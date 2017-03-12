@@ -1,0 +1,29 @@
+{
+  "name": "@chatie/db",
+  "version": "0.0.1",
+  "description": "Database for Chatie",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo tested"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chatie/db.git"
+  },
+  "keywords": [
+    "chatie",
+    "database",
+    "devops"
+  ],
+  "author": "Huan LI <zixia@zixia.net>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/chatie/db/issues"
+  },
+  "homepage": "https://github.com/chatie/db#readme",
+  "devDependencies": {
+    "@types/node": "^7.0.5",
+    "ts-node": "^2.1.0",
+    "typescript": "^2.2.1"
+  }
+}
