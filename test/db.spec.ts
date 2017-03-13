@@ -48,7 +48,6 @@ test('IonicDB connect testing', t => {
   db.connect()
 })
 
-
 /*
 import { Database } from '@ionic/cloud-angular'
 @Component( ... )

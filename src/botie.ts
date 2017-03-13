@@ -10,5 +10,5 @@ export type Botie = {
   createTime: number,
   updateTime: number,
   status:     BotieStatus,
-  hostieId?:  string
+  hostieId?:  string,
 }

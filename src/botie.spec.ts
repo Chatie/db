@@ -15,7 +15,7 @@ test('Botie model with all values fulfilled', t => {
     createTime: 123,
     updateTime: 123,
     status:     BotieStatus.STANDBY,
-    hostieId:   'string'
+    hostieId:   'string',
   }
   botie.status = BotieStatus.READY
 

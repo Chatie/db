@@ -2,8 +2,12 @@
   "name": "@chatie/db",
   "version": "0.0.2",
   "description": "Database for Chatie",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "clean": "shx rm -fr dist",
+    "dist": "npm run clean && tsc && shx cp package.json dist/",
+    "lint": "npm run tslint",
     "test": "tap {src,test}/**/*.spec.ts",
     "tslint": "tslint \"{src,test}/**/*.ts\""
   },
@@ -23,9 +27,9 @@
   },
   "homepage": "https://github.com/chatie/db#readme",
   "devDependencies": {
-    "@ionic/cloud-angular": "^0.11.0",
     "@ionic/db": "^0.1.0",
     "@types/node": "^7.0.5",
+    "shx": "^0.2.2",
     "tap": "^10.3.0",
     "ts-node": "^2.1.0",
     "tslint": "^4.5.1",
