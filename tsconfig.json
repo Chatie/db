@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2015"
+    "target": "es2016"
     , "module": "commonjs"
     , "outDir": "dist"
     , "declaration": true
@@ -26,6 +26,5 @@
      , "example/**/*.ts"
      , "src/**/*.ts"
      , "test/**/*.spec.ts"
-     , "bot/**/*.ts"
   ]
 }

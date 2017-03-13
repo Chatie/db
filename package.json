@@ -4,7 +4,8 @@
   "description": "Database for Chatie",
   "main": "index.ts",
   "scripts": {
-    "test": "echo tested"
+    "test": "tap {src,test}/**/*.spec.ts",
+    "tslint": "tslint \"{src,test}/**/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -22,8 +23,14 @@
   },
   "homepage": "https://github.com/chatie/db#readme",
   "devDependencies": {
+    "@ionic/cloud-angular": "^0.11.0",
+    "@ionic/db": "^0.1.0",
     "@types/node": "^7.0.5",
+    "tap": "^10.3.0",
     "ts-node": "^2.1.0",
-    "typescript": "^2.2.1"
+    "tslint": "^4.5.1",
+    "tslint-jsdoc-rules": "^0.1.2",
+    "typescript": "^2.2.1",
+    "ws": "^2.2.0"
   }
 }
