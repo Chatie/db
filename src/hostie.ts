@@ -112,5 +112,5 @@ export class HostieStore {
   public update(condition: object) {
     return this.collection.update(condition)
   }
-
 }
+
