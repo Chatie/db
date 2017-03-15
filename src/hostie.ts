@@ -113,4 +113,3 @@ export class HostieStore {
     return this.collection.update(condition)
   }
 }
-
