@@ -3,6 +3,14 @@ export enum HostieStatus {
   ONLINE  = 1,
 }
 
+export enum HostieRuntime {
+  UNKNOWN = 0,
+  DOCKER  = 1,
+  LINUX   = 2,
+  WINDOWS = 3,
+  APPLE   = 4,
+}
+
 export type Hostie = {
   id:         string,
   token:      string,
@@ -12,5 +20,5 @@ export type Hostie = {
   note?:      string,
   status:     HostieStatus,
   version?:   string,
-  runtime?:   string,
+  runtime?:   HostieRuntime,
 }

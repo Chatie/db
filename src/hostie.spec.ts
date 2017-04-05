@@ -5,6 +5,7 @@ import { test } from 'tap'
 import {
   Hostie,
   HostieStatus,
+  HostieRuntime,
 } from './hostie'
 
 test('Hostie model with all values fulfilled', t => {
@@ -17,7 +18,7 @@ test('Hostie model with all values fulfilled', t => {
     note:       'string',
     status:     HostieStatus.OFFLINE,
     version:    '0.7.41',
-    runtime:    'docker',
+    runtime:    HostieRuntime.DOCKER,
   }
   hostie.status = HostieStatus.ONLINE
 

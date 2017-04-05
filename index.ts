@@ -1,6 +1,7 @@
 import {
   Hostie,
   HostieStatus,
+  HostieRuntime,
 }                 from './src/hostie'
 
 import { 
@@ -13,5 +14,6 @@ export {
   BotieStatus,
   Hostie,
   HostieStatus,
+  HostieRuntime,
 }
 
