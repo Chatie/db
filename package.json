@@ -1,6 +1,6 @@
 {
   "name": "@chatie/db",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Database for Chatie",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,5 +36,8 @@
     "tslint-jsdoc-rules": "^0.1.2",
     "typescript": "^2.2.1",
     "ws": "^2.2.0"
+  },
+  "dependencies": {
+    "brolog": "^0.3.11"
   }
 }

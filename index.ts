@@ -1,10 +1,11 @@
 import {
   Hostie,
-  HostieStatus,
   HostieRuntime,
+  HostieStatus,
+  HostieStore,
 }                 from './src/hostie'
 
-import { 
+import {
   Botie,
   BotieStatus,
 }                 from './src/botie'
@@ -12,8 +13,10 @@ import {
 export {
   Botie,
   BotieStatus,
+  //
   Hostie,
-  HostieStatus,
   HostieRuntime,
+  HostieStatus,
+  HostieStore,
 }
 
