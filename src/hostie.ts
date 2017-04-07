@@ -25,15 +25,15 @@ export enum HostieRuntime {
 }
 
 export type Hostie = {
-  id?:        string,
-  token:      string,
-  name:       string,
   createTime: number,
-  updateTime: number,
+  id?:        string,
+  name:       string,
   note?:      string,
-  status:     HostieStatus,
-  version?:   string,
   runtime?:   HostieRuntime,
+  status:     HostieStatus,
+  token:      string,
+  updateTime: number,
+  version?:   string,
 }
 
 export class HostieStore {
