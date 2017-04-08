@@ -17,11 +17,12 @@ export enum HostieStatus {
 }
 
 export enum HostieRuntime {
-  UNKNOWN = 0,
-  DOCKER  = 1,
-  LINUX   = 2,
-  WINDOWS = 3,
-  APPLE   = 4,
+  UNKNOWN   = 0,
+  LINUX     = 1,
+  WINDOWS   = 2,
+  APPLE     = 3,
+  DOCKER    = 4,
+  ELECTRON  = 5,
 }
 
 export type Hostie = {
@@ -36,6 +37,11 @@ export type Hostie = {
   version?:   string,
 }
 
+export type HostieStoreInstanceOptions = {
+  log:      Brolog,
+  database: any,
+}
+
 export class HostieStore {
   private static _instance: HostieStore
 
@@ -47,16 +53,22 @@ export class HostieStore {
     return this._hosties
   }
 
-  public static instance({
-    database,
-    log,
-  }) {
-    if (!HostieStore._instance) {
-      HostieStore._instance = new HostieStore({
-        database,
-        log,
-      })
+  public static instance(options?: HostieStoreInstanceOptions) {
+    if (HostieStore._instance) {
+      if (options) {
+        Brolog.warn('HostieStore', 'instance() should only init instance once')
+      }
+      return HostieStore._instance
     }
+
+    if (!options) {
+      throw new Error('no options found for init instance')
+    }
+
+    HostieStore._instance = new HostieStore({
+      database: options.database,
+      log:      options.log,
+    })
     return HostieStore._instance
   }
 
@@ -64,11 +76,13 @@ export class HostieStore {
     database,
     log,
   }) {
+    this.log = log || Brolog
+    this.log.verbose('HostieStore', 'constructor()')
+
     if (HostieStore._instance) {
       throw new Error('HostieStore should be singleton')
     }
 
-    this.log = log || Brolog
     this.log.verbose('HostieStore', 'constructor({db, log})')
 
     this.collection = database.collection('hosties')
@@ -87,6 +101,7 @@ export class HostieStore {
    * @param newHostie
    */
   public insert(newHostie: Hostie): Observable<Hostie> {
+    this.log.verbose('HostieStore', 'insert()')
     return this.collection.insert(newHostie)
   }
 
@@ -95,6 +110,7 @@ export class HostieStore {
    * @param id uuid
    */
   public remove(id: string) {
+    this.log.verbose('HostieStore', 'remove()')
     return this.collection.remove(id)
   }
 
@@ -106,6 +122,7 @@ export class HostieStore {
   public find(id: string)
 
   public find(value: string | object) {
+    this.log.verbose('HostieStore', 'find()')
     return this.collection
                 .find(value)
                 .fetch()
@@ -118,6 +135,7 @@ export class HostieStore {
    * @param updateHostie
    */
   public update(condition: object) {
+    this.log.verbose('HostieStore', 'update(%s)', JSON.stringify(condition))
     return this.collection.update(condition)
   }
 }
