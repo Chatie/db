@@ -7,8 +7,8 @@ export type Botie = {
   id:         string,
   name:       string,
   note?:      string,
-  createTime: number,
-  updateTime: number,
+  create_at:  number,
+  update_at:  number,
   status:     BotieStatus,
   hostieId?:  string,
 }

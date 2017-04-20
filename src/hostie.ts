@@ -26,14 +26,14 @@ export enum HostieRuntime {
 }
 
 export type Hostie = {
-  createTime: number,
+  create_at:  number,
   id?:        string,
   name:       string,
   note?:      string,
   runtime?:   HostieRuntime,
   status:     HostieStatus,
   token:      string,
-  updateTime: number,
+  update_at:  number,
   version?:   string,
 }
 

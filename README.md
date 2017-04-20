@@ -5,3 +5,10 @@ Database for Chatie System
 
 * <https://blog.chatie.io>
 * <https://www.chatie.io>
+
+## Reference
+
+### Scaphold(Graphql)
+
+* [How to add social authentication to Scaphold](https://scaphold.io/community/questions/scaphold-social-login/)
+
