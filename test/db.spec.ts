@@ -9,7 +9,7 @@ import { test }       from 'tap'
 
 import {
   // Db,
-  Hostie,
+  Dockie,
   // Botie,
 }                     from '../'
 
@@ -26,22 +26,22 @@ test('IonicDB connect testing', t => {
   const db = new IonicDB(options)
   db.setToken(API_TOKEN)
 
-  const hosties = db.collection('hosties')
+  const dockies = db.collection('dockies')
   // const boties = db.collection('boties')
 
   let i = 0
-  const hostiesSub = hosties
+  const dockiesSub = dockies
                       .limit(3)
                       .fetch()
                       .flatMap(doc => doc)
-                      .subscribe((hostie: Hostie) => {
-                        t.ok(hostie, 'Got #' + i++ + ' hostie from IonicDB')
+                      .subscribe((dockie: Dockie) => {
+                        t.ok(dockie, 'Got #' + i++ + ' dockie from IonicDB')
                       })
 
   const connectedSub = db.onConnected().subscribe(_ => {
     t.pass('IonicDB connected.')
     db.disconnect()
-    hostiesSub.unsubscribe()
+    dockiesSub.unsubscribe()
     connectedSub.unsubscribe()
     t.end()
   })

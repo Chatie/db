@@ -1,9 +1,9 @@
 import {
-  Hostie,
-  HostieRuntime,
-  HostieStatus,
-  HostieStore,
-}                 from './src/hostie'
+  Dockie,
+  DockieRuntime,
+  DockieStatus,
+  DockieStore,
+}                 from './src/dockie'
 
 import {
   Botie,
@@ -14,9 +14,9 @@ export {
   Botie,
   BotieStatus,
   //
-  Hostie,
-  HostieRuntime,
-  HostieStatus,
-  HostieStore,
+  Dockie,
+  DockieRuntime,
+  DockieStatus,
+  DockieStore,
 }
 
