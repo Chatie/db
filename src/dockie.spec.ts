@@ -10,6 +10,7 @@ import {
 
 test('Dockie model with all values fulfilled', t => {
   const dockie: Dockie = {
+    email:      'zixia@zixia.net',
     id:         'uuid',
     token:      'uuid',
     name:       'string',
@@ -28,6 +29,7 @@ test('Dockie model with all values fulfilled', t => {
 
 test('Dockie model with minimum values fulfilled', t => {
   const dockie: Dockie = {
+    email:      'zixia@zixia.net',
     id:         'uuid',
     token:      'uuid',
     name:       'string',

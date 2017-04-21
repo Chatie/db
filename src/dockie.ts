@@ -5,7 +5,7 @@ import {
 import {
   BehaviorSubject,
   Observable,
-  // Subscription,
+  Subscription,
 }                     from  'rxjs'
 import                      'rxjs/add/operator/map'
 
@@ -26,6 +26,7 @@ export enum DockieRuntime {
 }
 
 export type Dockie = {
+  email:    string,
   create_at:  number,
   id?:        string,
   name:       string,
@@ -43,14 +44,19 @@ export type DockieStoreInstanceOptions = {
 }
 
 export class DockieStore {
+  private log: Brolog
+
+  private user:   any
+  private email:  string | null
+
   private static _instance: DockieStore
 
-  private collection: Collection
-  private log: Brolog
+  private collection:   Collection
+  private subscription: Subscription|null = null
 
   private _dockies:  BehaviorSubject<Dockie[]> = new BehaviorSubject([])
   public get dockies() {
-    return this._dockies
+    return this._dockies.asObservable()
   }
 
   public static instance(options?: DockieStoreInstanceOptions) {
@@ -74,6 +80,7 @@ export class DockieStore {
 
   constructor(options: any) {
     this.log = options.log || Brolog
+
     this.log.verbose('DockieStore', 'constructor()')
 
     if (DockieStore._instance) {
@@ -83,14 +90,6 @@ export class DockieStore {
     this.log.verbose('DockieStore', 'constructor({db, log})')
 
     this.collection = options.database.collection('dockies')
-
-    this.collection
-        .watch() // TODO: watch for the specific user instead of all
-        .defaultIfEmpty() // XXX: confirm the behaviour of this
-        .subscribe((list: Dockie[]) => {
-          this.log.silly('DockieStore', 'constructor() subscript() %s', list)
-          this._dockies.next(list)
-        })
   }
 
   /**
@@ -99,6 +98,7 @@ export class DockieStore {
    */
   public insert(newDockie: Dockie): Observable<Dockie> {
     this.log.verbose('DockieStore', 'insert()')
+    newDockie.email = this.email || 'unknown@unknown.org'
     return this.collection.insert(newDockie)
   }
 
@@ -134,5 +134,37 @@ export class DockieStore {
   public update(condition: object) {
     this.log.verbose('DockieStore', 'update(%s)', JSON.stringify(condition))
     return this.collection.update(condition)
+  }
+
+  public auth(user: any) {
+    this.log.verbose('DockieStore', 'auth(%s)', user && user.email)
+
+    if (user) {
+      this.user = user
+      this.email = user.email
+
+      this.subscription = this.collection
+          .findAll({ email: this.email })
+          .limit(10)
+          .watch() // TODO: watch for the specific user instead of all
+          // .fetch()
+          .defaultIfEmpty() // XXX: confirm the behaviour of this
+          .subscribe((list: Dockie[]) => {
+            this.log.silly('DockieStore', 'constructor() subscript() %s', list)
+            this._dockies.next(list)
+          })
+
+      this.log.silly('DockieStore', 'auth() subscribe() collection')
+
+    } else {
+      this.log.silly('DockieStore', 'auth() unsubscribe() collection')
+      if (this.subscription) {
+        this.subscription.unsubscribe()
+        this.subscription = null
+      }
+
+      this.user = null
+      this.email = null
+    }
   }
 }
