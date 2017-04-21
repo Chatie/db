@@ -11,12 +11,12 @@ import                      'rxjs/add/operator/map'
 
 import { Brolog }     from 'brolog'
 
-export enum HostieStatus {
+export enum DockieStatus {
   OFFLINE = 0,
   ONLINE  = 1,
 }
 
-export enum HostieRuntime {
+export enum DockieRuntime {
   UNKNOWN   = 0,
   LINUX     = 1,
   WINDOWS   = 2,
@@ -25,81 +25,81 @@ export enum HostieRuntime {
   ELECTRON  = 5,
 }
 
-export type Hostie = {
+export type Dockie = {
   create_at:  number,
   id?:        string,
   name:       string,
   note?:      string,
-  runtime?:   HostieRuntime,
-  status:     HostieStatus,
+  runtime?:   DockieRuntime,
+  status:     DockieStatus,
   token:      string,
   update_at:  number,
   version?:   string,
 }
 
-export type HostieStoreInstanceOptions = {
+export type DockieStoreInstanceOptions = {
   log:      Brolog,
   database: any,
 }
 
-export class HostieStore {
-  private static _instance: HostieStore
+export class DockieStore {
+  private static _instance: DockieStore
 
   private collection: Collection
   private log: Brolog
 
-  private _hosties:  BehaviorSubject<Hostie[]> = new BehaviorSubject([])
-  public get hosties() {
-    return this._hosties
+  private _dockies:  BehaviorSubject<Dockie[]> = new BehaviorSubject([])
+  public get dockies() {
+    return this._dockies
   }
 
-  public static instance(options?: HostieStoreInstanceOptions) {
-    if (HostieStore._instance) {
+  public static instance(options?: DockieStoreInstanceOptions) {
+    if (DockieStore._instance) {
       if (options) {
-        Brolog.warn('HostieStore', 'instance() should only init instance once')
+        Brolog.warn('DockieStore', 'instance() should only init instance once')
       }
-      return HostieStore._instance
+      return DockieStore._instance
     }
 
     if (!options) {
       throw new Error('no options found for init instance')
     }
 
-    HostieStore._instance = new HostieStore({
+    DockieStore._instance = new DockieStore({
       database: options.database,
       log:      options.log,
     })
-    return HostieStore._instance
+    return DockieStore._instance
   }
 
   constructor(options: any) {
     this.log = options.log || Brolog
-    this.log.verbose('HostieStore', 'constructor()')
+    this.log.verbose('DockieStore', 'constructor()')
 
-    if (HostieStore._instance) {
-      throw new Error('HostieStore should be singleton')
+    if (DockieStore._instance) {
+      throw new Error('DockieStore should be singleton')
     }
 
-    this.log.verbose('HostieStore', 'constructor({db, log})')
+    this.log.verbose('DockieStore', 'constructor({db, log})')
 
-    this.collection = options.database.collection('hosties')
+    this.collection = options.database.collection('dockies')
 
     this.collection
         .watch() // TODO: watch for the specific user instead of all
         .defaultIfEmpty() // XXX: confirm the behaviour of this
-        .subscribe((list: Hostie[]) => {
-          this.log.silly('HostieStore', 'constructor() subscript() %s', list)
-          this._hosties.next(list)
+        .subscribe((list: Dockie[]) => {
+          this.log.silly('DockieStore', 'constructor() subscript() %s', list)
+          this._dockies.next(list)
         })
   }
 
   /**
    * @todo confirm the return type of Observable
-   * @param newHostie
+   * @param newDockie
    */
-  public insert(newHostie: Hostie): Observable<Hostie> {
-    this.log.verbose('HostieStore', 'insert()')
-    return this.collection.insert(newHostie)
+  public insert(newDockie: Dockie): Observable<Dockie> {
+    this.log.verbose('DockieStore', 'insert()')
+    return this.collection.insert(newDockie)
   }
 
   /**
@@ -107,7 +107,7 @@ export class HostieStore {
    * @param id uuid
    */
   public remove(id: string) {
-    this.log.verbose('HostieStore', 'remove()')
+    this.log.verbose('DockieStore', 'remove()')
     return this.collection.remove(id)
   }
 
@@ -119,7 +119,7 @@ export class HostieStore {
   public find(id: string):        Observable<any>
 
   public find(value: string | object): Observable<any> {
-    this.log.verbose('HostieStore', 'find()')
+    this.log.verbose('DockieStore', 'find()')
     return this.collection
                 .find(value)
                 .fetch()
@@ -129,10 +129,10 @@ export class HostieStore {
   /**
    * update will only change the specified fields in documents it affects;
    * unspecified fields will be left untouched.
-   * @param updateHostie
+   * @param updateDockie
    */
   public update(condition: object) {
-    this.log.verbose('HostieStore', 'update(%s)', JSON.stringify(condition))
+    this.log.verbose('DockieStore', 'update(%s)', JSON.stringify(condition))
     return this.collection.update(condition)
   }
 }
