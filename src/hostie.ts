@@ -72,11 +72,8 @@ export class HostieStore {
     return HostieStore._instance
   }
 
-  constructor({
-    database,
-    log,
-  }) {
-    this.log = log || Brolog
+  constructor(options: any) {
+    this.log = options.log || Brolog
     this.log.verbose('HostieStore', 'constructor()')
 
     if (HostieStore._instance) {
@@ -85,7 +82,7 @@ export class HostieStore {
 
     this.log.verbose('HostieStore', 'constructor({db, log})')
 
-    this.collection = database.collection('hosties')
+    this.collection = options.database.collection('hosties')
 
     this.collection
         .watch() // TODO: watch for the specific user instead of all
