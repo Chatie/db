@@ -13,8 +13,8 @@ test('Hostie model with all values fulfilled', t => {
     id:         'uuid',
     token:      'uuid',
     name:       'string',
-    createTime: 1234567,
-    updateTime: 1234567,
+    create_at: 1234567,
+    update_at: 1234567,
     note:       'string',
     status:     HostieStatus.OFFLINE,
     version:    '0.7.41',
@@ -31,8 +31,8 @@ test('Hostie model with minimum values fulfilled', t => {
     id:         'uuid',
     token:      'uuid',
     name:       'string',
-    createTime: 1234567,
-    updateTime: 1234567,
+    create_at: 1234567,
+    update_at: 1234567,
     status:     HostieStatus.OFFLINE,
   }
 

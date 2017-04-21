@@ -11,10 +11,11 @@
     , "noImplicitReturns": true
     , "noFallthroughCasesInSwitch": true
     , "strictNullChecks": true
+    , "alwaysStrict": true
 
     , "noImplicitAny": false
-    , "noUnusedParameters": false
-    , "noImplicitThis": false
+    , "noUnusedParameters": true
+    , "noImplicitThis": true
     , "traceResolution": false
   }
   , "exclude": [

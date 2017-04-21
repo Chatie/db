@@ -12,8 +12,8 @@ test('Botie model with all values fulfilled', t => {
     id:         'string',
     name:       'string',
     note:       'string',
-    createTime: 123,
-    updateTime: 123,
+    create_at: 123,
+    update_at: 123,
     status:     BotieStatus.STANDBY,
     hostieId:   'string',
   }
@@ -27,8 +27,8 @@ test('Botie model with minimum values fulfilled', t => {
   const botie: Botie = {
     id:         'string',
     name:       'string',
-    createTime: 123,
-    updateTime: 123,
+    create_at: 123,
+    update_at: 123,
     status:     BotieStatus.STANDBY,
   }
 

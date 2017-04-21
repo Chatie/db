@@ -9,7 +9,7 @@
     "dist": "npm run clean && tsc && shx cp package.json dist/",
     "lint": "npm run tslint",
     "test": "tap {src,test}/**/*.spec.ts",
-    "tslint": "tslint \"{src,test}/**/*.ts\""
+    "tslint": "tslint \"{src,test}/**/*.ts\" && tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -29,10 +29,11 @@
   "devDependencies": {
     "@ionic/db": "^0.1.0",
     "@types/node": "^7.0.5",
+    "@types/ws": "0.0.40",
     "shx": "^0.2.2",
     "tap": "^10.3.0",
     "ts-node": "^2.1.0",
-    "tslint": "^4.5.1",
+    "tslint": "^5",
     "tslint-jsdoc-rules": "^0.1.2",
     "typescript": "^2.2.1",
     "ws": "^2.2.0"

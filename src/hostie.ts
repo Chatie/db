@@ -118,10 +118,10 @@ export class HostieStore {
    * find
    * @param condition
    */
-  public find(condition: object)
-  public find(id: string)
+  public find(condition: object): Observable<any>
+  public find(id: string):        Observable<any>
 
-  public find(value: string | object) {
+  public find(value: string | object): Observable<any> {
     this.log.verbose('HostieStore', 'find()')
     return this.collection
                 .find(value)
