@@ -1,6 +1,6 @@
 import {
   Collection,
-}           from '@ionic/db'
+}                     from '@ionic/db'
 
 import {
   BehaviorSubject,
@@ -26,7 +26,7 @@ export enum DockieRuntime {
 }
 
 export type Dockie = {
-  email:    string,
+  email:      string,
   create_at:  number,
   id?:        string,
   name:       string,
@@ -136,12 +136,11 @@ export class DockieStore {
     return this.collection.update(condition)
   }
 
-  public auth(user: any) {
-    this.log.verbose('DockieStore', 'auth(%s)', user && user.email)
+  public auth(email?: string | null) {
+    this.log.verbose('DockieStore', 'auth(%s)', email)
 
-    if (user) {
-      this.user = user
-      this.email = user.email
+    if (email) {
+      this.email = email
 
       this.subscription = this.collection
           .findAll({ email: this.email })
