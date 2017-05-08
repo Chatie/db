@@ -79,8 +79,8 @@ export class DockieStore {
 
   constructor(options: any) {
     this.log = options.log || {
-      verbose:  () => {},
-      silly:    () => {},
+      verbose:  () => { /* */ },
+      silly:    () => { /* */ },
     }
 
     this.log.verbose('DockieStore', 'constructor()')
