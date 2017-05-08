@@ -30,6 +30,7 @@
     "@ionic/db": "^0.1.0",
     "@types/node": "^7.0.5",
     "@types/ws": "0.0.40",
+    "brolog": "^1.1.16",
     "shx": "^0.2.2",
     "tap": "^10.3.0",
     "ts-node": "^2.1.0",
@@ -38,7 +39,5 @@
     "typescript": "^2",
     "ws": "^2.2.0"
   },
-  "dependencies": {
-    "brolog": "^0.3.11"
-  }
+  "dependencies": {}
 }
