@@ -39,5 +39,7 @@
     "typescript": "^2",
     "ws": "^2.2.0"
   },
-  "dependencies": {}
+  "peerDependencies": {
+    "brolog": "*"
+  }
 }

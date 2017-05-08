@@ -9,8 +9,6 @@ import {
 }                     from  'rxjs'
 import                      'rxjs/add/operator/map'
 
-import { Brolog }     from 'brolog'
-
 export enum DockieStatus {
   OFFLINE = 0,
   ONLINE  = 1,
@@ -39,12 +37,12 @@ export type Dockie = {
 }
 
 export type DockieStoreInstanceOptions = {
-  log:      Brolog,
+  log:      any,
   database: any,
 }
 
 export class DockieStore {
-  private log: Brolog
+  private log: any
 
   private user:   any
   private email:  string | null
@@ -62,7 +60,8 @@ export class DockieStore {
   public static instance(options?: DockieStoreInstanceOptions) {
     if (DockieStore._instance) {
       if (options) {
-        Brolog.warn('DockieStore', 'instance() should only init instance once')
+        // Brolog.warn('DockieStore', 'instance() should only init instance once')
+        console.warn('DockieStore', 'instance() should only init instance once')
       }
       return DockieStore._instance
     }
@@ -79,7 +78,10 @@ export class DockieStore {
   }
 
   constructor(options: any) {
-    this.log = options.log || Brolog
+    this.log = options.log || {
+      verbose:  () => {},
+      silly:    () => {},
+    }
 
     this.log.verbose('DockieStore', 'constructor()')
 
