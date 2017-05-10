@@ -9,12 +9,12 @@ import {
 }                     from  'rxjs'
 import                      'rxjs/add/operator/map'
 
-export enum DockieStatus {
+export enum HostieStatus {
   OFFLINE = 0,
   ONLINE  = 1,
 }
 
-export enum DockieRuntime {
+export enum HostieRuntime {
   UNKNOWN   = 0,
   LINUX     = 1,
   WINDOWS   = 2,
@@ -23,58 +23,58 @@ export enum DockieRuntime {
   ELECTRON  = 5,
 }
 
-export type Dockie = {
+export type Hostie = {
   email:      string,
   create_at:  number,
   id?:        string,
   name:       string,
   note?:      string,
-  runtime?:   DockieRuntime,
-  status:     DockieStatus,
+  runtime?:   HostieRuntime,
+  status:     HostieStatus,
   token:      string,
   update_at:  number,
   version?:   string,
 }
 
-export type DockieStoreInstanceOptions = {
+export type HostieStoreInstanceOptions = {
   log:      any,
   database: any,
 }
 
-export class DockieStore {
+export class HostieStore {
   private log: any
 
   private user:   any
   private email:  string | null
 
-  private static _instance: DockieStore
+  private static _instance: HostieStore
 
   private collection:   Collection
   private subscription: Subscription|null = null
 
-  private _dockies:  BehaviorSubject<Dockie[]> = new BehaviorSubject([])
-  public get dockies() {
-    return this._dockies.asObservable()
+  private hosties$:  BehaviorSubject<Hostie[]> = new BehaviorSubject([])
+  public get hosties() {
+    return this.hosties$.asObservable()
   }
 
-  public static instance(options?: DockieStoreInstanceOptions) {
-    if (DockieStore._instance) {
+  public static instance(options?: HostieStoreInstanceOptions) {
+    if (HostieStore._instance) {
       if (options) {
-        // Brolog.warn('DockieStore', 'instance() should only init instance once')
-        console.warn('DockieStore', 'instance() should only init instance once')
+        // Brolog.warn('HostieStore', 'instance() should only init instance once')
+        console.warn('HostieStore', 'instance() should only init instance once')
       }
-      return DockieStore._instance
+      return HostieStore._instance
     }
 
     if (!options) {
       throw new Error('no options found for init instance')
     }
 
-    DockieStore._instance = new DockieStore({
+    HostieStore._instance = new HostieStore({
       database: options.database,
       log:      options.log,
     })
-    return DockieStore._instance
+    return HostieStore._instance
   }
 
   constructor(options: any) {
@@ -83,25 +83,25 @@ export class DockieStore {
       silly:    () => { /* */ },
     }
 
-    this.log.verbose('DockieStore', 'constructor()')
+    this.log.verbose('HostieStore', 'constructor()')
 
-    if (DockieStore._instance) {
-      throw new Error('DockieStore should be singleton')
+    if (HostieStore._instance) {
+      throw new Error('HostieStore should be singleton')
     }
 
-    this.log.verbose('DockieStore', 'constructor({db, log})')
+    this.log.verbose('HostieStore', 'constructor({db, log})')
 
-    this.collection = options.database.collection('dockies')
+    this.collection = options.database.collection('hosties')
   }
 
   /**
    * @todo confirm the return type of Observable
-   * @param newDockie
+   * @param newHostie
    */
-  public insert(newDockie: Dockie): Observable<Dockie> {
-    this.log.verbose('DockieStore', 'insert()')
-    newDockie.email = this.email || 'unknown@unknown.org'
-    return this.collection.insert(newDockie)
+  public insert(newHostie: Hostie): Observable<Hostie> {
+    this.log.verbose('HostieStore', 'insert()')
+    newHostie.email = this.email || 'unknown@unknown.org'
+    return this.collection.insert(newHostie)
   }
 
   /**
@@ -109,7 +109,7 @@ export class DockieStore {
    * @param id uuid
    */
   public remove(id: string) {
-    this.log.verbose('DockieStore', 'remove()')
+    this.log.verbose('HostieStore', 'remove()')
     return this.collection.remove(id)
   }
 
@@ -121,7 +121,7 @@ export class DockieStore {
   public find(id: string):        Observable<any>
 
   public find(value: string | object): Observable<any> {
-    this.log.verbose('DockieStore', 'find()')
+    this.log.verbose('HostieStore', 'find()')
     return this.collection
                 .find(value)
                 .fetch()
@@ -131,15 +131,15 @@ export class DockieStore {
   /**
    * update will only change the specified fields in documents it affects;
    * unspecified fields will be left untouched.
-   * @param updateDockie
+   * @param updateHostie
    */
   public update(condition: object) {
-    this.log.verbose('DockieStore', 'update(%s)', JSON.stringify(condition))
+    this.log.verbose('HostieStore', 'update(%s)', JSON.stringify(condition))
     return this.collection.update(condition)
   }
 
   public auth(email?: string | null) {
-    this.log.verbose('DockieStore', 'auth(%s)', email)
+    this.log.verbose('HostieStore', 'auth(%s)', email)
 
     if (email) {
       this.email = email
@@ -150,15 +150,15 @@ export class DockieStore {
           .watch() // TODO: watch for the specific user instead of all
           // .fetch()
           .defaultIfEmpty() // XXX: confirm the behaviour of this
-          .subscribe((list: Dockie[]) => {
-            this.log.silly('DockieStore', 'constructor() subscript() %s', list)
-            this._dockies.next(list)
+          .subscribe((list: Hostie[]) => {
+            this.log.silly('HostieStore', 'constructor() subscript() %s', list)
+            this.hosties$.next(list)
           })
 
-      this.log.silly('DockieStore', 'auth() subscribe() collection')
+      this.log.silly('HostieStore', 'auth() subscribe() collection')
 
     } else {
-      this.log.silly('DockieStore', 'auth() unsubscribe() collection')
+      this.log.silly('HostieStore', 'auth() unsubscribe() collection')
       if (this.subscription) {
         this.subscription.unsubscribe()
         this.subscription = null
