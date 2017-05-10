@@ -8,10 +8,24 @@ Database for Chatie System
 
 ## Reference
 
+### Firebase
+
+* [Firebase Realtime Database Introduction Documentation](https://firebase.google.com/docs/database/)
+
 ### Scaphold(Graphql)
 
 * [How to add social authentication to Scaphold](https://scaphold.io/community/questions/scaphold-social-login/)
 
+### Ionic DB
+
+DEPRECATED and Sun Set at 9th May 2017
+
+## Resources
+
+### Admin
+
+!(Chart)[https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif]
+> https://blog.heroku.com/kafka-data-pipelines-frp-node
 
 ## Change History
 
