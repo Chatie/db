@@ -1,6 +1,3 @@
-import {
-  Collection,
-}                     from '@ionic/db'
 
 import {
   BehaviorSubject,
@@ -8,6 +5,10 @@ import {
   Subscription,
 }                     from  'rxjs'
 import                      'rxjs/add/operator/map'
+
+import { Brolog }     from 'brolog'
+
+import { db }         from './db'
 
 export enum HostieStatus {
   OFFLINE = 0,
@@ -23,7 +24,7 @@ export enum HostieRuntime {
   ELECTRON  = 5,
 }
 
-export type Hostie = {
+export interface Hostie {
   email:      string,
   create_at:  number,
   id?:        string,
@@ -36,62 +37,53 @@ export type Hostie = {
   version?:   string,
 }
 
-export type HostieStoreInstanceOptions = {
-  log:      any,
-  database: any,
-}
-
 export class HostieStore {
-  private log: any
+  private log: Brolog
 
   private user:   any
   private email:  string | null
 
   private static _instance: HostieStore
 
-  private collection:   Collection
   private subscription: Subscription|null = null
+
+  private fbUserHostiePath: string
+  private fbHostiePath:     string
+  private hostiesRef: firebase.database.Reference
 
   private hosties$:  BehaviorSubject<Hostie[]> = new BehaviorSubject([])
   public get hosties() {
     return this.hosties$.asObservable()
   }
 
-  public static instance(options?: HostieStoreInstanceOptions) {
-    if (HostieStore._instance) {
-      if (options) {
-        // Brolog.warn('HostieStore', 'instance() should only init instance once')
-        console.warn('HostieStore', 'instance() should only init instance once')
-      }
-      return HostieStore._instance
-    }
-
-    if (!options) {
-      throw new Error('no options found for init instance')
-    }
-
-    HostieStore._instance = new HostieStore({
-      database: options.database,
-      log:      options.log,
-    })
-    return HostieStore._instance
-  }
-
-  constructor(options: any) {
-    this.log = options.log || {
-      verbose:  () => { /* */ },
-      silly:    () => { /* */ },
-    }
-
+  private constructor() {
+    this.log = Brolog.instance()
     this.log.verbose('HostieStore', 'constructor()')
 
     if (HostieStore._instance) {
       throw new Error('HostieStore should be singleton')
     }
 
-    this.log.verbose('HostieStore', 'constructor({db, log})')
+    /**
+     * /hosties/id/email/zixia@zixia.net
+     * /users/zixia@zixia.net/hosties/[id1,id2,...]
+     */
+    this.fbUserHostiePath = '/users'
+                          + '/' + db.email()
+                          + '/hosties'
 
-    this.collection = options.database.collection('hosties')
+    this.fbHostiePath = '/hosties'
+
+    this.hostiesRef = db.database().ref(this.fbUserHostiePath)
+  }
+
+  public static instance() {
+    Brolog.instance().verbose('HostieStore', 'instance()')
+
+    if (!this._instance) {
+      this._instance = new HostieStore()
+    }
+    return this._instance
   }
 
   /**
@@ -168,4 +160,54 @@ export class HostieStore {
       this.email = null
     }
   }
+}
+
+export const hostieStore = HostieStore.instance()
+
+
+async function test() {
+    const result = await firebase.auth().signInWithCustomToken(token)
+    console.log('auth: %s', JSON.stringify(result))
+
+    const root = firebase.database().ref()
+    // root.on('value', snap => console.log(snap.val()));
+
+    const zixia = root.child('zixia')
+    zixia.on('value', snap => {
+        console.log(snap.key, snap.val())
+    })
+    // zixia.update()
+    await firebase.auth().signOut()
+
+    await firebase.auth().signInAnonymously()
+}
+
+/**
+ * https://firebase.google.com/docs/database/web/offline-capabilities
+ *
+ */
+function userPresenceSystem() {
+    // since I can connect from multiple devices or browser tabs, we store each connection instance separately
+    // any time that connectionsRef's value is null (i.e. has no children) I am offline
+    var myConnectionsRef = firebase.database().ref('users/joe/connections');
+
+    // stores the timestamp of my last disconnect (the last time I was seen online)
+    var lastOnlineRef = firebase.database().ref('users/joe/lastOnline');
+
+    var connectedRef = firebase.database().ref('.info/connected');
+    connectedRef.on('value', function(snap) {
+    if (snap.val() === true) {
+        // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
+
+        // add this device to my connections list
+        // this value could contain info about the device or a timestamp too
+        var con = myConnectionsRef.push(true);
+
+        // when I disconnect, remove this device
+        con.onDisconnect().remove();
+
+        // when I disconnect, update the last time I was seen online
+        lastOnlineRef.onDisconnect().set(firebase.database.ServerValue.TIMESTAMP);
+    }
+    });
 }
