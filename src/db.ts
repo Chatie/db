@@ -27,6 +27,8 @@ export class Db {
   }
 
   public static instance() {
+    Brolog.instance().verbose('Db', 'instance()')
+
     if (!this._instance) {
       this._instance = new Db()
     }
@@ -79,8 +81,6 @@ export class Db {
     return this._email
   }
 }
-
-export const db = Db.instance()
 
 function toggleStar(postRef, uid) {
   postRef.transaction(function(post) {
