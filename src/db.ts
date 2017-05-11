@@ -5,9 +5,17 @@ import { Brolog }         from 'brolog'
 import { firebaseConfig } from './config'
 
 export class Db {
+  private static _instance: Db
+
+  public static instance() {
+    if (!this._instance) {
+      this._instance = new Db()
+    }
+    return this._instance
+  }
+
   public log: Brolog
 
-  private static _instance: Db
   private _email: string | null
 
   // private idToken:      string | null
@@ -26,17 +34,10 @@ export class Db {
     firebase.initializeApp(firebaseConfig)
   }
 
-  public static instance() {
-    if (!this._instance) {
-      this._instance = new Db()
-    }
-    return this._instance
-  }
+  public async jwtAuth():                  Promise<void>
+  public async jwtAuth(idToken: string):   Promise<void>
 
-  async jwtAuth():                  Promise<void>
-  async jwtAuth(idToken: string):   Promise<void>
-
-  async jwtAuth(idToken?: string):  Promise<void> {
+  public async jwtAuth(idToken?: string):  Promise<void> {
     this.log.verbose('Db', 'jwtAuth(%s)', idToken)
 
     if (!idToken) {
@@ -49,9 +50,9 @@ export class Db {
     }
 
     // 1. use api to transform idToken to firebaseToken
+    // tslint:disable-next-line:max-line-length
     const customToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbXMiOnsicHJlbWl1bUFjY291bnQiOnRydWUsImVtYWlsIjoieml4aWFAeml4aWEubmV0In0sInVpZCI6InNvbWUtdWlkIiwiaWF0IjoxNDk0NDE0MDg0LCJleHAiOjE0OTQ0MTc2ODQsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHl0b29sa2l0Lmdvb2dsZWFwaXMuY29tL2dvb2dsZS5pZGVudGl0eS5pZGVudGl0eXRvb2xraXQudjEuSWRlbnRpdHlUb29sa2l0IiwiaXNzIjoiZmlyZWJhc2UtYWRtaW5zZGstY3NuaGhAd2VjaGF0eS1iby5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsInN1YiI6ImZpcmViYXNlLWFkbWluc2RrLWNzbmhoQHdlY2hhdHktYm8uaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20ifQ.qhf-AWrStlAvdnWInyDd_j_OYm1YV5MR7lb5IYAy_YI-mtbMS4EfH563CR5t3vzB-1F8XSXXBkr5EQxc0HFvMZME9GIqJiwVMZyWRuU1TMk_paqD4Ji1uqbNbeXTgjC_Aj8CNbiZMqTURTiZVjMJRw35KOKBFclv2zkfyzBUTkd1FbW2GM-OWyuhustc7lWzB-_unL5XTLKIVTRwyLyU1iARqqPN6dWyFWnSwgAeDaSYOMLeAo8zF_tsA0YTtWOgrlh5JZtr4Y8q0IzYeL5KxZfRrhQam2elWvQhwv2stygz9TFbjkchBrUzyQZcpwc-wEfhWysfr_70KmprNXg7ZQ'
-
-    this.log.silly('Db', 'jwtAuth() jwtAuth need to use API here', idToken && idToken.length)
+    this.log.warn('Db', 'jwtAuth() TODO: jwtAuth need change to get from API', idToken && idToken.length)
 
     try {
       const userInfo = await firebase.auth().signInWithCustomToken(customToken) as firebase.UserInfo
@@ -66,12 +67,12 @@ export class Db {
     return
   }
 
-  database() {
+  public database() {
     this.log.verbose('Db', 'database()')
     return firebase.database()
   }
 
-  email() {
+  public email() {
     this.log.verbose('Db', 'email() is %s', this.email)
     if (!this._email) {
       throw new Error('no email')
