@@ -18,6 +18,7 @@ export class Db {
     this.log.verbose('Db', 'constructor()')
 
     /**
+     * https://firebase.google.com/docs/database/
      * https://firebase.google.com/docs/admin/setup
      * https://firebase.google.com/docs/auth/web/custom-auth
      * https://firebase.google.com/docs/auth/admin/create-custom-tokens
@@ -80,3 +81,21 @@ export class Db {
 }
 
 export const db = Db.instance()
+
+function toggleStar(postRef, uid) {
+  postRef.transaction(function(post) {
+    if (post) {
+      if (post.stars && post.stars[uid]) {
+        post.starCount--;
+        post.stars[uid] = null;
+      } else {
+        post.starCount++;
+        if (!post.stars) {
+          post.stars = {};
+        }
+        post.stars[uid] = true;
+      }
+    }
+    return post;
+  });
+}
