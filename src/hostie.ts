@@ -10,46 +10,35 @@ import { Brolog }     from 'brolog'
 
 import { db }         from './db'
 
-export enum HostieStatus {
-  OFFLINE = 0,
-  ONLINE  = 1,
-}
-
-export enum HostieRuntime {
-  UNKNOWN   = 0,
-  LINUX     = 1,
-  WINDOWS   = 2,
-  APPLE     = 3,
-  DOCKER    = 4,
-  ELECTRON  = 5,
-}
-
-export interface Hostie {
-  email:      string,
-  create_at:  number,
-  id?:        string,
-  name:       string,
-  note?:      string,
-  runtime?:   HostieRuntime,
-  status:     HostieStatus,
-  token:      string,
-  update_at:  number,
-  version?:   string,
-}
+import {
+  Hostie,
+  HostieRuntime,
+  HostieStatus,
+}                     from './hostie-schema'
 
 export class HostieStore {
+
+  private static _instance: HostieStore
+
+  public static instance() {
+    Brolog.instance().verbose('HostieStore', 'instance()')
+
+    if (!this._instance) {
+      this._instance = new HostieStore()
+    }
+    return this._instance
+  }
+
   private log: Brolog
 
   private user:   any
   private email:  string | null
 
-  private static _instance: HostieStore
-
   private subscription: Subscription|null = null
 
-  private fbUserHostiePath: string
-  private fbHostiePath:     string
-  private hostiesRef: firebase.database.Reference
+  private pathUserHostie: string
+  private pathHostie:     string
+  private hostiesRef:     firebase.database.Reference
 
   private hosties$:  BehaviorSubject<Hostie[]> = new BehaviorSubject([])
   public get hosties() {
@@ -68,22 +57,13 @@ export class HostieStore {
      * /hosties/id/email/zixia@zixia.net
      * /users/zixia@zixia.net/hosties/[id1,id2,...]
      */
-    this.fbUserHostiePath = '/users'
-                          + '/' + db.email()
-                          + '/hosties'
+    this.pathUserHostie = '/users'
+                        + '/' + db.email()
+                        + '/hosties'
 
-    this.fbHostiePath = '/hosties'
+    this.pathHostie = '/hosties'
 
-    this.hostiesRef = db.database().ref(this.fbUserHostiePath)
-  }
-
-  public static instance() {
-    Brolog.instance().verbose('HostieStore', 'instance()')
-
-    if (!this._instance) {
-      this._instance = new HostieStore()
-    }
-    return this._instance
+    this.hostiesRef = db.database().ref(this.pathUserHostie)
   }
 
   /**
