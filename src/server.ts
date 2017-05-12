@@ -9,10 +9,11 @@ firebase.initializeApp({
 
 // admin.
 const testdata = firebase.database().ref().child('test')
+
 testdata.on('value', snap => {
   if (snap) {
     console.log(snap.val())
-  } else { 
+  } else {
     console.error('no snap')
   }
 })
@@ -34,7 +35,7 @@ async function test() {
   } catch (e) {
     console.error('updateUser error: %s', e.message)
   }
-  
+
   let userRecord
   // userRecord = await auth().getUser(uid)
   // // See the UserRecord reference doc for the contents of userRecord.

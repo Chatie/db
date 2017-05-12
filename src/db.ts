@@ -1,22 +1,75 @@
-import * as firebase      from 'firebase'
+import * as Firebase    from 'firebase'
 
-import { Brolog }         from 'brolog'
+import { Brolog }       from 'brolog'
 
-import { firebaseConfig } from './config'
+import {
+  firebaseConfig,
+  serviceAccount,
+}                       from './config'
 
 export class Db {
   private static _instance: Db
 
-  public static instance() {
+  public static instance(server = false) {
     Brolog.instance().verbose('Db', 'instance()')
 
     if (!this._instance) {
+      if (server) {
+        this.forServer()
+      } else {
+        this.forClient()
+      }
       this._instance = new Db()
     }
     return this._instance
   }
 
-  public log: Brolog
+  public static log
+  public static enableLogging():              void
+  public static enableLogging(log: boolean):  void
+  public static enableLogging(log: any):      void
+
+  public static enableLogging(log?: any) {
+    Brolog.instance().verbose('Db', 'enableLogging(%s)', log)
+
+    if (!log) {
+      Brolog.instance().silly('Db', 'enableLogging() disabled')
+      this.log = null
+    } else {
+      if (typeof log === 'boolean') {
+        Brolog.instance().silly('Db', 'enableLogging() enabled/using default Brolog')
+        this.log = Brolog.instance()
+      } else if (typeof log.verbose === 'function') {
+        Brolog.instance().silly('Db', 'enableLogging() enabled/using %s as provided',
+                                      log.constructor && log.constructor.name
+                              )
+        this.log = log
+      } else {
+        throw new Error('got invalid logger')
+      }
+    }
+  }
+
+  public static forClient() {
+    /**
+     * https://firebase.google.com/docs/database/
+     *
+     * https://firebase.google.com/docs/auth/web/custom-auth
+     * https://firebase.google.com/docs/auth/admin/create-custom-tokens
+     */
+    Firebase.initializeApp(firebaseConfig)
+    Firebase.auth().currentUser.uid
+  }
+
+  public static forServer() {
+    // https://firebase.google.com/docs/admin/setup
+    Firebase.initializeApp({
+      credential: Firebase.credential.cert(serviceAccount),
+      databaseURL: "https://wechaty-bo.firebaseio.com"
+    });
+
+    throw new Error('no implement yet')
+  }
 
   private _email: string | null
 
@@ -27,13 +80,6 @@ export class Db {
     this.log = Brolog.instance()
     this.log.verbose('Db', 'constructor()')
 
-    /**
-     * https://firebase.google.com/docs/database/
-     * https://firebase.google.com/docs/admin/setup
-     * https://firebase.google.com/docs/auth/web/custom-auth
-     * https://firebase.google.com/docs/auth/admin/create-custom-tokens
-     */
-    firebase.initializeApp(firebaseConfig)
   }
 
   public async jwtAuth():                  Promise<void>
@@ -46,8 +92,9 @@ export class Db {
       // this.idToken      = null
       // this.customToken  = null
       this._email = null
-      await firebase.auth().signOut()
-      this.log.silly('Db', 'jwtAuth() firebase.auth().signOut()')
+      await Firebase.auth().signOut()
+      await Firebase.app().delete()
+      this.log.silly('Db', 'jwtAuth() firebase.auth().signOut() & delete()')
       return
     }
 
@@ -57,7 +104,7 @@ export class Db {
     this.log.warn('Db', 'jwtAuth() TODO: jwtAuth need change to get from API', idToken && idToken.length)
 
     try {
-      const userInfo = await firebase.auth().signInWithCustomToken(customToken) as firebase.UserInfo
+      const userInfo = await Firebase.auth().signInWithCustomToken(customToken) as Firebase.UserInfo
       this.log.silly('Db', 'jwtAuth() firebase.auth().signInWithCustomToken() userInfo({email:%s})', userInfo.email)
       // this.idToken      = idToken
       // this.customToken  = customToken
@@ -71,7 +118,7 @@ export class Db {
 
   public database() {
     this.log.verbose('Db', 'database()')
-    return firebase.database()
+    return Firebase.database()
   }
 
   public email() {

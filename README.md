@@ -27,6 +27,12 @@ DEPRECATED and Sun Set at 9th May 2017
 !(Chart)[https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif]
 > https://blog.heroku.com/kafka-data-pipelines-frp-node
 
+### Firebase
+
+* [Firebase Realtime Database](https://firebase.google.com/docs/database/)
+* [Add the Firebase Admin SDK to your Server](https://firebase.google.com/docs/admin/setup)
+* [Firebase API Reference](https://firebase.google.com/docs/reference/js/)
+
 ## Change History
 
 ### v0.1.x (master)
