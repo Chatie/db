@@ -8,9 +8,11 @@ import {
 }                         from 'brolog'
 
 import {
-  IDb,
+  serviceAccount,
   databaseURL,
 }                         from './config'
+
+import { IDb }            from './db'
 
 export class AdminDb implements IDb {
   private static _instance: AdminDb
@@ -37,15 +39,11 @@ export class AdminDb implements IDb {
   }
 
   public static serviceAuth(): void {
-    let serviceConfig: FirebaseAdmin.AppOptions | null = null
-
     // Service Account Key must exist!
-    if (!process.env['FIREBASE_SERVICE_ACCOUNT_KEY']) {
+    if (!serviceAccount) {
       throw new Error('service config not found')
     }
-    // https://firebase.google.com/docs/admin/setup
-    const serviceAccount = JSON.parse(process.env['FIREBASE_SERVICE_ACCOUNT_KEY'])
-    serviceConfig = {
+    const serviceConfig: FirebaseAdmin.AppOptions = {
       credential: FirebaseAdmin.credential.cert(serviceAccount),
       databaseURL,
     }
@@ -56,10 +54,16 @@ export class AdminDb implements IDb {
 
   public currentUserEmail(): string {
     // FirebaseAdmin.auth().currentUser() is not exist
+    // TODO
     return 'zixia@zixia.net'
   }
 
   public rootRef(): Firebase.database.Reference {
     return FirebaseAdmin.database().ref('/')
   }
+}
+
+export {
+  Firebase,
+  FirebaseAdmin,
 }
