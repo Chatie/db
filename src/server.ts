@@ -1,10 +1,10 @@
-import * as firebase from "firebase-admin"
+import * as firebase from 'firebase-admin'
 
 const serviceAccount = JSON.parse(process.env['FIREBASE_SERVICE_ACCOUNT_KEY'])
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: "https://wechaty-bo.firebaseio.com"
+  databaseURL: 'https://wechaty-bo.firebaseio.com',
 });
 
 // admin.
@@ -18,8 +18,8 @@ testdata.on('value', snap => {
   }
 })
 
-var uid = "some-uid";
-var additionalClaims = {
+const uid = 'some-uid';
+const additionalClaims = {
   premiumAccount: true,
   email: 'zixia@zixia.net',
   emailVerified: true,
@@ -39,13 +39,13 @@ async function test() {
   let userRecord
   // userRecord = await auth().getUser(uid)
   // // See the UserRecord reference doc for the contents of userRecord.
-  // console.log("Successfully fetched user data by id:", userRecord.toJSON());
+  // console.log('Successfully fetched user data by id:', userRecord.toJSON());
 
   try {
     const email = 'zixia@zixia.net'
     userRecord = await firebase.auth().getUserByEmail(email)
     // See the UserRecord reference doc for the contents of userRecord.
-    console.log("Successfully fetched user data by email:", userRecord.toJSON());
+    console.log('Successfully fetched user data by email:', userRecord.toJSON());
   } catch (e) {
     console.error('no such user: ', e.message)
   }
