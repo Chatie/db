@@ -6,7 +6,7 @@ import {
   Hostie,
   HostieStatus,
   HostieRuntime,
-}                 from './hostie'
+}                 from './hostie-schema'
 
 test('Hostie model with all values fulfilled', t => {
   const hostie: Hostie = {

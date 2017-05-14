@@ -39,12 +39,13 @@ export class AdminDb implements IDb {
   }
 
   public static serviceAuth(): void {
+    const localServiceAccount = serviceAccount
     // Service Account Key must exist!
-    if (!serviceAccount) {
+    if (!localServiceAccount) {
       throw new Error('service config not found')
     }
     const serviceConfig: FirebaseAdmin.AppOptions = {
-      credential: FirebaseAdmin.credential.cert(serviceAccount),
+      credential: FirebaseAdmin.credential.cert(localServiceAccount),
       databaseURL,
     }
 
