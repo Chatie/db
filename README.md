@@ -48,3 +48,41 @@ Switch to Firebase
 Starting with Realtime Database: Ionic DB
 
 1. Limitation: does not support server JWT
+
+
+db/
+  hostie
+
+await db.jwtAuth(fasf)
+  uid
+  email
+
+  hostie.add({}, email?)
+
+await db.jwtAuth(false)
+
+
+
+///////////////////////////////////////////////
+import { Db } from '@chatie/db'
+Db.enableLogging(true)
+await Db.jwtAuth(idToken)
+await Db.jwtAuth(false)
+
+const rootRef: Firebase.database.Reference = Db.database().ref('/')
+
+const hostieStore = HostieStore.instance(rootRef)
+hostieStore.hostieList.subscribe(l => console.log)
+hostieStore.insert({}, uid)
+
+///////////////////////////////////////////////
+import { AdminDb } from '@chatie/db'
+
+AdminDb.enableLogging(true)
+await AdminDb.serviceAuth(serviceConfig)
+
+const rootRef: Firebase.database.Reference = AdminDb.database().ref('/')
+
+const hostieStore = HostieStore.instance(rootRef, email)
+hostieStore.hostieList.subscribe(l => console.log)
+hostieStore.insert({}, uid)

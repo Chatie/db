@@ -1,100 +1,65 @@
 import * as Firebase    from 'firebase'
 
-import { Brolog }       from 'brolog'
+import {
+  Brolog,
+  Loggable,
+  nullLogger,
+}                       from 'brolog'
 
 import {
-  firebaseConfig,
-  serviceAccount,
+  IDb,
+  databaseURL,
 }                       from './config'
 
-export class Db {
+export const firebaseConfig = {
+  apiKey:             'AIzaSyB0oeZdda1zmCa1KusRDhVsN5sQROYrSEg',
+  authDomain:         'wechaty-bo.firebaseapp.com',
+  databaseURL,
+  messagingSenderId:  '673602949542',
+  projectId:          'wechaty-bo',
+  storageBucket:      'wechaty-bo.appspot.com',
+}
+
+/**
+ * https://firebase.google.com/docs/database/
+ * https://firebase.google.com/docs/auth/web/custom-auth
+ * https://firebase.google.com/docs/auth/admin/create-custom-tokens
+ */
+Firebase.initializeApp(firebaseConfig)
+
+export class Db implements IDb {
   private static _instance: Db
 
-  public static instance(server = false) {
-    Brolog.instance().verbose('Db', 'instance()')
+  public static instance() {
+    Db.log.verbose('Db', 'instance()')
 
     if (!this._instance) {
-      if (server) {
-        this.forServer()
-      } else {
-        this.forClient()
-      }
       this._instance = new Db()
     }
     return this._instance
   }
 
-  public static log
-  public static enableLogging():              void
-  public static enableLogging(log: boolean):  void
-  public static enableLogging(log: any):      void
-
-  public static enableLogging(log?: any) {
-    Brolog.instance().verbose('Db', 'enableLogging(%s)', log)
-
-    if (!log) {
-      Brolog.instance().silly('Db', 'enableLogging() disabled')
-      this.log = null
-    } else {
-      if (typeof log === 'boolean') {
-        Brolog.instance().silly('Db', 'enableLogging() enabled/using default Brolog')
-        this.log = Brolog.instance()
-      } else if (typeof log.verbose === 'function') {
-        Brolog.instance().silly('Db', 'enableLogging() enabled/using %s as provided',
-                                      log.constructor && log.constructor.name
-                              )
-        this.log = log
-      } else {
-        throw new Error('got invalid logger')
-      }
-    }
+  public static log: Loggable = nullLogger
+  public static enableLogging(log: boolean | Loggable ) {
+    this.log = Brolog.enableLogging(log)
   }
 
-  public static forClient() {
-    /**
-     * https://firebase.google.com/docs/database/
-     *
-     * https://firebase.google.com/docs/auth/web/custom-auth
-     * https://firebase.google.com/docs/auth/admin/create-custom-tokens
-     */
-    Firebase.initializeApp(firebaseConfig)
-    Firebase.auth().currentUser.uid
-  }
-
-  public static forServer() {
-    // https://firebase.google.com/docs/admin/setup
-    Firebase.initializeApp({
-      credential: Firebase.credential.cert(serviceAccount),
-      databaseURL: "https://wechaty-bo.firebaseio.com"
-    });
-
-    throw new Error('no implement yet')
-  }
-
-  private _email: string | null
-
-  // private idToken:      string | null
-  // private customToken:  string | null
+  private log: Loggable
 
   private constructor() {
-    this.log = Brolog.instance()
+    this.log = Db.log
     this.log.verbose('Db', 'constructor()')
-
   }
 
-  public async jwtAuth():                  Promise<void>
-  public async jwtAuth(idToken: string):   Promise<void>
+  public async jwtAuth(enable: false):    Promise<void>
+  public async jwtAuth(idToken: string):  Promise<void>
 
-  public async jwtAuth(idToken?: string):  Promise<void> {
+  public async jwtAuth(idToken: string | false):  Promise<void> {
     this.log.verbose('Db', 'jwtAuth(%s)', idToken)
 
     if (!idToken) {
-      // this.idToken      = null
-      // this.customToken  = null
-      this._email = null
+      this.log.silly('Db', 'jwtAuth(%s) firebase signOut()', idToken)
       await Firebase.auth().signOut()
-      await Firebase.app().delete()
-      this.log.silly('Db', 'jwtAuth() firebase.auth().signOut() & delete()')
       return
     }
 
@@ -106,9 +71,6 @@ export class Db {
     try {
       const userInfo = await Firebase.auth().signInWithCustomToken(customToken) as Firebase.UserInfo
       this.log.silly('Db', 'jwtAuth() firebase.auth().signInWithCustomToken() userInfo({email:%s})', userInfo.email)
-      // this.idToken      = idToken
-      // this.customToken  = customToken
-      this._email  = userInfo.email
     } catch (e) {
       this.log.error('Db', 'jwtAuth() exception:%s', e.message)
     }
@@ -116,34 +78,35 @@ export class Db {
     return
   }
 
-  public database() {
-    this.log.verbose('Db', 'database()')
-    return Firebase.database()
+  public rootRef(): Firebase.database.Reference {
+    this.log.verbose('Db', 'rootRef()')
+    return Firebase.database().ref('/')
   }
 
-  public email() {
-    this.log.verbose('Db', 'email() is %s', this.email)
-    if (!this._email) {
-      throw new Error('no email')
+  public currentUserEmail(): string {
+    this.log.verbose('Db', 'currentUser()')
+    const user = Firebase.auth().currentUser
+    if (!user || !user.email || !user.emailVerified) {
+      throw new Error('user/email/verfication not found')
     }
-    return this._email
+    return user.email
   }
-}
 
-function toggleStar(postRef, uid) {
-  postRef.transaction(function(post) {
-    if (post) {
-      if (post.stars && post.stars[uid]) {
-        post.starCount--;
-        post.stars[uid] = null;
-      } else {
-        post.starCount++;
-        if (!post.stars) {
-          post.stars = {};
+  public toggleStar(postRef, uid) {
+    postRef.transaction(function(post) {
+      if (post) {
+        if (post.stars && post.stars[uid]) {
+          post.starCount--
+          post.stars[uid] = null
+        } else {
+          post.starCount++
+          if (!post.stars) {
+            post.stars = {}
+          }
+          post.stars[uid] = true
         }
-        post.stars[uid] = true;
       }
-    }
-    return post;
-  });
+      return post
+    })
+  }
 }

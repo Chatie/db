@@ -8,7 +8,7 @@ import                      'rxjs/add/operator/map'
 
 import { Brolog }     from 'brolog'
 
-import { db }         from './db'
+import { Db }         from './db'
 
 import {
   Hostie,
@@ -16,7 +16,9 @@ import {
   HostieStatus,
 }                     from './hostie-schema'
 
-export class HostieStore {
+import { Store }      from './store'
+
+export class HostieStore implements Store<Hostie> {
 
   private static _instance: HostieStore
 
