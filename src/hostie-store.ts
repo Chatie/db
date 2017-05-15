@@ -80,7 +80,7 @@ export class HostieStore implements Store {
                       this.$data.next(snapshot.val())
                     } else {
                       this.log.warn('HostieStore', 'init() snapshot.val() is null')
-                      this.$data.next([])
+                      this.$data.next({})
                     }
                   } else {
                     this.log.error('HostieStore', 'init() snapshot is null')
