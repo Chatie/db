@@ -1,5 +1,4 @@
-import * as Firebase      from 'firebase'
-import * as FirebaseAdmin from 'firebase-admin'
+/*
 
 import {
   Brolog,
@@ -8,7 +7,6 @@ import {
 }                         from 'brolog'
 
 import {
-  serviceAccount,
   databaseURL,
 }                         from './config'
 
@@ -68,3 +66,4 @@ export {
   Firebase,
   FirebaseAdmin,
 }
+*/
