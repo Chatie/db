@@ -4,9 +4,12 @@
 Database for Chatie System
 
 * <https://blog.chatie.io>
-* <https://www.chatie.io>
 
 ## Reference
+
+### Wilddog
+
+* [authWithCustomToken 中自定义属性无法在客户端取到的问题](https://forum.wilddog.com/topic/23/authwithcustomtoken)
 
 ### Firebase
 

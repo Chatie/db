@@ -11,6 +11,10 @@ import {
 }                   from './hostie-schema'
 import { Store }    from './store'
 
+export interface HostieMap {
+  [id: string]: Hostie
+}
+
 export class HostieStore implements Store {
 
   private static $instance: HostieStore
@@ -26,16 +30,16 @@ export class HostieStore implements Store {
     return this.$instance
   }
 
-  private $data: BehaviorSubject<Hostie>
-  public get data(): Observable<Hostie> { return this.$data.asObservable() }
-
-  private log: Loggable
+  private $data: BehaviorSubject<HostieMap>
+  public get data(): Observable<HostieMap> { return this.$data.asObservable() }
 
   private rootRef:      Wilddog.sync.Reference
   private emailGetter:  () => string
 
   private dbPathUserHosties:  string
   private dbPathHosties:      string
+
+  private log: Loggable
 
   constructor(
     rootRef?:     Wilddog.sync.Reference,
@@ -60,13 +64,26 @@ export class HostieStore implements Store {
     // hosties/${id}/email/zixia@zixia.net
     this.dbPathHosties      = '/hosties'
 
+    this.init()
+  }
+
+  public init(): void {
+    this.log.verbose('HostieStore', 'init()')
+
+    this.$data = new BehaviorSubject<HostieMap>({})
+
     this.rootRef.child(this.dbPathUserHosties)
                 .on('value', snapshot => {
                   if (snapshot) {
-                    this.log.silly('HostieStore', 'constructor() on(value, snapshot => %s)', snapshot.val())
-                    this.$data.next(snapshot.val())
+                    this.log.silly('HostieStore', 'init() on(value, snapshot => %s)', snapshot.val())
+                    if (snapshot.val()) {
+                      this.$data.next(snapshot.val())
+                    } else {
+                      this.log.warn('HostieStore', 'init() snapshot.val() is null')
+                      this.$data.next([])
+                    }
                   } else {
-                    this.log.error('HostieStore', 'constructor() snapshot null')
+                    this.log.error('HostieStore', 'init() snapshot is null')
                   }
                 })
   }
@@ -115,11 +132,13 @@ export class HostieStore implements Store {
   // public find(condition: object): Observable<any>
   // public find(value: string | object): Observable<any> {
 
-  public async find(id: string): Promise<Hostie> {
+  public async find(id: string): Promise<Hostie | null> {
     this.log.verbose('HostieStore', 'find(%s)', id)
-    return await this.rootRef
-                      .child(this.dbPathHosties + '/' + id)
-                      .once('value')
+    let snapshot: Wilddog.sync.DataSnapshot
+    snapshot = await this.rootRef
+                          .child(this.dbPathHosties + '/' + id)
+                          .once('value')
+    return snapshot.val()
   }
 
   /**
@@ -127,23 +146,27 @@ export class HostieStore implements Store {
    * unspecified fields will be left untouched.
    * @param updateHostie
    */
-  public async update(condition: object): Promise<Hostie> {
-    this.log.verbose('HostieStore', 'update(%s)', JSON.stringify(condition))
+  public async update(condition: object): Promise<void> {
+    this.log.verbose('HostieStore', 'update({id:%s})', condition['id'])
 
     const id = condition['id']
     if (!id) {
       throw new Error('no id')
     }
     const updatedHostie = await this.find(id)
+    if (!updatedHostie) {
+      throw new Error('update() id not found')
+    }
+
     Object.assign(updatedHostie, condition)
+
     const updates = {}
     updates[this.dbPathHosties      + '/' + id] = updatedHostie
     updates[this.dbPathUserHosties  + '/' + id] = updatedHostie
 
     await this.rootRef.update(updates)
-    return updatedHostie
+    return
   }
-
 }
 
-export const hostieStore = HostieStore.instance()
+export * from './hostie-schema'

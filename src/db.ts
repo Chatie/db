@@ -6,6 +6,8 @@ import {
   nullLogger,
 }                   from 'brolog'
 
+import * as UrlSafeBase64 from 'urlsafe-base64'
+
 import {
   wilddogConfig,
 }                   from './config'
@@ -34,6 +36,8 @@ export class Db implements IDb {
     this.log.verbose('Db', 'enableLogging(%s)', log)
   }
 
+  private static claims: Wilddog.UserInfo | null
+
   private log: Loggable
 
   private constructor() {
@@ -49,21 +53,31 @@ export class Db implements IDb {
 
     if (!idToken) {
       this.log.silly('Db', 'jwtAuth(%s) wilddog signOut()', idToken)
+      this.claims = null
       await Wilddog.auth().signOut()
       return
     }
 
     // 1. use api to transform idToken to wilddogToken
     // tslint:disable-next-line:max-line-length
-    const customToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjoxLCJpYXQiOjE0OTQ4MjMzMzIsInVpZCI6InVpZDEiLCJleHAiOjE0OTQ4MjY5MzIsImFkbWluIjpmYWxzZSwiY2xhaW1zIjp7ImVtYWlsIjoieml4aWFAeml4aWEubmV0IiwiZW1haWxWZXJpZmllZCI6dHJ1ZX19.F1vsODb3WMPfJSXQC_M6trFvueDk1_GCNtzh1lcJtvM'
+    const customToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjoxLCJpYXQiOjE0OTQ4Mzk5NjIsInVpZCI6InppeGlhIiwiZXhwIjoxNDk0ODQzNTYyLCJhZG1pbiI6ZmFsc2UsImNsYWltcyI6eyJlbWFpbCI6InppeGlhQHppeGlhLm5ldCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlfX0.JG5Jm0mV_vIYetVuDcPIGgGHFBDlqjeIOeEu9DTRezA'
     this.log.warn('Db', 'jwtAuth() TODO: jwtAuth need change to get from API. idToken length:', idToken && idToken.length)
 
     try {
-      const userInfo = await Wilddog.auth().signInWithCustomToken(customToken) as Wilddog.UserInfo
-      this.log.silly('Db', 'jwtAuth() wilddog.auth().signInWithCustomToken() userInfo({email:%s})', userInfo.email)
-      console.log(userInfo)
+      // userInfo is useless. See: https://forum.wilddog.com/topic/23/authwithcustomtoken
+      await Wilddog.auth().signInWithCustomToken(customToken)
+
+      const token = Wilddog.auth().currentUser.getToken()
+      const claimsStr = UrlSafeBase64.decode(token.split('.')[1])
+                                      .toString()
+      this.claims = JSON.parse(claimsStr)
+
+      this.log.silly('Db', 'jwtAuth() wilddog.auth().signInWithCustomToken() claims({email:%s})',
+                            this.claims!.email)
     } catch (e) {
       this.log.error('Db', 'jwtAuth() exception:%s', e.message)
+      this.claims = null
+      Wilddog.auth().signOut()
     }
 
     return
@@ -75,12 +89,13 @@ export class Db implements IDb {
   }
 
   public currentUserEmail(): string {
-    this.log.verbose('Db', 'currentUser()')
-    const user = Wilddog.auth().currentUser
-    if (!user || !user.email || !user.emailVerified) {
-      throw new Error('user/email/verfication not found:' + user)
+    this.log.verbose('Db', 'currentUserEmail()')
+    const email     = Db.claims && Db.claims.email
+    // const verified  = Db.claims && Db.claims. email_verified
+    if (!email) {
+      throw new Error('email not exist')
     }
-    return user.email
+    return email.replace(/\./g, ',')
   }
 
   public toggleStar(postRef, uid) {

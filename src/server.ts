@@ -28,8 +28,8 @@ async function main() {
 
   const claims = {
     email: 'zixia@zixia.net',
-    emailVerified: true,
-    uid: 'uid1',
+    email_verified: true,
+    uid: 'zixia',
   }
 
   const customToken = tokenGenerator.createToken(claims, {
