@@ -35,7 +35,11 @@ DEPRECATED and Sun Set at 9th May 2017
 
 ## Change History
 
-### v0.1.x (master)
+### v0.2.x master
+
+Switch to Wilddog, because Firebase `Firebase.auth().signInWithCustomToken()` is still blocked.
+
+### v0.1.x (15th, May, 2017)
 
 Switch to Firebase
 
