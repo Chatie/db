@@ -1,24 +1,14 @@
 export const databaseURL = 'https://wechaty-bo.firebaseio.com'
 
 /**
- * for Firebase.initializeApp()
+ * for initializeApp()
  */
-export const firebaseConfig = {
-  apiKey:             'AIzaSyB0oeZdda1zmCa1KusRDhVsN5sQROYrSEg',
-  authDomain:         'wechaty-bo.firebaseapp.com',
-  databaseURL,
-  messagingSenderId:  '673602949542',
-  projectId:          'wechaty-bo',
-  storageBucket:      'wechaty-bo.appspot.com',
+export const wilddogConfig = {
+  authDomain: 'chatie.wilddog.com',
+  syncURL: 'https://chatie.wilddogio.com',
+  websocketOnly: true,
 }
 
-/**
- * for FirebaseAdmin.initializeApp()
- */
-let serviceAccount = null
-if (process.env['FIREBASE_SERVICE_ACCOUNT_KEY']) {
-  // https://firebase.google.com/docs/admin/setup
-  serviceAccount = JSON.parse(process.env['FIREBASE_SERVICE_ACCOUNT_KEY'])
-}
-
-export { serviceAccount }
+export const wilddogKey = process.env['WILDDOG_KEY']
+                        ? process.env['WILDDOG_KEY']
+                        : null

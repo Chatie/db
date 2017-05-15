@@ -1,37 +1,31 @@
-import * as Firebase    from 'firebase'
+import * as Wilddog from 'wilddog'
 
 import {
   Brolog,
   Loggable,
   nullLogger,
-}                       from 'brolog'
+}                   from 'brolog'
 
 import {
-  firebaseConfig,
-}                       from './config'
-
-/**
- * https://firebase.google.com/docs/database/
- * https://firebase.google.com/docs/auth/web/custom-auth
- * https://firebase.google.com/docs/auth/admin/create-custom-tokens
- */
-Firebase.initializeApp(firebaseConfig)
+  wilddogConfig,
+}                   from './config'
 
 export interface IDb {
   currentUserEmail: () => string,
-  rootRef:          () => Firebase.database.Reference,
+  rootRef:          () => Wilddog.sync.Reference,
 }
 
-export class Db implements IDb {
-  private static _instance: Db
+Wilddog.initializeApp(wilddogConfig)
 
-  public static instance() {
+export class Db implements IDb {
+  private static $instance: Db
+  public  static instance() {
     Db.log.verbose('Db', 'instance()')
 
-    if (!this._instance) {
-      this._instance = new Db()
+    if (!this.$instance) {
+      this.$instance = new Db()
     }
-    return this._instance
+    return this.$instance
   }
 
   public static log: Loggable = nullLogger
@@ -54,19 +48,20 @@ export class Db implements IDb {
     this.log.verbose('Db', 'jwtAuth(%s)', idToken)
 
     if (!idToken) {
-      this.log.silly('Db', 'jwtAuth(%s) firebase signOut()', idToken)
-      await Firebase.auth().signOut()
+      this.log.silly('Db', 'jwtAuth(%s) wilddog signOut()', idToken)
+      await Wilddog.auth().signOut()
       return
     }
 
-    // 1. use api to transform idToken to firebaseToken
+    // 1. use api to transform idToken to wilddogToken
     // tslint:disable-next-line:max-line-length
-    const customToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbXMiOnsicHJlbWl1bUFjY291bnQiOnRydWUsImVtYWlsIjoieml4aWFAeml4aWEubmV0In0sInVpZCI6InNvbWUtdWlkIiwiaWF0IjoxNDk0NDE0MDg0LCJleHAiOjE0OTQ0MTc2ODQsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHl0b29sa2l0Lmdvb2dsZWFwaXMuY29tL2dvb2dsZS5pZGVudGl0eS5pZGVudGl0eXRvb2xraXQudjEuSWRlbnRpdHlUb29sa2l0IiwiaXNzIjoiZmlyZWJhc2UtYWRtaW5zZGstY3NuaGhAd2VjaGF0eS1iby5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsInN1YiI6ImZpcmViYXNlLWFkbWluc2RrLWNzbmhoQHdlY2hhdHktYm8uaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20ifQ.qhf-AWrStlAvdnWInyDd_j_OYm1YV5MR7lb5IYAy_YI-mtbMS4EfH563CR5t3vzB-1F8XSXXBkr5EQxc0HFvMZME9GIqJiwVMZyWRuU1TMk_paqD4Ji1uqbNbeXTgjC_Aj8CNbiZMqTURTiZVjMJRw35KOKBFclv2zkfyzBUTkd1FbW2GM-OWyuhustc7lWzB-_unL5XTLKIVTRwyLyU1iARqqPN6dWyFWnSwgAeDaSYOMLeAo8zF_tsA0YTtWOgrlh5JZtr4Y8q0IzYeL5KxZfRrhQam2elWvQhwv2stygz9TFbjkchBrUzyQZcpwc-wEfhWysfr_70KmprNXg7ZQ'
+    const customToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjoxLCJpYXQiOjE0OTQ4MjMzMzIsInVpZCI6InVpZDEiLCJleHAiOjE0OTQ4MjY5MzIsImFkbWluIjpmYWxzZSwiY2xhaW1zIjp7ImVtYWlsIjoieml4aWFAeml4aWEubmV0IiwiZW1haWxWZXJpZmllZCI6dHJ1ZX19.F1vsODb3WMPfJSXQC_M6trFvueDk1_GCNtzh1lcJtvM'
     this.log.warn('Db', 'jwtAuth() TODO: jwtAuth need change to get from API. idToken length:', idToken && idToken.length)
 
     try {
-      const userInfo = await Firebase.auth().signInWithCustomToken(customToken) as Firebase.UserInfo
-      this.log.silly('Db', 'jwtAuth() firebase.auth().signInWithCustomToken() userInfo({email:%s})', userInfo.email)
+      const userInfo = await Wilddog.auth().signInWithCustomToken(customToken) as Wilddog.UserInfo
+      this.log.silly('Db', 'jwtAuth() wilddog.auth().signInWithCustomToken() userInfo({email:%s})', userInfo.email)
+      console.log(userInfo)
     } catch (e) {
       this.log.error('Db', 'jwtAuth() exception:%s', e.message)
     }
@@ -74,14 +69,14 @@ export class Db implements IDb {
     return
   }
 
-  public rootRef(): Firebase.database.Reference {
+  public rootRef(): Wilddog.sync.Reference {
     this.log.verbose('Db', 'rootRef()')
-    return Firebase.database().ref('/')
+    return Wilddog.sync().ref('/')
   }
 
   public currentUserEmail(): string {
     this.log.verbose('Db', 'currentUser()')
-    const user = Firebase.auth().currentUser
+    const user = Wilddog.auth().currentUser
     if (!user || !user.email || !user.emailVerified) {
       throw new Error('user/email/verfication not found:' + user)
     }
@@ -107,14 +102,14 @@ export class Db implements IDb {
   }
 }
 
-export { Firebase }
+export { Wilddog }
 
 export async function test() {
   const token = '1'
-  const result = await firebase.auth().signInWithCustomToken(token)
+  const result = await Wilddog.auth().signInWithCustomToken(token)
   console.log('auth: %s', JSON.stringify(result))
 
-  const root = firebase.database().ref()
+  const root = Wilddog.sync().ref()
   // root.on('value', snap => console.log(snap.val()));
 
   const zixia = root.child('zixia')
@@ -122,24 +117,24 @@ export async function test() {
       console.log(snap!.key, snap!.val())
   })
   // zixia.update()
-  await firebase.auth().signOut()
+  await Wilddog.auth().signOut()
 
-  await firebase.auth().signInAnonymously()
+  await Wilddog.auth().signInAnonymously()
 }
 
 /**
- * https://firebase.google.com/docs/database/web/offline-capabilities
+ * https://wilddog.google.com/docs/database/web/offline-capabilities
  *
  */
 export function userPresenceSystem() {
     // since I can connect from multiple devices or browser tabs, we store each connection instance separately
     // any time that connectionsRef's value is null (i.e. has no children) I am offline
-    const myConnectionsRef = firebase.database().ref('users/joe/connections');
+    const myConnectionsRef = Wilddog.sync().ref('users/joe/connections');
 
     // stores the timestamp of my last disconnect (the last time I was seen online)
-    const lastOnlineRef = firebase.database().ref('users/joe/lastOnline');
+    const lastOnlineRef = Wilddog.sync().ref('users/joe/lastOnline');
 
-    const connectedRef = firebase.database().ref('.info/connected');
+    const connectedRef = Wilddog.sync().ref('.info/connected');
     connectedRef.on('value', function(snap) {
       if (snap!.val() === true) {
           // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
@@ -152,7 +147,7 @@ export function userPresenceSystem() {
           con.onDisconnect().remove();
 
           // when I disconnect, update the last time I was seen online
-          lastOnlineRef.onDisconnect().set(firebase.database.ServerValue.TIMESTAMP);
+          lastOnlineRef.onDisconnect().set(Wilddog.sync().ServerValue.TIMESTAMP);
       }
     });
 }
@@ -169,12 +164,12 @@ export function writeNewPost(uid, username, picture, title, body) {
   };
 
   // Get a key for a new Post.
-  const newPostKey = firebase.database().ref().child('posts').push().key;
+  const newPostKey = Wilddog.sync().ref().child('posts').push().key;
 
   // Write the new post's data simultaneously in the posts list and the user's post list.
   const updates = {};
   updates['/posts/' + newPostKey] = postData;
   updates['/user-posts/' + uid + '/' + newPostKey] = postData;
 
-  return firebase.database().ref().update(updates);
+  return Wilddog.sync().ref().update(updates);
 }

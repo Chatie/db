@@ -1,21 +1,21 @@
-import * as Firebase  from 'firebase'
-import { Loggable }   from 'brolog'
+import * as Wilddog from 'wilddog'
+import { Loggable } from 'brolog'
 import {
   BehaviorSubject,
   Observable,
-}                     from  'rxjs'
+}                   from  'rxjs'
 
-import { Db }         from './db'
+import { Db }       from './db'
 import {
   Hostie,
-}                     from './hostie-schema'
-import { Store }      from './store'
+}                   from './hostie-schema'
+import { Store }    from './store'
 
 export class HostieStore implements Store {
 
   private static $instance: HostieStore
   public static instance(
-    rootRef?:   Firebase.database.Reference,
+    rootRef?:   Wilddog.sync.Reference,
     userEmail?: (() => string),
   ): HostieStore {
     if (!this.$instance) {
@@ -31,14 +31,14 @@ export class HostieStore implements Store {
 
   private log: Loggable
 
-  private rootRef:      Firebase.database.Reference
+  private rootRef:      Wilddog.sync.Reference
   private emailGetter:  () => string
 
   private dbPathUserHosties:  string
   private dbPathHosties:      string
 
   constructor(
-    rootRef?:     Firebase.database.Reference,
+    rootRef?:     Wilddog.sync.Reference,
     emailGetter?: (() => string),
   ) {
     this.log = Db.log
@@ -81,7 +81,7 @@ export class HostieStore implements Store {
 
     const id = this.rootRef.child(this.dbPathHosties)
                             .push()
-                            .key
+                            .key()
     if (!id) {
       throw new Error('push key null')
     }
