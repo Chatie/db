@@ -1,6 +1,6 @@
 {
   "name": "@chatie/db",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Database for Chatie",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,6 +10,11 @@
     "lint": "npm run tslint",
     "test": "tap {src,test}/**/*.spec.ts",
     "tslint": "tslint \"{src,test}/**/*.ts\" && tsc --noEmit"
+  },
+  "git": {
+    "scripts": {
+      "pre-push": "bash ./scripts/pre-push.sh"
+    }
   },
   "repository": {
     "type": "git",
@@ -28,22 +33,17 @@
   "homepage": "https://github.com/chatie/db#readme",
   "devDependencies": {
     "@types/node": "^7.0.5",
-    "@types/ws": "0.0.40",
     "brolog": "^1.1.18",
+    "eslint": "^4.17.0",
+    "git-scripts": "^0.2.1",
     "shx": "^0.2.2",
-    "tap": "^10.3.0",
     "ts-node": "^2.1.0",
-    "tslint": "^5",
+    "tslint": "^5.9.1",
     "tslint-jsdoc-rules": "^0.1.2",
-    "typescript": "^2",
-    "ws": "^2.2.0"
+    "typescript": "^2.7.1"
   },
   "peerDependencies": {
     "brolog": ">=1"
   },
-  "dependencies": {
-    "urlsafe-base64": "^1.0.0",
-    "wilddog": "^2.5.6",
-    "wilddog-token-generator": "^2.1.0"
-  }
+  "dependencies": {}
 }
