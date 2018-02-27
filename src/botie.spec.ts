@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { test } from 'tap'
+import * as test from 'blue-tape'
 
 import {
   Botie,

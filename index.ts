@@ -5,7 +5,7 @@ export {
   HostieRuntime,
   HostieStatus,
   HostieStore,
-}                 from './src/hostie'
+}                 from './src/hostie-store'
 
 export {
   Botie,

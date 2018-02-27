@@ -1,83 +1,63 @@
-# db
+# CHATIE DB
 [![Build Status](https://api.travis-ci.org/Chatie/db.svg?branch=master)](https://travis-ci.org/Chatie/db) [![npm version](https://badge.fury.io/js/%40chatie%2Fdb.svg)](https://www.npmjs.com/package/@chatie/db)
 
 Database for Chatie System
 
 * <https://blog.chatie.io>
 
-## Reference
+# GRAPHQL BACKEND
 
-### Wilddog
+https://github.com/Chatie/graphql
 
-* [authWithCustomToken 中自定义属性无法在客户端取到的问题](https://forum.wilddog.com/topic/23/authwithcustomtoken)
+Powered by [Graph.cool](https://www.graph.cool/)
 
-### Firebase
+# RESOURCES
 
-* [Firebase Realtime Database Introduction Documentation](https://firebase.google.com/docs/database/)
+## Admin
 
-### Scaphold(Graphql)
-
-* [How to add social authentication to Scaphold](https://scaphold.io/community/questions/scaphold-social-login/)
-
-### Ionic DB
-
-DEPRECATED and Sun Set at 9th May 2017
-
-## Resources
-
-### Admin
-
-!(Chart)[https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif]
+![Chart](https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif)
 > https://blog.heroku.com/kafka-data-pipelines-frp-node
 
-### Firebase
+# CHANGE LOG
 
-* [Firebase Realtime Database](https://firebase.google.com/docs/database/)
-* [Add the Firebase Admin SDK to your Server](https://firebase.google.com/docs/admin/setup)
-* [Firebase API Reference](https://firebase.google.com/docs/reference/js/)
+### v0.3 (18th, Feb, 2018)
 
-## Change History
+Switch to [Graph.Cool](https://www.graph.cool) Serverless solution because Wilddog sucks.
 
-### v0.2.x master
 
-Switch to Wilddog, because Firebase `Firebase.auth().signInWithCustomToken()` is still blocked.
+### v0.2 (15th, May, 2017)
 
-### v0.1.x (15th, May, 2017)
+Switch to [Wilddog](https://www.wilddog.com/), because Firebase `Firebase.auth().signInWithCustomToken()` is still blocked in China by GFW.
 
-Switch to Firebase
+### v0.1 (15th, May, 2017)
 
-1. Ionic DB Sunset Done: `404 error` at 9th May 2017
+Switch to [Firebase](https://firebase.google.com/) because Ionic DB Sunset Done: `404 error` at 9th May 2017
+
 1. Firebase server is not blocked in China any more
 1. Rename: from Dockie to Hostie(back)
 
-### v0.0.x (Mar, 2017)
+### v0.0 (Mar, 2017)
 
-Starting with Realtime Database: Ionic DB
+Starting with Realtime Database: [Ionic DB](https://forum.ionicframework.com/t/ionic-db-shutdown/84677)
 
 1. Limitation: does not support server JWT
 
+# AUTHOR
 
-db/
-  hostie
+[Huan LI](http://linkedin.com/in/zixia) \<zixia@zixia.net\>
 
-await db.jwtAuth(fasf)
-  uid
-  email
+<a href="https://stackexchange.com/users/265499">
+  <img src="https://stackexchange.com/users/flair/265499.png" width="208" height="58" alt="profile for zixia on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for zixia on Stack Exchange, a network of free, community-driven Q&amp;A sites">
+</a>
 
-  hostie.add({}, email?)
+# COPYRIGHT & LICENSE
 
-await db.jwtAuth(false)
+* Code & Docs © 2017-2018 Huan LI \<zixia@zixia.net\>
+* Code released under the Apache-2.0 License
+* Docs released under Creative Commons
 
 
-
-///////////////////////////////////////////////
-import { Db } from '@chatie/db'
-Db.enableLogging(true)
-await Db.jwtAuth(idToken)
-await Db.jwtAuth(false)
-
-const rootRef: Firebase.database.Reference = Db.database().ref('/')
-
+```ts
 const hostieStore = HostieStore.instance(rootRef)
 hostieStore.hostieList.subscribe(l => console.log)
 hostieStore.insert({}, uid)
@@ -93,3 +73,5 @@ const rootRef: Firebase.database.Reference = AdminDb.database().ref('/')
 const hostieStore = HostieStore.instance(rootRef, email)
 hostieStore.hostieList.subscribe(l => console.log)
 hostieStore.insert({}, uid)
+
+```
