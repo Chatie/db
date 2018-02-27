@@ -8,8 +8,8 @@
     "clean": "shx rm -fr dist",
     "dist": "npm run clean && tsc && shx cp package.json dist/",
     "lint": "npm run tslint",
-    "test": "blue-tape -r ts-node/register -r source-map-support/register {src,test}/**/*.spec.ts",
-    "tslint": "tslint \"{src,test}/**/*.ts\" && tsc --noEmit"
+    "test": "blue-tape -r ts-node/register -r source-map-support/register {src,tests}/**/*.spec.ts",
+    "tslint": "tslint \"{src,tests}/**/*.ts\" && tsc --noEmit"
   },
   "git": {
     "scripts": {

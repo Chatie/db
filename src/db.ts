@@ -1,16 +1,7 @@
-import * as Wilddog from 'wilddog'
-
 import {
   Brolog,
   Loggable,
-  nullLogger,
 }                   from 'brolog'
-
-import * as UrlSafeBase64 from 'urlsafe-base64'
-
-import {
-  wilddogConfig,
-}                   from './config'
 
 export interface IDb {
   currentUserEmail: () => string,
