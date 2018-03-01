@@ -4,11 +4,11 @@ export enum BotieStatus {
 }
 
 export type Botie = {
+  createdAt:  number,
+  hostieId?:  string,
   id:         string,
   name:       string,
   note?:      string,
-  create_at:  number,
-  update_at:  number,
   status:     BotieStatus,
-  hostieId?:  string,
+  updatedAt:  number,
 }

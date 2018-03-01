@@ -12,8 +12,8 @@ test('Botie model with all values fulfilled', t => {
     id:         'string',
     name:       'string',
     note:       'string',
-    create_at: 123,
-    update_at: 123,
+    createdAt:  123,
+    updatedAt:  123,
     status:     BotieStatus.STANDBY,
     hostieId:   'string',
   }

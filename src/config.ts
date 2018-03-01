@@ -1,14 +1,5 @@
-export const databaseURL = 'https://wechaty-bo.firebaseio.com'
+export const graphqlEndpoint = 'https://graph.cool'
 
 /**
  * for initializeApp()
  */
-export const wilddogConfig = {
-  authDomain: 'chatie.wilddog.com',
-  syncURL: 'https://chatie.wilddogio.com',
-  websocketOnly: true,
-}
-
-export const wilddogKey = process.env['WILDDOG_KEY']
-                        ? process.env['WILDDOG_KEY']
-                        : null

@@ -1,5 +1,3 @@
-/*
-
 import {
   Brolog,
   Loggable,
@@ -66,4 +64,3 @@ export {
   Firebase,
   FirebaseAdmin,
 }
-*/

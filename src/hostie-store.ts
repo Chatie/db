@@ -1,4 +1,3 @@
-import * as Wilddog from 'wilddog'
 import { Loggable } from 'brolog'
 import {
   BehaviorSubject,

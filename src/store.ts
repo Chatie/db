@@ -1,14 +1,13 @@
-// import * as Firebase  from 'firebase'
-
 import {
   Observable,
-}                     from 'rxjs'
+}                     from 'rxjs/Observable'
 
 export interface Store {
   data:   Observable<any>,
   // CRUD
-  add:     (data: any) => Promise<any>,
-  del:     (data: any) => Promise<any>,
-  update:  (cond: any) => Promise<any>,
-  find:    (cond: any) => Promise<any>,
+  create: (data: any) => Promise<any>,
+  read:   (data: any) => Promise<any>,
+  update: (cond: any) => Promise<any>,
+  delete: (cond: any) => Promise<any>,
+  search: (cond: any) => Promise<any>,
 }
