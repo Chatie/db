@@ -3,11 +3,15 @@ import {
 }                     from 'rxjs/Observable'
 
 export interface Store<T> {
-  data:   Observable<T>,
+  itemList:   Observable<[T]>,
   // CRUD
-  create: (data: T) => Promise<any>,
-  read:   (data: T) => Promise<any>,
-  update: (data: T, props: object) => Promise<any>,
-  delete: (cond: any) => Promise<any>,
-  search: (cond: any) => Promise<any>,
+  create: (item: Partial<T>) => Promise<T>,
+  read:   (id: string) => Promise<T>,
+  update: (
+    id:     string,
+    props:  Partial<T>,
+  ) => Promise<T>,
+  delete: (id: string) => Promise<T>,
+
+  // search: (cond: any) => Promise<[T]>,
 }

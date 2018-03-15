@@ -41,3 +41,6 @@ jspm_packages
 
 t.*
 t/
+
+/downloaded-schema.json
+/src/*-schema.ts

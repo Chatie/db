@@ -1,4 +1,3 @@
-import { Loggable } from 'brolog'
 import {
   BehaviorSubject,
 }                   from  'rxjs/BehaviorSubject'
@@ -6,6 +5,7 @@ import {
   Observable,
 }                   from 'rxjs/Observable'
 
+import { log }      from './config'
 import { Db }       from './db'
 import {
   Hostie,
@@ -18,73 +18,36 @@ export interface HostieMap {
 
 export class HostieStore implements Store {
 
-  private static $instance: HostieStore
-  public static instance(
-    rootRef?:   Wilddog.sync.Reference,
-    userEmail?: (() => string),
-  ): HostieStore {
-    if (!this.$instance) {
-      this.$instance = new HostieStore(rootRef, userEmail)
-    } else if (rootRef || userEmail) {
-      throw new Error('can not set singleton instance twice')
-    }
-    return this.$instance
+  private $itemList: BehaviorSubject<HostieMap>
+  public get itemList(): Observable<HostieMap> {
+    return this.$itemList.asObservable()
   }
-
-  private $data: BehaviorSubject<HostieMap>
-  public get data(): Observable<HostieMap> { return this.$data.asObservable() }
-
-  private rootRef:      Wilddog.sync.Reference
-  private emailGetter:  () => string
-
-  private dbPathUserHosties:  string
-  private dbPathHosties:      string
-
-  private log: Loggable
 
   constructor(
-    rootRef?:     Wilddog.sync.Reference,
-    emailGetter?: (() => string),
+    public db: Db,
   ) {
-    this.log = Db.log
-    this.log.verbose('HostieStore', 'constructor()')
-
-    this.rootRef = rootRef
-                  ? rootRef
-                  : Db.instance().rootRef()
-
-    this.emailGetter = emailGetter
-                      ? emailGetter
-                      : () => Db.instance().currentUserEmail()
-
-    // users/${zixia@zixia.ne}t/hosties/[id1,id2,...]
-    this.dbPathUserHosties  = '/users'
-                            + '/' + this.emailGetter()
-                            + '/hosties'
-
-    // hosties/${id}/email/zixia@zixia.net
-    this.dbPathHosties      = '/hosties'
-
-    this.init()
+    log.verbose('HostieStore', 'constructor()')
   }
 
-  public init(): void {
-    this.log.verbose('HostieStore', 'init()')
+  public async init(): Promise<void> {
+    log.verbose('HostieStore', 'init()')
 
-    this.$data = new BehaviorSubject<HostieMap>({})
+    this.$itemList = new BehaviorSubject<HostieMap>({})
+
+    this.db.apollo.
 
     this.rootRef.child(this.dbPathUserHosties)
                 .on('value', snapshot => {
                   if (snapshot) {
-                    this.log.silly('HostieStore', 'init() on(value, snapshot => %s)', snapshot.val())
+                    log.silly('HostieStore', 'init() on(value, snapshot => %s)', snapshot.val())
                     if (snapshot.val()) {
                       this.$data.next(snapshot.val())
                     } else {
-                      this.log.warn('HostieStore', 'init() snapshot.val() is null')
+                      log.warn('HostieStore', 'init() snapshot.val() is null')
                       this.$data.next({})
                     }
                   } else {
-                    this.log.error('HostieStore', 'init() snapshot is null')
+                    log.error('HostieStore', 'init() snapshot is null')
                   }
                 })
   }
@@ -94,7 +57,7 @@ export class HostieStore implements Store {
    * @param newHostie
    */
   public async create(newHostie: Hostie): Promise<void> {
-    this.log.verbose('HostieStore', 'add({name:%s})', newHostie.name)
+    log.verbose('HostieStore', 'add({name:%s})', newHostie.name)
     newHostie.email = this.emailGetter()
 
     const id = this.rootRef.child(this.dbPathHosties)
@@ -117,7 +80,7 @@ export class HostieStore implements Store {
    * @param id uuid
    */
   public async delete(id: string): Promise<void> {
-    this.log.verbose('HostieStore', 'del(%s)', id)
+    log.verbose('HostieStore', 'del(%s)', id)
 
     const updates = {}
     updates[this.dbPathHosties      + '/' + id] = null
@@ -134,7 +97,7 @@ export class HostieStore implements Store {
   // public find(value: string | object): Observable<any> {
 
   public async read(id: string): Promise<Hostie | null> {
-    this.log.verbose('HostieStore', 'find(%s)', id)
+    log.verbose('HostieStore', 'find(%s)', id)
     let snapshot: Wilddog.sync.DataSnapshot
     snapshot = await this.rootRef
                           .child(this.dbPathHosties + '/' + id)
@@ -148,7 +111,7 @@ export class HostieStore implements Store {
    * @param updateHostie
    */
   public async update(condition: object): Promise<void> {
-    this.log.verbose('HostieStore', 'update({id:%s})', condition['id'])
+    log.verbose('HostieStore', 'update({id:%s})', condition['id'])
 
     const id = condition['id']
     if (!id) {
