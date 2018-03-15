@@ -18,6 +18,8 @@ Powered by [Graph.cool](https://www.graph.cool/)
 ![Chart](https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif)
 > https://blog.heroku.com/kafka-data-pipelines-frp-node
 
+* [Introducing GraphQL Subscriptions](https://blog.graph.cool/introducing-graphql-subscriptions-86183029029a)
+
 # CHANGE LOG
 
 ### v0.3 (18th, Feb, 2018)
