@@ -1,4 +1,4 @@
-export const graphqlEndpoint = 'https://graph.cool'
+export { log } from 'brolog'
 
 /**
  * for initializeApp()

@@ -2,12 +2,12 @@ import {
   Observable,
 }                     from 'rxjs/Observable'
 
-export interface Store {
-  data:   Observable<any>,
+export interface Store<T> {
+  data:   Observable<T>,
   // CRUD
-  create: (data: any) => Promise<any>,
-  read:   (data: any) => Promise<any>,
-  update: (cond: any) => Promise<any>,
+  create: (data: T) => Promise<any>,
+  read:   (data: T) => Promise<any>,
+  update: (data: T, props: object) => Promise<any>,
   delete: (cond: any) => Promise<any>,
   search: (cond: any) => Promise<any>,
 }

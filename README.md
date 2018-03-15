@@ -18,7 +18,10 @@ Powered by [Graph.cool](https://www.graph.cool/)
 ![Chart](https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif)
 > https://blog.heroku.com/kafka-data-pipelines-frp-node
 
-* [Introducing GraphQL Subscriptions](https://blog.graph.cool/introducing-graphql-subscriptions-86183029029a)
+
+## Apollo Client
+
+* [Apollo Client + TypeScript example](https://medium.com/@borekb/apollo-client-typescript-example-99febdaa18fa)
 
 # CHANGE LOG
 
@@ -44,6 +47,10 @@ Starting with Realtime Database: [Ionic DB](https://forum.ionicframework.com/t/i
 
 1. Limitation: does not support server JWT
 
+## See Also
+
+* [An enhanced GraphQL developer experience with TypeScript](https://dev-blog.apollodata.com/graphql-dx-d35bcf51c943)
+
 # AUTHOR
 
 [Huan LI](http://linkedin.com/in/zixia) \<zixia@zixia.net\>
@@ -57,23 +64,3 @@ Starting with Realtime Database: [Ionic DB](https://forum.ionicframework.com/t/i
 * Code & Docs © 2017-2018 Huan LI \<zixia@zixia.net\>
 * Code released under the Apache-2.0 License
 * Docs released under Creative Commons
-
-
-```ts
-const hostieStore = HostieStore.instance(rootRef)
-hostieStore.hostieList.subscribe(l => console.log)
-hostieStore.insert({}, uid)
-
-///////////////////////////////////////////////
-import { AdminDb } from '@chatie/db'
-
-AdminDb.enableLogging(true)
-await AdminDb.serviceAuth(serviceConfig)
-
-const rootRef: Firebase.database.Reference = AdminDb.database().ref('/')
-
-const hostieStore = HostieStore.instance(rootRef, email)
-hostieStore.hostieList.subscribe(l => console.log)
-hostieStore.insert({}, uid)
-
-```

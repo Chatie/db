@@ -1,8 +1,10 @@
 import { Loggable } from 'brolog'
 import {
   BehaviorSubject,
+}                   from  'rxjs/BehaviorSubject'
+import {
   Observable,
-}                   from  'rxjs'
+}                   from 'rxjs/Observable'
 
 import { Db }       from './db'
 import {
@@ -91,7 +93,7 @@ export class HostieStore implements Store {
    * @todo confirm the return type of Observable
    * @param newHostie
    */
-  public async add(newHostie: Hostie): Promise<void> {
+  public async create(newHostie: Hostie): Promise<void> {
     this.log.verbose('HostieStore', 'add({name:%s})', newHostie.name)
     newHostie.email = this.emailGetter()
 
@@ -111,10 +113,10 @@ export class HostieStore implements Store {
   }
 
   /**
-   * remove
+   * delete
    * @param id uuid
    */
-  public async del(id: string): Promise<void> {
+  public async delete(id: string): Promise<void> {
     this.log.verbose('HostieStore', 'del(%s)', id)
 
     const updates = {}
@@ -125,13 +127,13 @@ export class HostieStore implements Store {
   }
 
   /**
-   * find
+   * read
    * @param id
    */
   // public find(condition: object): Observable<any>
   // public find(value: string | object): Observable<any> {
 
-  public async find(id: string): Promise<Hostie | null> {
+  public async read(id: string): Promise<Hostie | null> {
     this.log.verbose('HostieStore', 'find(%s)', id)
     let snapshot: Wilddog.sync.DataSnapshot
     snapshot = await this.rootRef
