@@ -1,11 +1,17 @@
+import { getApolloClient } from '@chatie/graphql'
+
 import {
-  Brolog,
-}                   from 'brolog'
+  log,
+}           from './config'
 
 export class Db {
-  private constructor(
-    public log: Brolog,
+  constructor(
+    public log:       Brolog,
+    public jwtToken:  string,
   ) {
-    this.log.verbose('Db', 'constructor()')
+    this.log.verbose('Db', 'constructor(%s, %s)',
+                            log,
+                            jwtToken,
+                    )
   }
 }

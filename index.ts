@@ -1,13 +1,10 @@
-import          './src/db'
-
 export {
-  Hostie,
-  HostieRuntime,
-  HostieStatus,
-  HostieStore,
-}                 from './src/hostie-store'
+  Db,
+}         from './src/db'
 
-export {
-  Botie,
-  BotieStatus,
-}                 from './src/botie'
+// export {
+//   Hostie,
+//   HostieRuntime,
+//   HostieStatus,
+//   HostieStore,
+// }                 from './src/hostie-store'
