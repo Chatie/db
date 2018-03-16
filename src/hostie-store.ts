@@ -24,7 +24,7 @@ import {
 import { Store }    from './store'
 
 import {
-  GQL_ALL_HOSTIES,
+  GQL_QUERY_ALL_HOSTIES,
   GQL_SUBSCRIBE_HOSTIE,
 }                       from './hostie-store.graphql'
 
@@ -34,6 +34,7 @@ export class HostieStore implements Store<Hostie> {
 
   private $itemMap: BehaviorSubject<HostieMap>
   public get itemMap(): Observable<HostieMap> {
+    log.silly('HostieStore', 'get itemMap()')
     return this.$itemMap.asObservable()
   }
 
@@ -41,20 +42,25 @@ export class HostieStore implements Store<Hostie> {
     public db: Db,
   ) {
     log.verbose('HostieStore', 'constructor()')
+    this.$itemMap = new BehaviorSubject<HostieMap>({})
   }
 
-  public async init(): Promise<void> {
-    log.verbose('HostieStore', 'init()')
-
-    this.$itemMap = new BehaviorSubject<HostieMap>({})
+  public async open(): Promise<void> {
+    log.verbose('HostieStore', 'open()')
 
     const hostieQuery = this.db.apollo.watchQuery<AllHostiesQuery>({
-      query: GQL_ALL_HOSTIES,
+      query: GQL_QUERY_ALL_HOSTIES,
     })
     this.initSubscribeToMore(hostieQuery)
     this.initSubscription(hostieQuery)
 
     await this.initQuery()
+  }
+
+  public async close(): Promise<void> {
+    log.verbose('HostieStore', 'close()')
+
+    await this.itemListSubscription.unsubscribe()
   }
 
   private initSubscribeToMore(hostieQuery: ObservableQuery<AllHostiesQuery>): void {
@@ -132,8 +138,8 @@ export class HostieStore implements Store<Hostie> {
   }
 
   private async initQuery(): Promise<void> {
-    this.db.apollo.query<AllHostiesQuery>({
-      query: GQL_ALL_HOSTIES,
+    await this.db.apollo.query<AllHostiesQuery>({
+      query: GQL_QUERY_ALL_HOSTIES,
     })
     .then(x => x.data.allHosties)
     .then(hostieList => {
@@ -193,4 +199,5 @@ export class HostieStore implements Store<Hostie> {
 
     return {} as any
   }
+
 }

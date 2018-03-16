@@ -13,7 +13,7 @@ export const GQL_FRAGMENT_HOSTIE = gql`
   }
 `
 
-export const GQL_ALL_HOSTIES = gql`
+export const GQL_QUERY_ALL_HOSTIES = gql`
   query AllHosties {
     allHosties {
       ...Hostie

@@ -17,6 +17,11 @@
     , "noUnusedParameters": true
     , "noImplicitThis": true
     , "traceResolution": false
+    , "lib": [
+        "es2016"
+      , "esnext"
+      , "dom"
+    ]
   }
   , "exclude": [
       "node_modules/"
@@ -27,6 +32,6 @@
     , "examples/**/*.ts"
     , "src/**/*.ts"
     , "scripts/**/*.ts"
-    , "test/**/*.spec.ts"
+    , "tests/**/*.spec.ts"
   ]
 }

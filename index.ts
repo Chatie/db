@@ -1,6 +1,13 @@
+import {
+  VERSION,
+  log,
+}               from './src/config'
 export {
   Db,
-}         from './src/db'
+}               from './src/db'
+export {
+  HostieStore,
+}               from './src/hostie-store'
 
 // export {
 //   Hostie,
