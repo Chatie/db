@@ -54,7 +54,7 @@ export class HostieStore implements Store<Hostie> {
     this.initSubscribeToMore(hostieQuery)
     this.initSubscription(hostieQuery)
 
-    await this.initQuery()
+    // await this.initQuery()
   }
 
   public async close(): Promise<void> {
@@ -137,19 +137,19 @@ export class HostieStore implements Store<Hostie> {
     )
   }
 
-  private async initQuery(): Promise<void> {
-    await this.db.apollo.query<AllHostiesQuery>({
-      query: GQL_QUERY_ALL_HOSTIES,
-    })
-    .then(x => x.data.allHosties)
-    .then(hostieList => {
-      const queryItemMap: HostieMap = {}
-      for (const hostie of hostieList) {
-        queryItemMap[hostie.id] = hostie
-      }
-      this.$itemMap.next(queryItemMap)
-    })
-  }
+  // private async initQuery(): Promise<void> {
+  //   await this.db.apollo.query<AllHostiesQuery>({
+  //     query: GQL_QUERY_ALL_HOSTIES,
+  //   })
+  //   .then(x => x.data.allHosties)
+  //   .then(hostieList => {
+  //     const queryItemMap: HostieMap = {}
+  //     for (const hostie of hostieList) {
+  //       queryItemMap[hostie.id] = hostie
+  //     }
+  //     this.$itemMap.next(queryItemMap)
+  //   })
+  // }
 
   /**
    * @todo confirm the return type of Observable

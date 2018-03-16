@@ -23,8 +23,8 @@ export class Db {
                 )
   }
 
-  public async init(): Promise<void> {
-    log.verbose('Db', 'init()')
+  public async open(): Promise<void> {
+    log.verbose('Db', 'open()')
     if (!this.apollo) {
       log.silly('Db', 'init() initializing apollo client...')
       this.apollo = await getApolloClient(
@@ -32,6 +32,12 @@ export class Db {
         this.endpoints,
       )
     }
+  }
+
+  public async close(): Promise<void> {
+    log.verbose('Db', 'close()')
+    await this.apollo['wsClose']()
+    await this.apollo.resetStore()
   }
 }
 

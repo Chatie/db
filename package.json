@@ -10,10 +10,10 @@
     "generate-schema": "ts-node scripts/generate-schema",
     "graphql:start": "chatie-graphql-local-bootstrap",
     "graphql:stop": "chatie-graphql-local-destroy",
-    "lint": "npm run tslint",
+    "lint": "npm run lint:ts",
     "test": "npm run test:unit",
     "test:unit": "blue-tape -r ts-node/register -r source-map-support/register {src,tests}/**/*.spec.ts",
-    "tslint": "tslint \"{src,tests}/**/*.ts\" && tsc --noEmit"
+    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" --exclude \"dist/\" && tsc --noEmit"
   },
   "git": {
     "scripts": {

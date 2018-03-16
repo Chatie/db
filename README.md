@@ -1,7 +1,8 @@
 # CHATIE DB
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Chatie/db.svg)](https://greenkeeper.io/)
+[![npm version](https://badge.fury.io/js/%40chatie%2Fdb.svg)](https://badge.fury.io/js/%40chatie%2Fdb)
 [![Build Status](https://api.travis-ci.org/Chatie/db.svg?branch=master)](https://travis-ci.org/Chatie/db) [![npm version](https://badge.fury.io/js/%40chatie%2Fdb.svg)](https://www.npmjs.com/package/@chatie/db)
+[![Greenkeeper badge](https://badges.greenkeeper.io/Chatie/db.svg)](https://greenkeeper.io/)
 
 Database for Chatie System
 

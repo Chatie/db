@@ -25,7 +25,7 @@ test('itemMap', async t => {
       fixtures.USER.token,
       fixtures.ENDPOINTS,
     )
-    await db.init()
+    await db.open()
 
     const store = new HostieStore(db)
 
@@ -35,8 +35,11 @@ test('itemMap', async t => {
     await store.open()
     const itemMap = await store.itemMap.first().toPromise()
     await store.close()
+    await db.close()
 
     t.ok(itemMap, 'should get itemMap')
     t.equal(Object.keys(itemMap).length, 0, 'should get zero items for a fresh fixture')
+
+    t.pass('ok')
   }
 })
