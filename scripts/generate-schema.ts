@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 import { spawn }  from 'child_process'
+import * as path  from 'path'
 
 import * as glob  from 'glob'
 import {
@@ -13,7 +14,8 @@ import {
   log,
 }               from '../src/config'
 
-const JSON_SCHEMA_FILE  = 'downloaded-schema.json'
+const GENERATED_SCHEMAS_DIR = 'generated-schemas/'
+const JSON_SCHEMA_FILE  = path.join(GENERATED_SCHEMAS_DIR, 'downloaded-schema.json')
 
 async function main() {
   log.verbose('GenerateSchema', 'main()')
@@ -32,7 +34,9 @@ async function main() {
       throw err
     }
     matches.forEach(async match => {
-      const schemaFile = match.replace('-store.graphql.ts', '-schema.ts')
+      const schemaFile = match
+                          .replace('-store.graphql.ts', '-schema.ts')
+                          .replace('src/', GENERATED_SCHEMAS_DIR)
       await generate(JSON_SCHEMA_FILE, match, schemaFile)
       console.log(`${match} => ${schemaFile} generated`)
     })

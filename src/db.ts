@@ -1,6 +1,7 @@
 import {
   ApolloClient,
   NormalizedCacheObject,
+  ObservableQuery,
   getApolloClient,
 }                         from '@chatie/graphql'
 
@@ -26,4 +27,8 @@ export class Db {
       this.apollo = await getApolloClient(this.token)
     }
   }
+}
+
+export {
+  ObservableQuery,
 }

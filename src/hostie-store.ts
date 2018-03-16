@@ -5,22 +5,36 @@ import {
   Observable,
 }                   from 'rxjs/Observable'
 
-import { log }      from './config'
-import { Db }       from './db'
 import {
-  Hostie,
-}                   from './hostie-schema'
-import { Store }    from './store'
-
+  _ModelMutationType,
+  AllHostiesQuery,
+  HostieFragment,
+  SubscribeHostieSubscription,
+}                               from '../generated-schemas/hostie-schema'
+export type Hostie = HostieFragment
 export interface HostieMap {
-  [id: string]: Hostie
+  [id: string]: Hostie,
 }
 
-export class HostieStore implements Store {
+import { log }      from './config'
+import {
+  Db,
+  ObservableQuery,
+}                   from './db'
+import { Store }    from './store'
 
-  private $itemList: BehaviorSubject<HostieMap>
-  public get itemList(): Observable<HostieMap> {
-    return this.$itemList.asObservable()
+import {
+  GQL_ALL_HOSTIES,
+  GQL_SUBSCRIBE_HOSTIE,
+}                       from './hostie-store.graphql'
+
+export class HostieStore implements Store<Hostie> {
+
+  private itemListSubscription
+
+  private $itemMap: BehaviorSubject<HostieMap>
+  public get itemMap(): Observable<HostieMap> {
+    return this.$itemMap.asObservable()
   }
 
   constructor(
@@ -32,61 +46,122 @@ export class HostieStore implements Store {
   public async init(): Promise<void> {
     log.verbose('HostieStore', 'init()')
 
-    this.$itemList = new BehaviorSubject<HostieMap>({})
+    this.$itemMap = new BehaviorSubject<HostieMap>({})
 
-    this.db.apollo.
+    const hostieQuery = this.db.apollo.watchQuery<AllHostiesQuery>({
+      query: GQL_ALL_HOSTIES,
+    })
+    this.initSubscribeToMore(hostieQuery)
+    this.initSubscription(hostieQuery)
 
-    this.rootRef.child(this.dbPathUserHosties)
-                .on('value', snapshot => {
-                  if (snapshot) {
-                    log.silly('HostieStore', 'init() on(value, snapshot => %s)', snapshot.val())
-                    if (snapshot.val()) {
-                      this.$data.next(snapshot.val())
-                    } else {
-                      log.warn('HostieStore', 'init() snapshot.val() is null')
-                      this.$data.next({})
-                    }
-                  } else {
-                    log.error('HostieStore', 'init() snapshot is null')
-                  }
-                })
+    await this.initQuery()
+  }
+
+  private initSubscribeToMore(hostieQuery: ObservableQuery<AllHostiesQuery>): void {
+    hostieQuery.subscribeToMore({
+      document: GQL_SUBSCRIBE_HOSTIE,
+      updateQuery: (prev, { subscriptionData }) => {
+        const data: SubscribeHostieSubscription = subscriptionData.data
+        if (!data || !data.Hostie) {
+          return prev
+        }
+
+        log.silly('HostieStore', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
+        log.silly('HostieStore', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
+
+        let result
+        const node = data.Hostie.node
+        const previousValues = data.Hostie.previousValues
+
+        switch (data.Hostie.mutation) {
+          case _ModelMutationType.CREATED:
+            result = {
+              ...prev,
+              allHosties: [...prev['allHosties'], node],
+            }
+            break
+          case _ModelMutationType.UPDATED:
+            result = {
+              ...prev,
+              allHosties: [...prev['allHosties']],
+            }
+            if (node) {
+              for (let i = result.allHosties.length; i--;) {
+                if (result.allHosties[i].id === node.id) {
+                  result.allHosties[i] = node
+                  break
+                }
+              }
+            }
+            break
+          case _ModelMutationType.DELETED:
+            result = {
+              ...prev,
+              allHosties: [...prev['allHosties']],
+            }
+            if (previousValues) {
+              for (let i = result.allHosties.length; i--;) {
+                if (result.allHosties[i].id === previousValues.id) {
+                  result.allHosties.splice(i, 1)
+                  break
+                }
+              }
+            }
+            break
+          default:
+            throw new Error('unknown mutation type:' + data.Hostie.mutation)
+        }
+
+        return result
+      },
+    })
+  }
+
+  private initSubscription(hostieQuery: ObservableQuery<AllHostiesQuery>): void {
+    this.itemListSubscription = hostieQuery.subscribe(
+      ({ data }) => {
+        const subscriptionItemMap: HostieMap = {}
+        for (const hostie of data.allHosties) {
+          subscriptionItemMap[hostie.id] = hostie
+        }
+        log.silly('HostieStore', 'init() subscribe() itemList updated #%d items', data.allHosties.length)
+
+        this.$itemMap.next(subscriptionItemMap)
+      },
+    )
+  }
+
+  private async initQuery(): Promise<void> {
+    this.db.apollo.query<AllHostiesQuery>({
+      query: GQL_ALL_HOSTIES,
+    })
+    .then(x => x.data.allHosties)
+    .then(hostieList => {
+      const queryItemMap: HostieMap = {}
+      for (const hostie of hostieList) {
+        queryItemMap[hostie.id] = hostie
+      }
+      this.$itemMap.next(queryItemMap)
+    })
   }
 
   /**
    * @todo confirm the return type of Observable
    * @param newHostie
    */
-  public async create(newHostie: Hostie): Promise<void> {
+  public async create(newHostie: Hostie): Promise<Hostie> {
     log.verbose('HostieStore', 'add({name:%s})', newHostie.name)
-    newHostie.email = this.emailGetter()
-
-    const id = this.rootRef.child(this.dbPathHosties)
-                            .push()
-                            .key()
-    if (!id) {
-      throw new Error('push key null')
-    }
-    newHostie.id = id
-
-    const updates = {}
-    updates[this.dbPathHosties      + '/' + id] = newHostie
-    updates[this.dbPathUserHosties  + '/' + id] = newHostie
-
-    await this.rootRef.update(updates)
+    return {} as any
   }
 
   /**
    * delete
    * @param id uuid
    */
-  public async delete(id: string): Promise<void> {
+  public async delete(id: string): Promise<Hostie> {
     log.verbose('HostieStore', 'del(%s)', id)
 
-    const updates = {}
-    updates[this.dbPathHosties      + '/' + id] = null
-    updates[this.dbPathUserHosties  + '/' + id] = null
-
-    await this.rootRef.update(updates)
+    return {} as any
   }
 
   /**
@@ -98,11 +173,7 @@ export class HostieStore implements Store {
 
   public async read(id: string): Promise<Hostie | null> {
     log.verbose('HostieStore', 'find(%s)', id)
-    let snapshot: Wilddog.sync.DataSnapshot
-    snapshot = await this.rootRef
-                          .child(this.dbPathHosties + '/' + id)
-                          .once('value')
-    return snapshot.val()
+    return {} as any
   }
 
   /**
@@ -110,27 +181,16 @@ export class HostieStore implements Store {
    * unspecified fields will be left untouched.
    * @param updateHostie
    */
-  public async update(condition: object): Promise<void> {
-    log.verbose('HostieStore', 'update({id:%s})', condition['id'])
+  public async update(id: string, condition: object): Promise<Hostie> {
+    log.verbose('HostieStore', 'update(id=%s)', id)
 
-    const id = condition['id']
-    if (!id) {
-      throw new Error('no id')
-    }
-    const updatedHostie = await this.find(id)
+    const updatedHostie = await this.read(id)
     if (!updatedHostie) {
       throw new Error('update() id not found')
     }
 
     Object.assign(updatedHostie, condition)
 
-    const updates = {}
-    updates[this.dbPathHosties      + '/' + id] = updatedHostie
-    updates[this.dbPathUserHosties  + '/' + id] = updatedHostie
-
-    await this.rootRef.update(updates)
-    return
+    return {} as any
   }
 }
-
-export * from './hostie-schema'
