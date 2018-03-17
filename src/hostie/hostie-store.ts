@@ -1,7 +1,4 @@
 import {
-  BehaviorSubject,
-}                   from  'rxjs/BehaviorSubject'
-import {
   Observable,
 }                   from 'rxjs/Observable'
 
@@ -10,51 +7,48 @@ import {
   AllHostiesQuery,
   HostieFragment,
   SubscribeHostieSubscription,
-}                               from '../generated-schemas/hostie-schema'
+}                               from '../../generated-schemas/hostie-schema'
 export type Hostie = HostieFragment
-export interface HostieMap {
-  [id: string]: Hostie,
-}
 
-import { log }      from './config'
+import { log }      from '../config'
 import {
   Db,
   ObservableQuery,
-}                   from './db'
-import { Store }    from './store'
+}                   from '../db'
+import {
+  Store,
+  InitOptions,
+}                   from '../store'
 
 import {
   GQL_QUERY_ALL_HOSTIES,
   GQL_SUBSCRIBE_HOSTIE,
-}                       from './hostie-store.graphql'
+}                         from './hostie-store.graphql'
 
-export class HostieStore implements Store<Hostie> {
-
-  private itemListSubscription
-
-  private $itemMap: BehaviorSubject<HostieMap>
-  public get itemMap(): Observable<HostieMap> {
-    log.silly('HostieStore', 'get itemMap()')
-    return this.$itemMap.asObservable()
-  }
+export class HostieStore extends Store<
+    Hostie,
+    AllHostiesQuery,
+    SubscribeHostieSubscription
+> {
+  private options: InitOptions
 
   constructor(
-    public db: Db,
+    protected db: Db,
   ) {
+    super(db)
     log.verbose('HostieStore', 'constructor()')
-    this.$itemMap = new BehaviorSubject<HostieMap>({})
+
+    this.options = {
+      gqlQueryAll:   GQL_QUERY_ALL_HOSTIES,
+      gqlSubscribe:  GQL_SUBSCRIBE_HOSTIE,
+      dataKey:    'allHosties',
+    }
   }
 
   public async open(): Promise<void> {
     log.verbose('HostieStore', 'open()')
 
-    const hostieQuery = this.db.apollo.watchQuery<AllHostiesQuery>({
-      query: GQL_QUERY_ALL_HOSTIES,
-    })
-    this.initSubscribeToMore(hostieQuery)
-    this.initSubscription(hostieQuery)
-
-    // await this.initQuery()
+    await this.init(this.options)
   }
 
   public async close(): Promise<void> {
@@ -132,7 +126,7 @@ export class HostieStore implements Store<Hostie> {
         }
         log.silly('HostieStore', 'init() subscribe() itemList updated #%d items', data.allHosties.length)
 
-        this.$itemMap.next(subscriptionItemMap)
+        this.$itemDict.next(subscriptionItemMap)
       },
     )
   }

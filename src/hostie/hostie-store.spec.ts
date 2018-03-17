@@ -12,14 +12,14 @@ import {
 // }                 from './config'
 import {
   Db,
-}                 from './db'
+}                 from '../db'
 import {
   HostieStore,
 }                 from './hostie-store'
 
 const localServer = new LocalServer()
 
-test('itemMap', async t => {
+test('itemDict', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = new Db(
       fixtures.USER.token,
@@ -29,16 +29,16 @@ test('itemMap', async t => {
 
     const store = new HostieStore(db)
 
-    // store.itemMap.subscribe(im => {
-    //   console.log('itemMap: ', im)
+    // store.itemDict.subscribe(im => {
+    //   console.log('itemDict: ', im)
     // })
     await store.open()
-    const itemMap = await store.itemMap.first().toPromise()
+    const itemDict = await store.itemDict.first().toPromise()
     await store.close()
     await db.close()
 
-    t.ok(itemMap, 'should get itemMap')
-    t.equal(Object.keys(itemMap).length, 0, 'should get zero items for a fresh fixture')
+    t.ok(itemDict, 'should get itemDict')
+    t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
 
     t.pass('ok')
   }

@@ -26,7 +26,7 @@ async function main() {
   await introspectSchema(simpleEndpoint, JSON_SCHEMA_FILE)
   console.log(`${JSON_SCHEMA_FILE} generated`)
 
-  glob('src/*-store.graphql.ts', (err, matches) => {
+  glob('src/**/*-store.graphql.ts', (err, matches) => {
     // src/hostie-store.graphql.ts
     // ->
     // src/hostie-schema.ts
@@ -36,7 +36,7 @@ async function main() {
     matches.forEach(async match => {
       const schemaFile = match
                           .replace('-store.graphql.ts', '-schema.ts')
-                          .replace('src/', GENERATED_SCHEMAS_DIR)
+                          .replace(/^src\/[^\/]+\//, GENERATED_SCHEMAS_DIR)
       await generate(JSON_SCHEMA_FILE, match, schemaFile)
       console.log(`${match} => ${schemaFile} generated`)
     })
