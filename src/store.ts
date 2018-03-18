@@ -88,8 +88,8 @@ export abstract class Store<
         const dataKey = this.options.dataKey
         const item    = data[dataKey]
 
-        log.silly('HostieStore', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
-        log.silly('HostieStore', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
+        log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
+        log.silly('Store', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
 
         let result
         const node            = item.node
@@ -140,7 +140,7 @@ export abstract class Store<
   }
 
   private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): void {
-    log.verbose('Store', 'initSubscription(itemQuery()')
+    log.verbose('Store', 'initSubscription(itemQuery=...)')
 
     this.itemListSubscription = itemQuery.subscribe(
       ({ data }) => {

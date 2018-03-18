@@ -44,11 +44,9 @@ export const GQL_SUBSCRIBE_HOSTIE = gql`
 export const GQL_DELETE_HOSTIE = gql`
   mutation DeleteHostie($id: ID!) {
     deleteHostie(id: $id) {
-      ...Hostie,
+      id,
     }
   }
-
-  ${GQL_FRAGMENT_HOSTIE}
 `
 
 export const GQL_CREATE_HOSTIE = gql`

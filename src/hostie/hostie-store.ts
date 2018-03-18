@@ -5,6 +5,7 @@ import {
 import {
   AllHostiesQuery,
   DeleteHostieMutation,
+  DeleteHostieMutationVariables,
   CreateHostieMutation,
   CreateHostieMutationVariables,
   HostieFragment,
@@ -53,14 +54,18 @@ export class HostieStore extends Store<
    * @todo confirm the return type of Observable
    * @param newHostie
    */
-  public async create(newHostie: Partial<Hostie>): Promise<Hostie> {
-    log.verbose('HostieStore', 'add(newHostie{name=%s})', newHostie.name)
+  public async create(info: {
+      name:     string,
+      key:      string,
+      ownerId:  string,
+  }): Promise<Hostie> {
+    log.verbose('HostieStore', 'add(newHostie{name=%s})', info.name)
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateHostieMutationVariables = {
-      key:      newHostie.key!,
-      name:     newHostie.name!,
-      ownerId:  newHostie.owner!.id,
+      key:      info.key,
+      name:     info.name,
+      ownerId:  info.ownerId,
     }
 
     const mutationResult: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
@@ -93,14 +98,15 @@ export class HostieStore extends Store<
    * delete
    * @param id
    */
-  public async delete(id: string): Promise<Hostie> {
+  public async delete(id: string): Promise< Partial<Hostie> > {
     log.verbose('HostieStore', 'del(%s)', id)
 
+    const variables: DeleteHostieMutationVariables = {
+      id,
+    }
     const result: DeleteHostieMutation = await this.db.apollo.mutate<DeleteHostieMutation>({
       mutation: GQL_DELETE_HOSTIE,
-      variables: {
-        id,
-      },
+      variables,
       update: (proxy, { data: { deleteHostie } }) => {
         try {
           // Read the data from our cache for this query.
@@ -160,7 +166,7 @@ export class HostieStore extends Store<
           log.verbose('HostieStore', 'update() before any query executed.')
         }
       },
-    })
+    }).then(x => x.data)
 
     const updatedHostie = result.updateHostie
     if (!updatedHostie) {
