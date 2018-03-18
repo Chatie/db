@@ -34,7 +34,7 @@ export abstract class Store<
     SubscribeItemSubscription
 > {
   protected itemListSubscription
-  private   options:              InitOptions
+  protected options:              InitOptions
 
   protected $itemDict: BehaviorSubject< ItemDict<T> >
   public get itemDict(): Observable< ItemDict<T> > {
@@ -49,13 +49,22 @@ export abstract class Store<
     this.$itemDict = new BehaviorSubject< ItemDict<T> >({})
   }
 
-  public abstract open():   Promise<void>
-  public abstract close():  Promise<void>
+  public async open(): Promise<void> {
+    log.verbose('Store', 'open()')
+    if (!this.options) {
+      throw new Error('Store.open() need `this.options` be set first!')
+    }
+    await this.init(this.options)
+  }
+
+  public async close():   Promise<void> {
+    log.verbose('Store', 'close()')
+    await this.itemListSubscription.unsubscribe()
+  }
 
   protected async init(options: InitOptions) {
     log.verbose('Store', 'init(options)')
 
-    this.options = options
     const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
       query: options.gqlQueryAll,
     })

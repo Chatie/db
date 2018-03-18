@@ -41,24 +41,12 @@ export class HostieStore extends Store<
   ) {
     super(db)
     log.verbose('HostieStore', 'constructor()')
-  }
 
-  public async open(): Promise<void> {
-    log.verbose('HostieStore', 'open()')
-
-    const options = {
+    this.options = {
       gqlQueryAll:  GQL_QUERY_ALL_HOSTIES,
       gqlSubscribe: GQL_SUBSCRIBE_HOSTIE,
       dataKey:      'allHosties',
     }
-
-    await this.init(options)
-  }
-
-  public async close(): Promise<void> {
-    log.verbose('HostieStore', 'close()')
-
-    await this.itemListSubscription.unsubscribe()
   }
 
   /**
