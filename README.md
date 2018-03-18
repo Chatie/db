@@ -35,6 +35,8 @@ Switch to [Graph.Cool](https://www.graph.cool) Serverless solution because Wildd
 1. use `@chatie/graphql` module to enable graphql backend.
 1. unit testing with stores: Store, HostieStore, etc.
 
+> 2018-03-17 Update: [因资金问题，“野狗”停止新用户注册](https://36kr.com/p/5124258.html)
+
 ### v0.2 (15th, May, 2017)
 
 Switch to [Wilddog](https://www.wilddog.com/), because Firebase `Firebase.auth().signInWithCustomToken()` is still blocked in China by GFW.

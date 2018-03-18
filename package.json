@@ -8,12 +8,13 @@
     "clean": "shx rm -fr dist",
     "dist": "npm run clean && tsc && shx cp package.json dist/",
     "generate-schema": "ts-node scripts/generate-schema",
-    "graphql:start": "chatie-graphql-local-bootstrap",
-    "graphql:stop": "chatie-graphql-local-destroy",
+    "graphql:start": "chatie-graphql-local-start",
+    "graphql:stop": "chatie-graphql-local-stop",
     "lint": "npm run lint:ts",
-    "test": "npm run test:unit",
-    "test:unit": "blue-tape -r ts-node/register -r source-map-support/register {src,tests}/**/*.spec.ts",
-    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" --exclude \"dist/\" && tsc --noEmit"
+    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" --exclude \"dist/\" && tsc --noEmit",
+    "pretest": "npm run graphql:stop && npm run graphql:start && npm run generate-schema",
+    "test": "npm run lint && npm run test:unit",
+    "test:unit": "blue-tape -r ts-node/register -r source-map-support/register {src,tests}/**/*.spec.ts"
   },
   "git": {
     "scripts": {
