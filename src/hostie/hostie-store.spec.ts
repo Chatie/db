@@ -26,20 +26,21 @@ test('itemDict', async t => {
       fixtures.ENDPOINTS,
     )
     await db.open()
-
     const store = new HostieStore(db)
-
-    // store.itemDict.subscribe(im => {
-    //   console.log('itemDict: ', im)
-    // })
     await store.open()
-    const itemDict = await store.itemDict.first().toPromise()
-    await store.close()
-    await db.close()
 
-    t.ok(itemDict, 'should get itemDict')
-    t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
+    try {
+      const itemDict = await store.itemDict.first().toPromise()
 
-    t.pass('ok')
+      t.ok(itemDict, 'should get itemDict')
+      t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
+
+      t.pass('ok')
+    } catch (e) {
+      t.fail(e)
+    } finally {
+      await store.close()
+      await db.close()
+    }
   }
 })

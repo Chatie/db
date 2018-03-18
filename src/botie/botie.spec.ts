@@ -22,16 +22,3 @@ test('Botie model with all values fulfilled', t => {
   t.ok(botie, 'maximum values is ok')
   t.end()
 })
-
-test('Botie model with minimum values fulfilled', t => {
-  const botie: Botie = {
-    id:         'string',
-    name:       'string',
-    create_at: 123,
-    update_at: 123,
-    status:     BotieStatus.STANDBY,
-  }
-
-  t.ok(botie, 'minimum values is ok')
-  t.end()
-})

@@ -1,28 +1,34 @@
 import {
-  Observable,
+  // Observable,
 }                   from 'rxjs/Observable'
 
 import {
-  _ModelMutationType,
   AllHostiesQuery,
+  DeleteHostieMutation,
+  CreateHostieMutation,
+  CreateHostieMutationVariables,
   HostieFragment,
   SubscribeHostieSubscription,
+  UpdateHostieMutation,
+  UpdateHostieMutationVariables,
 }                               from '../../generated-schemas/hostie-schema'
 export type Hostie = HostieFragment
 
 import { log }      from '../config'
 import {
   Db,
-  ObservableQuery,
+  // ObservableQuery,
 }                   from '../db'
 import {
   Store,
-  InitOptions,
 }                   from '../store'
 
 import {
+  GQL_CREATE_HOSTIE,
+  GQL_DELETE_HOSTIE,
   GQL_QUERY_ALL_HOSTIES,
   GQL_SUBSCRIBE_HOSTIE,
+  GQL_UPDATE_HOSTIE,
 }                         from './hostie-store.graphql'
 
 export class HostieStore extends Store<
@@ -30,25 +36,23 @@ export class HostieStore extends Store<
     AllHostiesQuery,
     SubscribeHostieSubscription
 > {
-  private options: InitOptions
-
   constructor(
     protected db: Db,
   ) {
     super(db)
     log.verbose('HostieStore', 'constructor()')
-
-    this.options = {
-      gqlQueryAll:   GQL_QUERY_ALL_HOSTIES,
-      gqlSubscribe:  GQL_SUBSCRIBE_HOSTIE,
-      dataKey:    'allHosties',
-    }
   }
 
   public async open(): Promise<void> {
     log.verbose('HostieStore', 'open()')
 
-    await this.init(this.options)
+    const options = {
+      gqlQueryAll:  GQL_QUERY_ALL_HOSTIES,
+      gqlSubscribe: GQL_SUBSCRIBE_HOSTIE,
+      dataKey:      'allHosties',
+    }
+
+    await this.init(options)
   }
 
   public async close(): Promise<void> {
@@ -57,123 +61,76 @@ export class HostieStore extends Store<
     await this.itemListSubscription.unsubscribe()
   }
 
-  private initSubscribeToMore(hostieQuery: ObservableQuery<AllHostiesQuery>): void {
-    hostieQuery.subscribeToMore({
-      document: GQL_SUBSCRIBE_HOSTIE,
-      updateQuery: (prev, { subscriptionData }) => {
-        const data: SubscribeHostieSubscription = subscriptionData.data
-        if (!data || !data.Hostie) {
-          return prev
-        }
-
-        log.silly('HostieStore', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
-        log.silly('HostieStore', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
-
-        let result
-        const node = data.Hostie.node
-        const previousValues = data.Hostie.previousValues
-
-        switch (data.Hostie.mutation) {
-          case _ModelMutationType.CREATED:
-            result = {
-              ...prev,
-              allHosties: [...prev['allHosties'], node],
-            }
-            break
-          case _ModelMutationType.UPDATED:
-            result = {
-              ...prev,
-              allHosties: [...prev['allHosties']],
-            }
-            if (node) {
-              for (let i = result.allHosties.length; i--;) {
-                if (result.allHosties[i].id === node.id) {
-                  result.allHosties[i] = node
-                  break
-                }
-              }
-            }
-            break
-          case _ModelMutationType.DELETED:
-            result = {
-              ...prev,
-              allHosties: [...prev['allHosties']],
-            }
-            if (previousValues) {
-              for (let i = result.allHosties.length; i--;) {
-                if (result.allHosties[i].id === previousValues.id) {
-                  result.allHosties.splice(i, 1)
-                  break
-                }
-              }
-            }
-            break
-          default:
-            throw new Error('unknown mutation type:' + data.Hostie.mutation)
-        }
-
-        return result
-      },
-    })
-  }
-
-  private initSubscription(hostieQuery: ObservableQuery<AllHostiesQuery>): void {
-    this.itemListSubscription = hostieQuery.subscribe(
-      ({ data }) => {
-        const subscriptionItemMap: HostieMap = {}
-        for (const hostie of data.allHosties) {
-          subscriptionItemMap[hostie.id] = hostie
-        }
-        log.silly('HostieStore', 'init() subscribe() itemList updated #%d items', data.allHosties.length)
-
-        this.$itemDict.next(subscriptionItemMap)
-      },
-    )
-  }
-
-  // private async initQuery(): Promise<void> {
-  //   await this.db.apollo.query<AllHostiesQuery>({
-  //     query: GQL_QUERY_ALL_HOSTIES,
-  //   })
-  //   .then(x => x.data.allHosties)
-  //   .then(hostieList => {
-  //     const queryItemMap: HostieMap = {}
-  //     for (const hostie of hostieList) {
-  //       queryItemMap[hostie.id] = hostie
-  //     }
-  //     this.$itemMap.next(queryItemMap)
-  //   })
-  // }
-
   /**
    * @todo confirm the return type of Observable
    * @param newHostie
    */
-  public async create(newHostie: Hostie): Promise<Hostie> {
-    log.verbose('HostieStore', 'add({name:%s})', newHostie.name)
-    return {} as any
+  public async create(newHostie: Partial<Hostie>): Promise<Hostie> {
+    log.verbose('HostieStore', 'add(newHostie{name=%s})', newHostie.name)
+
+    // FIXME: key! & name! should be checked gracefully
+    const variables: CreateHostieMutationVariables = {
+      key:      newHostie.key!,
+      name:     newHostie.name!,
+      ownerId:  newHostie.owner!.id,
+    }
+
+    const mutationResult: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
+      mutation: GQL_CREATE_HOSTIE,
+      variables,
+      update: (proxy, { data: { createHostie } }) => {
+        try {
+          // Read the data from our cache for this query.
+          const data = proxy.readQuery<AllHostiesQuery>({ query: GQL_QUERY_ALL_HOSTIES })
+          if (data) {
+            data.allHosties.push(createHostie)
+            proxy.writeQuery({ query: GQL_QUERY_ALL_HOSTIES, data })
+          }
+        } catch (e) {
+          log.verbose('HostieStore', 'create() before any query executed.')
+        }
+      },
+    }).then(x => x.data)
+
+    const hostie = mutationResult.createHostie
+
+    if (!hostie) {
+      throw new Error('HostieStore.create() fail!')
+    }
+
+    return hostie
   }
 
   /**
    * delete
-   * @param id uuid
+   * @param id
    */
   public async delete(id: string): Promise<Hostie> {
     log.verbose('HostieStore', 'del(%s)', id)
 
-    return {} as any
-  }
+    const result: DeleteHostieMutation = await this.db.apollo.mutate<DeleteHostieMutation>({
+      mutation: GQL_DELETE_HOSTIE,
+      variables: {
+        id,
+      },
+      update: (proxy, { data: { deleteHostie } }) => {
+        try {
+          // Read the data from our cache for this query.
+          const data = proxy.readQuery<AllHostiesQuery>({ query: GQL_QUERY_ALL_HOSTIES })
+          if (data) {
+            data.allHosties = data.allHosties.filter(hostie => hostie.id !== deleteHostie.id)
+            proxy.writeQuery({ query: GQL_QUERY_ALL_HOSTIES, data })
+          }
+        } catch (e) {
+          log.verbose('HostieStore', 'delete() before any query executed.')
+        }
+      },
+    }).then(x => x.data)
 
-  /**
-   * read
-   * @param id
-   */
-  // public find(condition: object): Observable<any>
-  // public find(value: string | object): Observable<any> {
-
-  public async read(id: string): Promise<Hostie | null> {
-    log.verbose('HostieStore', 'find(%s)', id)
-    return {} as any
+    if (!result.deleteHostie) {
+      throw new Error(`HostieStore.delete(id=${id}) failed!`)
+    }
+    return result.deleteHostie
   }
 
   /**
@@ -181,17 +138,47 @@ export class HostieStore extends Store<
    * unspecified fields will be left untouched.
    * @param updateHostie
    */
-  public async update(id: string, condition: object): Promise<Hostie> {
+  public async update(id: string, props: Partial<Hostie>): Promise<Hostie> {
     log.verbose('HostieStore', 'update(id=%s)', id)
 
-    const updatedHostie = await this.read(id)
-    if (!updatedHostie) {
+    const hostie = await this.read(id)
+    if (!hostie) {
       throw new Error('update() id not found')
     }
 
-    Object.assign(updatedHostie, condition)
+    const variables: UpdateHostieMutationVariables = {
+      id,
+      name:   props.name || hostie.name,
+      note:   props.note || hostie.note,
+    }
 
-    return {} as any
+    const result: UpdateHostieMutation = await this.db.apollo.mutate<UpdateHostieMutation>({
+      mutation: GQL_UPDATE_HOSTIE,
+      variables,
+      update: (proxy, { data: { updateHostie } }) => {
+        try {
+          // Read the data from our cache for this query.
+          const data = proxy.readQuery<AllHostiesQuery>({ query: GQL_QUERY_ALL_HOSTIES })
+          if (data) {
+            for (let i = data.allHosties.length; i--;) {
+              if (data.allHosties[i].id === updateHostie.id) {
+                data.allHosties[i] = updateHostie
+                break
+              }
+            }
+            proxy.writeQuery({ query: GQL_QUERY_ALL_HOSTIES, data })
+          }
+        } catch (e) {
+          log.verbose('HostieStore', 'update() before any query executed.')
+        }
+      },
+    })
+
+    const updatedHostie = result.updateHostie
+    if (!updatedHostie) {
+      throw new Error('HostieStore.update() failed!')
+    }
+    return updatedHostie
   }
 
 }
