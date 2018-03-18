@@ -8,7 +8,7 @@ Database for Chatie System
 
 * <https://blog.chatie.io>
 
-# GRAPHQL BACKEND
+## Graphql Backend
 
 https://github.com/Chatie/graphql
 
@@ -28,10 +28,12 @@ Powered by [Graph.cool](https://www.graph.cool/)
 
 # CHANGE LOG
 
-### v0.3 (18th, Feb, 2018)
+### v0.3 master (18th, Feb, 2018)
 
 Switch to [Graph.Cool](https://www.graph.cool) Serverless solution because Wilddog sucks.
 
+1. use `@chatie/graphql` module to enable graphql backend.
+1. unit testing with stores: Store, HostieStore, etc.
 
 ### v0.2 (15th, May, 2017)
 
@@ -41,8 +43,8 @@ Switch to [Wilddog](https://www.wilddog.com/), because Firebase `Firebase.auth()
 
 Switch to [Firebase](https://firebase.google.com/) because Ionic DB Sunset Done: `404 error` at 9th May 2017
 
-1. Firebase server is not blocked in China any more
-1. Rename: from Dockie to Hostie(back)
+1. Firebase server is not blocked in China any more.
+1. Rename: from Dockie to Hostie(back).
 
 ### v0.0 (Mar, 2017)
 
