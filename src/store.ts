@@ -190,7 +190,7 @@ export abstract class Store<
     id:     string,
     props:  Partial<T>,
   ):                                              Promise<T>
-  public abstract async delete(id: string):       Promise<T>
+  public abstract async delete(id: string):       Promise< Partial<T> >
 
   // search: (cond: any) => Promise<[T]>,
 }
