@@ -3,8 +3,12 @@ import {
   ApolloClient,
   Endpoints,
   NormalizedCacheObject,
-  ObservableQuery,
   getApolloClient,
+}                         from '@chatie/graphql'
+
+export {
+  MutationUpdaterFn,
+  ObservableQuery,
 }                         from '@chatie/graphql'
 
 import {
@@ -43,5 +47,4 @@ export class Db {
 
 export {
   Endpoints,
-  ObservableQuery,
 }

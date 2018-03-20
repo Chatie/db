@@ -1,10 +1,12 @@
+import * as deepFreeze  from 'deep-freeze'
+
 import {
   BehaviorSubject,
-}                   from 'rxjs/BehaviorSubject'
+}                       from 'rxjs/BehaviorSubject'
 import {
   Observable,
-}                   from 'rxjs/Observable'
-import 'rxjs/add/operator/first'
+}                       from 'rxjs/Observable'
+import                       'rxjs/add/operator/first'
 
 import {
   _ModelMutationType,
@@ -12,17 +14,18 @@ import {
 
 import {
   Db,
+  MutationUpdaterFn,
   ObservableQuery,
-}                   from './db'
+}                     from './db'
 import {
   log,
-}                   from './config'
+}                     from './config'
 
 export interface ItemDict<T> {
   [id: string]: T,
 }
 
-export interface InitOptions {
+export interface StoreSettings {
   gqlQueryAll:  string,
   gqlSubscribe: string,
   dataKey:      string,
@@ -34,7 +37,7 @@ export abstract class Store<
     SubscribeItemSubscription
 > {
   protected itemListSubscription
-  protected options:              InitOptions
+  protected settings:              StoreSettings
 
   protected $itemDict: BehaviorSubject< ItemDict<T> >
   public get itemDict(): Observable< ItemDict<T> > {
@@ -51,10 +54,10 @@ export abstract class Store<
 
   public async open(): Promise<void> {
     log.verbose('Store', 'open()')
-    if (!this.options) {
+    if (!this.settings) {
       throw new Error('Store.open() need `this.options` be set first!')
     }
-    await this.init(this.options)
+    await this.init(this.settings)
   }
 
   public async close():   Promise<void> {
@@ -62,7 +65,7 @@ export abstract class Store<
     await this.itemListSubscription.unsubscribe()
   }
 
-  protected async init(options: InitOptions) {
+  protected async init(options: StoreSettings) {
     log.verbose('Store', 'init(options)')
 
     const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
@@ -78,65 +81,76 @@ export abstract class Store<
   private initSubscribeToMore(itemQuery: ObservableQuery<AllItemsQuery>): void {
     log.verbose('Store', 'initSubscribeToMore(itemQuery)')
     itemQuery.subscribeToMore({
-      document: this.options.gqlSubscribe,
+      document: this.settings.gqlSubscribe,
       updateQuery: (prev, { subscriptionData }) => {
         const data: SubscribeItemSubscription = subscriptionData.data
-        if (!data || !data[this.options.dataKey]) {
+        if (!data || !data[this.settings.dataKey]) {
           return prev
         }
 
-        const dataKey = this.options.dataKey
+        const dataKey = this.settings.dataKey
         const item    = data[dataKey]
 
         log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
         log.silly('Store', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
 
-        let result
         const node            = item.node
         const previousValues  = item.previousValues
 
-        switch (item.mutation) {
-          case _ModelMutationType.CREATED:
-            result = {
-              ...prev,
-            }
-            result[dataKey] = [...prev[dataKey], node]
-            break
+        const newData = this.getNewData(
+          item.mutation,
+          prev,
+          dataKey,
+          node || previousValues, // when DELETE, node will be null and we use previousValues
+        )
 
-          case _ModelMutationType.UPDATED:
-            result = {
-              ...prev,
-            }
-
-            if (node) {
-              for (let i = result[dataKey].length; i--;) {
-                if (result[dataKey][i].id === node.id) {
-                  result[dataKey][i] = node
-                  break
-                }
-              }
-            }
-            break
-          case _ModelMutationType.DELETED:
-            result = {
-              ...prev,
-            }
-            if (previousValues) {
-              for (let i = result[dataKey].length; i--;) {
-                if (result[dataKey][i].id === previousValues.id) {
-                  result[dataKey].splice(i, 1)
-                  break
-                }
-              }
-            }
-            break
-          default:
-            throw new Error('unknown mutation type:' + item.mutation)
-        }
-
-        return result
+        return newData
       },
     })
+  }
+
+  private getNewData(
+      type: _ModelMutationType,
+      oldData,
+      dataKey,
+      changedNode,
+  ) {
+    deepFreeze(oldData)
+
+    const updatedData = {
+      ...oldData,
+    }
+    updatedData[dataKey] = [...oldData[dataKey]]
+
+    switch (type) {
+      case _ModelMutationType.CREATED:
+        updatedData[dataKey].push(changedNode)
+        break
+
+      case _ModelMutationType.UPDATED:
+        for (let i = updatedData[dataKey].length; i--;) {
+          if (updatedData[dataKey][i].id === changedNode.id) {
+            updatedData[dataKey][i] = changedNode
+            break
+          }
+        }
+        break
+
+      case _ModelMutationType.DELETED:
+        for (let i = updatedData[dataKey].length; i--;) {
+          if (updatedData[dataKey][i].id === changedNode.id) {
+            updatedData[dataKey].splice(i, 1)
+            break
+          }
+        }
+        break
+
+      default:
+        throw new Error('unknown mutation type:' + type)
+    }
+
+    return deepFreeze(updatedData)
+
   }
 
   private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): void {
@@ -145,14 +159,44 @@ export abstract class Store<
     this.itemListSubscription = itemQuery.subscribe(
       ({ data }) => {
         const subscriptionItemMap: ItemDict<T> = {}
-        for (const hostie of data[this.options.dataKey]) {
+        for (const hostie of data[this.settings.dataKey]) {
           subscriptionItemMap[hostie.id] = hostie
         }
-        log.silly('HostieStore', 'init() subscribe() itemList updated #%d items', data[this.options.dataKey].length)
+        log.silly('HostieStore', 'init() subscribe() itemList updated #%d items', data[this.settings.dataKey].length)
 
         this.$itemDict.next(subscriptionItemMap)
       },
     )
+  }
+
+  protected mutateUpdateFn(
+      type:             _ModelMutationType,
+      mutationDataKey:  string,
+  ): MutationUpdaterFn<T> {
+    log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s)', type, mutationDataKey)
+
+    return (proxy, { data }) => {
+      log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s), (proxy, {data})', type, mutationDataKey)
+
+      let cachedData: AllItemsQuery | null = null
+      try {
+        cachedData = proxy.readQuery<AllItemsQuery>({ query: this.settings.gqlQueryAll })
+      } catch (e) {
+        log.verbose('Store', 'mutateUpdateFn() call proxy.readQuery() before any query had been executed.')
+      }
+
+      if (cachedData) {
+        const node = data[mutationDataKey]
+
+        /**
+         * Combinate all the data to produce a new data
+         */
+        const newData = this.getNewData(type, cachedData, this.settings.dataKey, node)
+
+        proxy.writeQuery({ query: this.settings.gqlQueryAll, data: newData })
+
+      }
+    }
   }
 
   // private async initQuery(): Promise<void> {
@@ -185,6 +229,10 @@ export abstract class Store<
     }
     throw new Error(`Store.read(id=${id} failed!`)
   }
+
+  /**
+   * TO BE IMPLEMENT in the sub class
+   */
   public abstract async create(item: Partial<T>): Promise<T>
   public abstract async update (
     id:     string,
