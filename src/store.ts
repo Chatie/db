@@ -110,19 +110,19 @@ export abstract class Store<
   }
 
   private getNewData(
-      type: _ModelMutationType,
-      oldData,
-      dataKey,
-      changedNode,
-  ) {
-    deepFreeze(oldData)
+      mutationType: _ModelMutationType,
+      data:         Object,
+      dataKey:      string,
+      changedNode:  any,
+  ): Object {
+    deepFreeze(data)
 
     const updatedData = {
-      ...oldData,
+      ...data,
     }
-    updatedData[dataKey] = [...oldData[dataKey]]
+    updatedData[dataKey] = [...data[dataKey]]
 
-    switch (type) {
+    switch (mutationType) {
       case _ModelMutationType.CREATED:
         updatedData[dataKey].push(changedNode)
         break
@@ -146,10 +146,10 @@ export abstract class Store<
         break
 
       default:
-        throw new Error('unknown mutation type:' + type)
+        throw new Error('unknown mutation type:' + mutationType)
     }
 
-    return deepFreeze(updatedData)
+    return deepFreeze(updatedData) as Object
 
   }
 
@@ -170,13 +170,13 @@ export abstract class Store<
   }
 
   protected mutateUpdateFn(
-      type:             _ModelMutationType,
+      mutationType:             _ModelMutationType,
       mutationDataKey:  string,
   ): MutationUpdaterFn<T> {
-    log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s)', type, mutationDataKey)
+    log.verbose('Store', 'mutateUpdateFn(mutationType=%s, mutationKey=%s)', mutationType, mutationDataKey)
 
     return (proxy, { data }) => {
-      log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s), (proxy, {data})', type, mutationDataKey)
+      log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s), (proxy, {data})', mutationType, mutationDataKey)
 
       let cachedData: AllItemsQuery | null = null
       try {
@@ -191,7 +191,7 @@ export abstract class Store<
         /**
          * Combinate all the data to produce a new data
          */
-        const newData = this.getNewData(type, cachedData, this.settings.dataKey, node)
+        const newData = this.getNewData(mutationType, cachedData, this.settings.dataKey, node)
 
         proxy.writeQuery({ query: this.settings.gqlQueryAll, data: newData })
 
@@ -221,7 +221,7 @@ export abstract class Store<
    * 3. update()
    * 4. delete()
    */
-  public async read(id: string):                  Promise<T> {
+  public async read(id: string): Promise<T> {
     log.verbose('Store', 'read(id=%s)', id)
     const itemDict = await this.itemDict.first().toPromise()
     if (itemDict[id]) {
@@ -233,12 +233,12 @@ export abstract class Store<
   /**
    * TO BE IMPLEMENT in the sub class
    */
-  public abstract async create(item: Partial<T>): Promise<T>
+  public abstract async delete(id: string):           Promise< Partial<T> >
+  public abstract async create(newItem: Partial<T>):  Promise<T>
   public abstract async update (
     id:     string,
     props:  Partial<T>,
-  ):                                              Promise<T>
-  public abstract async delete(id: string):       Promise< Partial<T> >
+  ):                                                  Promise<T>
 
   // search: (cond: any) => Promise<[T]>,
 }
