@@ -1,5 +1,3 @@
-import * as deepFreeze  from 'deep-freeze'
-
 import {
   BehaviorSubject,
 }                       from 'rxjs/BehaviorSubject'
