@@ -6,6 +6,9 @@ import {
 import {
   Observable,
 }                       from 'rxjs/Observable'
+import {
+  Subscription,
+}                       from 'rxjs/Subscription'
 import                       'rxjs/add/operator/first'
 
 import {
@@ -41,8 +44,8 @@ export abstract class Store<
     AllItemsQuery,
     SubscribeItemSubscription
 > {
-  protected itemListSubscription
-  protected settings:              StoreSettings
+  private itemListSubscription: Subscription
+  protected settings:           StoreSettings
 
   protected $itemDict: BehaviorSubject< ItemDict<T> >
   public get itemDict(): Observable< ItemDict<T> > {
@@ -62,25 +65,20 @@ export abstract class Store<
     if (!this.settings) {
       throw new Error('Store.open() need `this.options` be set first!')
     }
-    await this.init(this.settings)
+
+    const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
+      query: this.settings.gqlQueryAll,
+    })
+
+    this.initSubscribeToMore(hostieQuery)
+    this.itemListSubscription = this.initSubscription(hostieQuery)
+
+    // await this.initQuery()
   }
 
   public async close():   Promise<void> {
     log.verbose('Store', 'close()')
-    await this.itemListSubscription.unsubscribe()
-  }
-
-  protected async init(options: StoreSettings) {
-    log.verbose('Store', 'init(options)')
-
-    const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
-      query: options.gqlQueryAll,
-    })
-    this.initSubscribeToMore(hostieQuery)
-    this.initSubscription(hostieQuery)
-
-    // await this.initQuery()
-
+    this.itemListSubscription.unsubscribe()
   }
 
   private initSubscribeToMore(itemQuery: ObservableQuery<AllItemsQuery>): void {
@@ -154,10 +152,10 @@ export abstract class Store<
 
   }
 
-  private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): void {
+  private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): Subscription {
     log.verbose('Store', 'initSubscription(itemQuery=...)')
 
-    this.itemListSubscription = itemQuery.subscribe(
+    return itemQuery.subscribe(
       ({ data }) => {
         const subscriptionItemMap: ItemDict<T> = {}
         for (const hostie of data[this.settings.dataKey]) {
@@ -167,7 +165,7 @@ export abstract class Store<
 
         this.$itemDict.next(subscriptionItemMap)
       },
-    )
+    ) as Subscription
   }
 
   protected mutateUpdateFn(
