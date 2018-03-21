@@ -1,8 +1,4 @@
 import {
-  // Observable,
-}                   from 'rxjs/Observable'
-
-import {
   _ModelMutationType,
   AllHostiesQuery,
   DeleteHostieMutation,
@@ -19,7 +15,6 @@ export type Hostie = HostieFragment
 import { log }      from '../config'
 import {
   Db,
-  // ObservableQuery,
 }                   from '../db'
 import {
   Store,
@@ -73,7 +68,7 @@ export class HostieStore extends Store<
       mutation: GQL_CREATE_HOSTIE,
       variables,
       update: this.mutateUpdateFn(_ModelMutationType.CREATED, 'createHostie'),
-    }).then(x => x.data)
+    }).then(m => m.data)
 
     if (!mutationResult.createHostie) {
       throw new Error('HostieStore.create() fail!')
@@ -95,7 +90,7 @@ export class HostieStore extends Store<
       mutation: GQL_DELETE_HOSTIE,
       variables,
       update: this.mutateUpdateFn(_ModelMutationType.DELETED, 'deleteHostie'),
-    }).then(x => x.data)
+    }).then(m => m.data)
 
     if (!result.deleteHostie) {
       throw new Error(`HostieStore.delete(id=${id}) failed!`)
@@ -126,7 +121,7 @@ export class HostieStore extends Store<
       mutation: GQL_UPDATE_HOSTIE,
       variables,
       update: this.mutateUpdateFn(_ModelMutationType.UPDATED, 'updateHostie'),
-    }).then(x => x.data)
+    }).then(m => m.data)
 
     if (!result.updateHostie) {
       throw new Error('HostieStore.update() failed!')

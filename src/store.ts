@@ -119,6 +119,10 @@ export abstract class Store<
       state:  any[] = [],
       action: StoreAction,
   ): any[] {
+    log.verbose('Store', 'mutationReducer(state.length=%d, action.type=%s)',
+                          state.length,
+                          action.type,
+                )
     switch (action.type) {
       case _ModelMutationType.CREATED:
         state.push(action.node)
@@ -170,7 +174,7 @@ export abstract class Store<
       mutationType:     _ModelMutationType,
       mutationDataKey:  string,
   ): MutationUpdaterFn<T> {
-    log.verbose('Store', 'mutateUpdateFn(mutationType=%s, mutationKey=%s)', mutationType, mutationDataKey)
+    log.verbose('Store', 'mutateUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
 
     return (proxy, { data }) => {
       log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s), (proxy, {data})', mutationType, mutationDataKey)
