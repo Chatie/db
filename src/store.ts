@@ -112,6 +112,9 @@ export abstract class Store<
 
         return newData
       },
+      onError: error => {
+        log.error('Store', 'initSubscribeToMore() onError() %s', error)
+      },
     })
   }
 
