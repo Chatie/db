@@ -31,6 +31,11 @@ export interface StoreSettings {
   dataKey:      string,
 }
 
+export interface StoreAction {
+  type: _ModelMutationType,
+  node: any,
+}
+
 export abstract class Store<
     T,
     AllItemsQuery,
@@ -97,11 +102,16 @@ export abstract class Store<
         const node            = item.node
         const previousValues  = item.previousValues
 
-        const newData = this.getNewData(
-          item.mutation,
-          prev,
-          dataKey,
-          node || previousValues, // when DELETE, node will be null and we use previousValues
+        const newData = {
+          ...prev,
+        }
+
+        newData[dataKey] = this.mutationReducer(
+          newData[dataKey],
+          {
+            type: item.mutation,
+            node: node || previousValues, // when DELETE, node will be null and we use previousValues
+          },
         )
 
         return newData
@@ -109,47 +119,38 @@ export abstract class Store<
     })
   }
 
-  private getNewData(
-      mutationType: _ModelMutationType,
-      data:         Object,
-      dataKey:      string,
-      changedNode:  any,
-  ): Object {
-    deepFreeze(data)
-
-    const updatedData = {
-      ...data,
-    }
-    updatedData[dataKey] = [...data[dataKey]]
-
-    switch (mutationType) {
+  private mutationReducer(
+      state:  any[] = [],
+      action: StoreAction,
+  ): any[] {
+    switch (action.type) {
       case _ModelMutationType.CREATED:
-        updatedData[dataKey].push(changedNode)
+        state.push(action.node)
         break
 
       case _ModelMutationType.UPDATED:
-        for (let i = updatedData[dataKey].length; i--;) {
-          if (updatedData[dataKey][i].id === changedNode.id) {
-            updatedData[dataKey][i] = changedNode
+        for (let i = state.length; i--;) {
+          if (state[i].id === action.node.id) {
+            state[i] = action.node
             break
           }
         }
         break
 
       case _ModelMutationType.DELETED:
-        for (let i = updatedData[dataKey].length; i--;) {
-          if (updatedData[dataKey][i].id === changedNode.id) {
-            updatedData[dataKey].splice(i, 1)
+        for (let i = state.length; i--;) {
+          if (state[i].id === action.node.id) {
+            state.splice(i, 1)
             break
           }
         }
         break
 
       default:
-        throw new Error('unknown mutation type:' + mutationType)
+        throw new Error('unknown action.type:' + action.type)
     }
 
-    return deepFreeze(updatedData) as Object
+    return state
 
   }
 
@@ -170,7 +171,7 @@ export abstract class Store<
   }
 
   protected mutateUpdateFn(
-      mutationType:             _ModelMutationType,
+      mutationType:     _ModelMutationType,
       mutationDataKey:  string,
   ): MutationUpdaterFn<T> {
     log.verbose('Store', 'mutateUpdateFn(mutationType=%s, mutationKey=%s)', mutationType, mutationDataKey)
@@ -186,12 +187,21 @@ export abstract class Store<
       }
 
       if (cachedData) {
-        const node = data[mutationDataKey]
+        const mutationNode = data[mutationDataKey]
 
         /**
          * Combinate all the data to produce a new data
          */
-        const newData = this.getNewData(mutationType, cachedData, this.settings.dataKey, node)
+        const newData = {
+          ...cachedData as Object,
+        }
+        newData[this.settings.dataKey] = this.mutationReducer(
+          newData[this.settings.dataKey],
+          {
+            type: mutationType,
+            node: mutationNode,
+          },
+        )
 
         proxy.writeQuery({ query: this.settings.gqlQueryAll, data: newData })
 
