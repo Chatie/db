@@ -1,11 +1,14 @@
+import * as assert from 'assert'
+
 import {
   HostieStore,
-}               from '../../src/hostie/hostie-store'
+  Hostie,
+}                 from '../../src/hostie/hostie-store'
 
 export async function createHostieFixture(
     hostieStore:  HostieStore,
     ownerId:      string,
-) {
+): Promise<Hostie> {
   const RAND_ID       = Math.random().toString().substr(2, 7)
   const EXPECTED_NAME = `name-${RAND_ID}`
   const EXPECTED_KEY  = `key-${RAND_ID}`
@@ -29,11 +32,10 @@ export async function createHostieFixture(
   await new Promise(r => setTimeout(r, 100))
   console.log('############ clear event loop tasks queue done')
 
-  const fixture = {
-    id:   hostie.id,
-    name: EXPECTED_NAME,
-    key:  EXPECTED_KEY,
-  }
-  console.log(fixture)
-  return fixture
+  assert(EXPECTED_KEY === hostie.key,   'should create the hostie with EXPECTED_KEY')
+  assert(EXPECTED_NAME === hostie.name, 'should create the hostie with EXPECTED_NAME')
+
+  console.log('Created Hostie Fixture:', hostie)
+
+  return hostie
 }

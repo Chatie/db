@@ -10,7 +10,6 @@ import {
   UpdateHostieMutation,
   UpdateHostieMutationVariables,
 }                               from '../../generated-schemas/hostie-schema'
-export type Hostie = HostieFragment
 
 import { log }      from '../config'
 import {
@@ -27,6 +26,8 @@ import {
   GQL_SUBSCRIBE_HOSTIE,
   GQL_UPDATE_HOSTIE,
 }                         from './hostie-store.graphql'
+
+export type Hostie = HostieFragment
 
 export class HostieStore extends Store<
     Hostie,
