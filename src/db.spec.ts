@@ -2,6 +2,8 @@
 
 import * as test  from 'blue-tape'
 
+import 'rxjs/add/operator/first'
+
 import {
   LocalServer,
 }                 from '@chatie/graphql'
@@ -17,9 +19,24 @@ test('db', async t => {
       fixtures.ENDPOINTS,
     )
 
+    const EXPECTED_COUNTER = 3
+    let counter = 0
+    db.apollo.subscribe(() => counter++)
+
+    let apollo = await db.apollo.first().toPromise()
+    t.notOk(apollo, 'should get a null apollo after construction')
+
     await db.open()
-    t.ok(db.apollo.version, 'should had inited apollo client')
+    apollo = await db.apollo.first().toPromise()
+    t.ok(apollo, 'should get a instiaciated apollo after open')
+    t.ok(apollo!.version, 'should had inited apollo client')
+
     await db.close()
+    apollo = await db.apollo.first().toPromise()
+    t.notOk(apollo, 'should get a null apollo after close()')
+
     t.pass('db.{open,close}() passed')
+
+    t.equal(counter, EXPECTED_COUNTER, 'should subscribe 3 apollo events: null(constructor), apollo, null(close)')
   }
 })
