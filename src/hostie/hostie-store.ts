@@ -107,9 +107,6 @@ export class HostieStore extends Store<
     log.verbose('HostieStore', 'update(id=%s)', id)
 
     const hostie = await this.read(id)
-    if (!hostie) {
-      throw new Error('update() id not found')
-    }
 
     const variables: UpdateHostieMutationVariables = {
       id,
