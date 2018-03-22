@@ -10,7 +10,7 @@ import {
   UpdateBotieMutation,
   UpdateBotieMutationVariables,
 }                               from '../../generated-schemas/botie-schema'
-export type Botie = BotieFragment
+export type Botie = Partial<BotieFragment>
 
 import { log }      from '../config'
 import {
@@ -80,7 +80,7 @@ export class BotieStore extends Store<
    * delete
    * @param id
    */
-  public async delete(id: string): Promise< Partial<Botie> > {
+  public async delete(id: string): Promise<Botie> {
     log.verbose('BotieStore', 'delete(id=%s)', id)
 
     const variables: DeleteBotieMutationVariables = {
