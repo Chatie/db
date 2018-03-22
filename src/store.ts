@@ -43,6 +43,8 @@ export abstract class Store<
     SubscribeItemSubscription
 > {
   private itemDictSubscription: Subscription
+  private itemResolverList: Function[]
+
   protected settings:           StoreSettings
 
   protected $itemDict: BehaviorSubject< ItemDict<T> >
@@ -55,14 +57,17 @@ export abstract class Store<
       protected db: Db,
   ) {
     log.verbose('Store', 'constructor()')
-    this.$itemDict = new BehaviorSubject< ItemDict<T> >({})
+    this.$itemDict        = new BehaviorSubject< ItemDict<T> >({})
+    this.itemResolverList = []
   }
 
   public async open(): Promise<void> {
     log.verbose('Store', 'open()')
     if (!this.settings) {
-      throw new Error('Store.open() need `this.options` be set first!')
+      throw new Error('Store.open() need `this.settings` to be set first!')
     }
+
+    // const future = new Promise(r => this.itemResolverList.push(r))
 
     const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
       query: this.settings.gqlQueryAll,
@@ -72,6 +77,7 @@ export abstract class Store<
     this.itemDictSubscription = this.initSubscription(hostieQuery)
 
     // await this.initQuery()
+    // await future
   }
 
   public async close():   Promise<void> {
@@ -118,6 +124,27 @@ export abstract class Store<
     })
   }
 
+  private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): Subscription {
+    log.verbose('Store', 'initSubscription(itemQuery)')
+
+    const sub = itemQuery.subscribe(
+      ({ data }) => {
+        const newItemDict: ItemDict<T> = {}
+        for (const item of data[this.settings.dataKey]) {
+          newItemDict[item.id] = item
+        }
+        log.silly('HostieStore', 'init() subscribe() itemDict updated #%d items', data[this.settings.dataKey].length)
+
+        this.$itemDict.next(newItemDict)
+
+        this.itemResolverList.forEach(fn => fn())
+        this.itemResolverList = []
+      },
+    ) as Subscription
+
+    return sub
+  }
+
   private mutationReducer(
       state:  any[] = [],
       action: StoreAction,
@@ -155,24 +182,6 @@ export abstract class Store<
 
     return state
 
-  }
-
-  private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): Subscription {
-    log.verbose('Store', 'initSubscription(itemQuery)')
-
-    const sub = itemQuery.subscribe(
-      ({ data }) => {
-        const newItemDict: ItemDict<T> = {}
-        for (const item of data[this.settings.dataKey]) {
-          newItemDict[item.id] = item
-        }
-        log.silly('HostieStore', 'init() subscribe() itemDict updated #%d items', data[this.settings.dataKey].length)
-
-        this.$itemDict.next(newItemDict)
-      },
-    ) as Subscription
-
-    return sub
   }
 
   protected mutationUpdateFnFactory(
