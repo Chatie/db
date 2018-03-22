@@ -43,6 +43,7 @@ export abstract class Store<
     SubscribeItemSubscription
 > {
   private itemDictSubscription: Subscription
+  private itemResolverList: Function[]
 
   protected settings:           StoreSettings
 
@@ -57,6 +58,7 @@ export abstract class Store<
   ) {
     log.verbose('Store', 'constructor()')
     this.$itemDict        = new BehaviorSubject< ItemDict<T> >({})
+    this.itemResolverList = []
   }
 
   public async open(): Promise<void> {
@@ -65,6 +67,7 @@ export abstract class Store<
       throw new Error('Store.open() need `this.settings` to be set first!')
     }
 
+    const future = new Promise(r => this.itemResolverList.push(r))
 
     const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
       query: this.settings.gqlQueryAll,
@@ -74,6 +77,7 @@ export abstract class Store<
     this.itemDictSubscription = this.initSubscription(hostieQuery)
 
     // await this.initQuery()
+    await future
   }
 
   public async close():   Promise<void> {
@@ -133,6 +137,13 @@ export abstract class Store<
 
         this.$itemDict.next(newItemDict)
 
+        /**
+         * issue #12
+         *
+         * wait subscription to be ready before open() returns
+         */
+        this.itemResolverList.forEach(fn => fn())
+        this.itemResolverList = []
       },
     ) as Subscription
 
