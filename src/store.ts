@@ -160,7 +160,7 @@ export abstract class Store<
   private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): Subscription {
     log.verbose('Store', 'initSubscription(itemQuery=...)')
 
-    return itemQuery.subscribe(
+    const sub = itemQuery.subscribe(
       ({ data }) => {
         const subscriptionItemMap: ItemDict<T> = {}
         for (const hostie of data[this.settings.dataKey]) {
@@ -171,6 +171,8 @@ export abstract class Store<
         this.$itemDict.next(subscriptionItemMap)
       },
     ) as Subscription
+
+    return sub
   }
 
   protected mutateUpdateFn(
@@ -237,10 +239,10 @@ export abstract class Store<
   public async read(id: string): Promise<T> {
     log.verbose('Store', 'read(id=%s)', id)
     const itemDict = await this.itemDict.first().toPromise()
-    if (itemDict[id]) {
-      return itemDict[id]
+    if (!itemDict[id]) {
+      throw new Error(`Store.read(id=${id}) not found!`)
     }
-    throw new Error(`Store.read(id=${id} failed!`)
+    return itemDict[id]
   }
 
   /**

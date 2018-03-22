@@ -3,8 +3,8 @@ import {
 }               from '../../src/botie/botie-store'
 
 export async function createBotieFixture(
-  botieStore:  BotieStore,
-  ownerId:      string,
+    botieStore: BotieStore,
+    ownerId:    string,
 ) {
   const RAND_ID       = Math.random().toString().substr(2, 7)
   const EXPECTED_NAME = `name-${RAND_ID}`
