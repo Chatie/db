@@ -182,7 +182,7 @@ export abstract class Store<
     log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
 
     return (proxy, { data }) => {
-      log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationKey=%s), (proxy, {data})', mutationType, mutationDataKey)
+      log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s), (proxy, {data})', mutationType, mutationDataKey)
 
       let cachedData: AllItemsQuery | null = null
       try {
