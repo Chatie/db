@@ -4,15 +4,17 @@
 [![Build Status](https://api.travis-ci.org/Chatie/db.svg?branch=master)](https://travis-ci.org/Chatie/db)
 [![Greenkeeper badge](https://badges.greenkeeper.io/Chatie/db.svg)](https://greenkeeper.io/)
 
-Database for Chatie System
+RealTime Database for Chatie Service
 
 * <https://blog.chatie.io>
 
-## Graphql Backend
+![RealTime Data](https://chatie.io/db/images/realtime-data.png)
+> Picture Credit: [What is Real-time Data?](https://www.insightdata.co.uk/news/what-is-real-time-data/)
 
-https://github.com/Chatie/graphql
+# FEATURES
 
-Powered by [Graph.cool](https://www.graph.cool/)
+1. RealTime Store Class for Hostie, Botie and Gitfie etc.
+1. Backed by [@chatie/graphql](https://github.com/Chatie/graphql) which Powered By [GraphCool](https://www.graph.cool/).
 
 # RESOURCES
 
