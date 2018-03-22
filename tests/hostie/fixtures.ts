@@ -3,8 +3,8 @@ import {
 }               from '../../src/hostie/hostie-store'
 
 export async function createHostieFixture(
-  hostieStore:  HostieStore,
-  ownerId:      string,
+    hostieStore:  HostieStore,
+    ownerId:      string,
 ) {
   const RAND_ID       = Math.random().toString().substr(2, 7)
   const EXPECTED_NAME = `name-${RAND_ID}`
