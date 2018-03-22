@@ -16,9 +16,12 @@ export async function createHostieFixture(
     ownerId,
   })
 
+  // issue #12
+  await new Promise(r => setImmediate(r))
+
   return {
     id:   hostie.id,
     name: EXPECTED_NAME,
-    key: EXPECTED_KEY,
+    key:  EXPECTED_KEY,
   }
 }

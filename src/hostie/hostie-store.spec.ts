@@ -112,8 +112,6 @@ test('read() with not exist id', async t => {
     const hostieStore = new HostieStore(db)
     await hostieStore.open()
 
-    await new Promise(r => setImmediate(r))
-
     try {
       const NOT_EXIST_ID = 'not exist id'
 
@@ -176,18 +174,7 @@ test('delete()', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
-
-      /**
-       * after we created the new hostie,
-       * the subscription need to be notified by the websocket,
-       * so we have to wait a while at here,
-       * or we will get a empty itemDict.
-       *
-       * SOLUTION: wait event loop to finished all queued tasks
-       */
-      await new Promise(r => setImmediate(r))
-
-      const hostie = await hostieStore.delete(HOSTIE_FIXTURE.id)
+      const hostie          = await hostieStore.delete(HOSTIE_FIXTURE.id)
 
       t.equal(hostie.id, HOSTIE_FIXTURE.id, 'should return the id of deleted hostie')
 

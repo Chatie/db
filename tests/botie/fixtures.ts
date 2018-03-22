@@ -16,9 +16,12 @@ export async function createBotieFixture(
     ownerId,
   })
 
+  // issue #12
+  await new Promise(r => setImmediate(r))
+
   return {
     id:   botie.id,
     name: EXPECTED_NAME,
-    key: EXPECTED_KEY,
+    key:  EXPECTED_KEY,
   }
 }
