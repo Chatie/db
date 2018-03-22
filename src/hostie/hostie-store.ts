@@ -9,7 +9,7 @@ import {
   SubscribeHostieSubscription,
   UpdateHostieMutation,
   UpdateHostieMutationVariables,
-}                               from '../../generated-schemas/hostie-schema'
+}                                 from '../../generated-schemas/hostie-schema'
 
 import { log }      from '../config'
 import {
