@@ -16,7 +16,7 @@
     "pretest": "npm run graphql:restart && npm run generate-schema",
     "test": "npm run lint && npm run test:unit",
     "test:unit": "blue-tape -r ts-node/register -r source-map-support/register {src,tests}/**/*.spec.ts",
-    "test:debug": "blue-tape -r ts-node/register -r source-map-support/register tests/hostie/*.spec.ts"
+    "test:debug": "BROLOG_LEVEL=silly blue-tape -r ts-node/register -r source-map-support/register tests/hostie/*.spec.ts"
   },
   "git": {
     "scripts": {
