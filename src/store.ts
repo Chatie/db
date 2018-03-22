@@ -175,7 +175,7 @@ export abstract class Store<
     return sub
   }
 
-  protected mutationUpdateFn(
+  protected mutationUpdateFnFactory(
       mutationType:     _ModelMutationType,
       mutationDataKey:  string,
   ): MutationUpdaterFn<T> {

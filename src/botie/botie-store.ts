@@ -67,7 +67,7 @@ export class BotieStore extends Store<
     const mutationResult: CreateBotieMutation = await this.db.apollo.mutate<CreateBotieMutation>({
       mutation: GQL_CREATE_BOTIE,
       variables,
-      update: this.mutationUpdateFn(_ModelMutationType.CREATED, 'createBotie'),
+      update: this.mutationUpdateFnFactory(_ModelMutationType.CREATED, 'createBotie'),
     }).then(m => m.data)
 
     if (!mutationResult.createBotie) {
@@ -89,7 +89,7 @@ export class BotieStore extends Store<
     const result: DeleteBotieMutation = await this.db.apollo.mutate<DeleteBotieMutation>({
       mutation: GQL_DELETE_BOTIE,
       variables,
-      update: this.mutationUpdateFn(_ModelMutationType.DELETED, 'deleteBotie'),
+      update: this.mutationUpdateFnFactory(_ModelMutationType.DELETED, 'deleteBotie'),
     }).then(m => m.data)
 
     if (!result.deleteBotie) {
@@ -117,7 +117,7 @@ export class BotieStore extends Store<
     const result: UpdateBotieMutation = await this.db.apollo.mutate<UpdateBotieMutation>({
       mutation: GQL_UPDATE_BOTIE,
       variables,
-      update: this.mutationUpdateFn(_ModelMutationType.UPDATED, 'updateBotie'),
+      update: this.mutationUpdateFnFactory(_ModelMutationType.UPDATED, 'updateBotie'),
     }).then(m => m.data)
 
     if (!result.updateBotie) {
