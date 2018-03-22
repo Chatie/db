@@ -67,7 +67,7 @@ export abstract class Store<
       throw new Error('Store.open() need `this.settings` to be set first!')
     }
 
-    // const future = new Promise(r => this.itemResolverList.push(r))
+    const future = new Promise(r => this.itemResolverList.push(r))
 
     const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
       query: this.settings.gqlQueryAll,
@@ -77,7 +77,7 @@ export abstract class Store<
     this.itemDictSubscription = this.initSubscription(hostieQuery)
 
     // await this.initQuery()
-    // await future
+    await future
   }
 
   public async close():   Promise<void> {
