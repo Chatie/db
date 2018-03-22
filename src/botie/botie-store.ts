@@ -64,7 +64,7 @@ export class BotieStore extends Store<
       ownerId:  newBotie.ownerId,
     }
 
-    const mutationResult: CreateBotieMutation = await this.db.apollo.mutate<CreateBotieMutation>({
+    const mutationResult: CreateBotieMutation = await this.apollo!.mutate<CreateBotieMutation>({
       mutation: GQL_CREATE_BOTIE,
       variables,
       update: this.mutationUpdateFnFactory(_ModelMutationType.CREATED, 'createBotie'),
@@ -86,7 +86,7 @@ export class BotieStore extends Store<
     const variables: DeleteBotieMutationVariables = {
       id,
     }
-    const result: DeleteBotieMutation = await this.db.apollo.mutate<DeleteBotieMutation>({
+    const result: DeleteBotieMutation = await this.apollo!.mutate<DeleteBotieMutation>({
       mutation: GQL_DELETE_BOTIE,
       variables,
       update: this.mutationUpdateFnFactory(_ModelMutationType.DELETED, 'deleteBotie'),
@@ -114,7 +114,7 @@ export class BotieStore extends Store<
       note:   props.note || botie.note,
     }
 
-    const result: UpdateBotieMutation = await this.db.apollo.mutate<UpdateBotieMutation>({
+    const result: UpdateBotieMutation = await this.apollo!.mutate<UpdateBotieMutation>({
       mutation: GQL_UPDATE_BOTIE,
       variables,
       update: this.mutationUpdateFnFactory(_ModelMutationType.UPDATED, 'updateBotie'),
