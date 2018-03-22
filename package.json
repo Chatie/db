@@ -1,6 +1,6 @@
 {
   "name": "@chatie/db",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "Database for Chatie",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
