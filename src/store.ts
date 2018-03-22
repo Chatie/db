@@ -42,7 +42,7 @@ export abstract class Store<
     AllItemsQuery,
     SubscribeItemSubscription
 > {
-  private itemListSubscription: Subscription
+  private itemDictSubscription: Subscription
   protected settings:           StoreSettings
 
   protected $itemDict: BehaviorSubject< ItemDict<T> >
@@ -69,14 +69,14 @@ export abstract class Store<
     })
 
     this.initSubscribeToMore(hostieQuery)
-    this.itemListSubscription = this.initSubscription(hostieQuery)
+    this.itemDictSubscription = this.initSubscription(hostieQuery)
 
     // await this.initQuery()
   }
 
   public async close():   Promise<void> {
     log.verbose('Store', 'close()')
-    this.itemListSubscription.unsubscribe()
+    this.itemDictSubscription.unsubscribe()
   }
 
   private initSubscribeToMore(itemQuery: ObservableQuery<AllItemsQuery>): void {
@@ -158,59 +158,62 @@ export abstract class Store<
   }
 
   private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): Subscription {
-    log.verbose('Store', 'initSubscription(itemQuery=...)')
+    log.verbose('Store', 'initSubscription(itemQuery)')
 
     const sub = itemQuery.subscribe(
       ({ data }) => {
-        const subscriptionItemMap: ItemDict<T> = {}
-        for (const hostie of data[this.settings.dataKey]) {
-          subscriptionItemMap[hostie.id] = hostie
+        const newItemDict: ItemDict<T> = {}
+        for (const item of data[this.settings.dataKey]) {
+          newItemDict[item.id] = item
         }
-        log.silly('HostieStore', 'init() subscribe() itemList updated #%d items', data[this.settings.dataKey].length)
+        log.silly('HostieStore', 'init() subscribe() itemDict updated #%d items', data[this.settings.dataKey].length)
 
-        this.$itemDict.next(subscriptionItemMap)
+        this.$itemDict.next(newItemDict)
       },
     ) as Subscription
 
     return sub
   }
 
-  protected mutateUpdateFn(
+  protected mutationUpdateFn(
       mutationType:     _ModelMutationType,
       mutationDataKey:  string,
   ): MutationUpdaterFn<T> {
-    log.verbose('Store', 'mutateUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
+    log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
 
     return (proxy, { data }) => {
-      log.verbose('Store', 'mutateUpdateFn(type=%s, mutationKey=%s), (proxy, {data})', mutationType, mutationDataKey)
+      log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationKey=%s), (proxy, {data})', mutationType, mutationDataKey)
 
       let cachedData: AllItemsQuery | null = null
       try {
         cachedData = proxy.readQuery<AllItemsQuery>({ query: this.settings.gqlQueryAll })
       } catch (e) {
-        log.verbose('Store', 'mutateUpdateFn() call proxy.readQuery() before any query had been executed.')
+        log.verbose('Store', 'mutationUpdateFn() call proxy.readQuery() before any query had been executed.')
       }
 
-      if (cachedData) {
-        const mutationNode = data[mutationDataKey]
-
-        /**
-         * Combinate all the data to produce a new data
-         */
-        const newData = {
-          ...cachedData as Object,
-        }
-        newData[this.settings.dataKey] = this.mutationReducer(
-          newData[this.settings.dataKey],
-          {
-            type: mutationType,
-            node: mutationNode,
-          },
-        )
-
-        proxy.writeQuery({ query: this.settings.gqlQueryAll, data: newData })
-
+      if (!cachedData) {
+        log.verbose('Store', 'mutationUpdateFn() proxy.readQuery() return empty???')
+        return
       }
+
+      const mutationNode = data[mutationDataKey]
+
+      /**
+       * Combinate all the data to produce a new data
+       */
+      const newData = {
+        ...cachedData as Object,
+      }
+      newData[this.settings.dataKey] = this.mutationReducer(
+        newData[this.settings.dataKey],
+        {
+          type: mutationType,
+          node: mutationNode,
+        },
+      )
+
+      proxy.writeQuery({ query: this.settings.gqlQueryAll, data: newData })
+
     }
   }
 

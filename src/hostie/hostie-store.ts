@@ -55,7 +55,7 @@ export class HostieStore extends Store<
       key:      string,
       ownerId:  string,
   }): Promise<Hostie> {
-    log.verbose('HostieStore', 'add(newHostie{name=%s})', newHostie.name)
+    log.verbose('HostieStore', 'add(newHostie{name:%s})', newHostie.name)
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateHostieMutationVariables = {
@@ -67,7 +67,7 @@ export class HostieStore extends Store<
     const mutationResult: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
       mutation: GQL_CREATE_HOSTIE,
       variables,
-      update: this.mutateUpdateFn(_ModelMutationType.CREATED, 'createHostie'),
+      update: this.mutationUpdateFn(_ModelMutationType.CREATED, 'createHostie'),
     }).then(m => m.data)
 
     if (!mutationResult.createHostie) {
@@ -89,7 +89,7 @@ export class HostieStore extends Store<
     const result: DeleteHostieMutation = await this.db.apollo.mutate<DeleteHostieMutation>({
       mutation: GQL_DELETE_HOSTIE,
       variables,
-      update: this.mutateUpdateFn(_ModelMutationType.DELETED, 'deleteHostie'),
+      update: this.mutationUpdateFn(_ModelMutationType.DELETED, 'deleteHostie'),
     }).then(m => m.data)
 
     if (!result.deleteHostie) {
@@ -117,7 +117,7 @@ export class HostieStore extends Store<
     const result: UpdateHostieMutation = await this.db.apollo.mutate<UpdateHostieMutation>({
       mutation: GQL_UPDATE_HOSTIE,
       variables,
-      update: this.mutateUpdateFn(_ModelMutationType.UPDATED, 'updateHostie'),
+      update: this.mutationUpdateFn(_ModelMutationType.UPDATED, 'updateHostie'),
     }).then(m => m.data)
 
     if (!result.updateHostie) {

@@ -62,7 +62,7 @@ test('smoke testing', async t => {
         name: EXPECTED_UPDATE_NAME,
       })
       await future
-      t.equal(updatedHostie1.name, EXPECTED_UPDATE_NAME, 'should get updated name after update')
+      t.equal(updatedHostie1.name, EXPECTED_UPDATE_NAME, 'should get updated name from the return value of update()')
       t.equal(itemDict[hostie1.id].name, EXPECTED_UPDATE_NAME, 'should updated itemDict to the updated name after update')
 
       future = new Promise(r => resolverList.push(r))

@@ -36,7 +36,6 @@ test('itemDict', async t => {
       t.ok(itemDict, 'should get itemDict')
       t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
 
-      t.pass('ok')
     } catch (e) {
       t.fail(e)
     } finally {
