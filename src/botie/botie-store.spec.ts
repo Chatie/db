@@ -10,10 +10,10 @@ import {
 import {
   createBotieFixture,
 }                       from '../../tests/botie/fixtures'
-
 import {
-  Db,
-}               from '../db'
+  userDbFixture,
+}                       from '../../tests/db.fixtures'
+
 import {
   BotieStore,
 }               from './botie-store'
@@ -22,10 +22,7 @@ const localServer = new LocalServer()
 
 test('itemDict', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
     await db.open()
     const botieStore = new BotieStore(db)
     await botieStore.open()
@@ -47,10 +44,7 @@ test('itemDict', async t => {
 
 test('create()', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
     await db.open()
     const botieStore = new BotieStore(db)
     await botieStore.open()
@@ -78,10 +72,7 @@ test('create()', async t => {
 
 test('read() with exist id', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
     await db.open()
     const botieStore = new BotieStore(db)
     await botieStore.open()
@@ -104,10 +95,7 @@ test('read() with exist id', async t => {
 
 test('read() with not exist id', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
     await db.open()
     const botieStore = new BotieStore(db)
     await botieStore.open()
@@ -130,10 +118,7 @@ test('read() with not exist id', async t => {
 
 test('update()', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
     await db.open()
     const botieStore = new BotieStore(db)
     await botieStore.open()
@@ -164,10 +149,7 @@ test('update()', async t => {
 
 test('delete()', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
     await db.open()
     const botieStore = new BotieStore(db)
     await botieStore.open()

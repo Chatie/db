@@ -17,8 +17,8 @@ export async function createBotieFixture(
   })
 
   // issue #12
-  await new Promise(r => setImmediate(r))
-  await new Promise(r => setTimeout(r, 100))
+  // await new Promise(r => setImmediate(r))
+  // await new Promise(r => setTimeout(r, 100))
 
   return {
     id:   botie.id,

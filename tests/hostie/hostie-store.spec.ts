@@ -8,12 +8,11 @@ import {
 }                 from '@chatie/graphql'
 
 import {
-  Db,
-}               from '../../src/db'
-import {
   HostieStore,
 }               from '../../src/hostie/hostie-store'
-
+import {
+  userDbFixture,
+}                 from '../db.fixtures'
 import {
   createHostieFixture,
 }                       from './fixtures'
@@ -22,10 +21,8 @@ const localServer = new LocalServer()
 
 test('smoke testing', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = userDbFixture(fixtures)
+
     await db.open()
     const hostieStore = new HostieStore(db)
     await hostieStore.open()

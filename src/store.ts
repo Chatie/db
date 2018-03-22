@@ -49,24 +49,28 @@ export abstract class Store<
   protected apollo?:            Apollo
   private   apolloSubscription: Subscription
 
+  private   log:      typeof log
   protected settings: StoreSettings
 
   protected $itemDict:    BehaviorSubject< ItemDict<T> >
   public get itemDict():  Observable< ItemDict<T> > {
-    log.silly('Store', 'get itemDict()')
+    this.log.silly('Store', 'get itemDict()')
     return this.$itemDict.asObservable()
   }
 
   constructor(
-      protected db: Db,
+    protected db: Db,
   ) {
-    log.verbose('Store', 'constructor()')
+    this.log = db.log
+
+    this.log.verbose('Store', 'constructor()')
     this.$itemDict        = new BehaviorSubject< ItemDict<T> >({})
     this.itemResolverList = []
+
   }
 
   public async open(): Promise<void> {
-    log.verbose('Store', 'open()')
+    this.log.verbose('Store', 'open()')
     if (!this.settings) {
       throw new Error('Store.open() need `this.settings` to be set first!')
     }
@@ -89,7 +93,7 @@ export abstract class Store<
   }
 
   private async refreshApollo(apollo: Apollo | null): Promise<void> {
-    log.verbose('Store', 'refreshApollo()')
+    this.log.verbose('Store', 'refreshApollo()')
 
     if (this.apollo) {
       await this.close()
@@ -106,14 +110,14 @@ export abstract class Store<
   }
 
   public async close():   Promise<void> {
-    log.verbose('Store', 'close()')
+    this.log.verbose('Store', 'close()')
     if (this.itemDictSubscription) {
       this.itemDictSubscription.unsubscribe()
     }
   }
 
   private initSubscribeToMore(itemQuery: ObservableQuery<AllItemsQuery>): void {
-    log.verbose('Store', 'initSubscribeToMore(itemQuery)')
+    this.log.verbose('Store', 'initSubscribeToMore(itemQuery)')
     itemQuery.subscribeToMore({
       document: this.settings.gqlSubscribe,
       updateQuery: (prev, { subscriptionData }) => {
@@ -125,8 +129,8 @@ export abstract class Store<
         const dataKey = this.settings.dataKey
         const item    = data[dataKey]
 
-        log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
-        log.silly('Store', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
+        this.log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
+        this.log.silly('Store', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
 
         const node            = item.node
         const previousValues  = item.previousValues
@@ -146,13 +150,13 @@ export abstract class Store<
         return newData
       },
       onError: error => {
-        log.error('Store', 'initSubscribeToMore() onError() %s', error)
+        this.log.error('Store', 'initSubscribeToMore() onError() %s', error)
       },
     })
   }
 
   private initSubscription(itemQuery: ObservableQuery<AllItemsQuery>): Subscription {
-    log.verbose('Store', 'initSubscription(itemQuery)')
+    this.log.verbose('Store', 'initSubscription(itemQuery)')
 
     const sub = itemQuery.subscribe(
       ({ data }) => {
@@ -160,7 +164,7 @@ export abstract class Store<
         for (const item of data[this.settings.dataKey]) {
           newItemDict[item.id] = item
         }
-        log.silly('HostieStore', 'init() subscribe() itemDict updated #%d items', data[this.settings.dataKey].length)
+        this.log.silly('HostieStore', 'init() subscribe() itemDict updated #%d items', data[this.settings.dataKey].length)
 
         this.$itemDict.next(newItemDict)
 
@@ -181,7 +185,7 @@ export abstract class Store<
       state:  any[] = [],
       action: StoreAction,
   ): any[] {
-    log.verbose('Store', 'mutationReducer(state.length=%d, action.type=%s)',
+    this.log.verbose('Store', 'mutationReducer(state.length=%d, action.type=%s)',
                           state.length,
                           action.type,
                 )
@@ -220,20 +224,20 @@ export abstract class Store<
       mutationType:     _ModelMutationType,
       mutationDataKey:  string,
   ): MutationUpdaterFn<T> {
-    log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
+    this.log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
 
     return (proxy, { data }) => {
-      log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s), (proxy, {data})', mutationType, mutationDataKey)
+      this.log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s), (proxy, {data})', mutationType, mutationDataKey)
 
       let cachedData: AllItemsQuery | null = null
       try {
         cachedData = proxy.readQuery<AllItemsQuery>({ query: this.settings.gqlQueryAll })
       } catch (e) {
-        log.verbose('Store', 'mutationUpdateFn() call proxy.readQuery() before any query had been executed.')
+        this.log.verbose('Store', 'mutationUpdateFn() call proxy.readQuery() before any query had been executed.')
       }
 
       if (!cachedData) {
-        log.verbose('Store', 'mutationUpdateFn() proxy.readQuery() return empty???')
+        this.log.verbose('Store', 'mutationUpdateFn() proxy.readQuery() return empty???')
         return
       }
 
@@ -259,7 +263,7 @@ export abstract class Store<
   }
 
   // private async initQuery(): Promise<void> {
-  //   log.verbose('Store', 'initQuery()')
+  //   this.log.verbose('Store', 'initQuery()')
   //   await this.db.apollo.query<AllHostiesQuery>({
   //     query: GQL_QUERY_ALL_HOSTIES,
   //   })
@@ -281,7 +285,7 @@ export abstract class Store<
    * 4. delete()
    */
   public async read(id: string): Promise<T> {
-    log.verbose('Store', 'read(id=%s)', id)
+    this.log.verbose('Store', 'read(id=%s)', id)
     const itemDict = await this.itemDict.first().toPromise()
     if (!itemDict[id]) {
       throw new Error(`Store.read(id=${id}) not found!`)

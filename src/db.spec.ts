@@ -14,10 +14,10 @@ const localServer = new LocalServer()
 
 test('db', async t => {
   for await (const fixtures of localServer.fixtures()) {
-    const db = new Db(
-      fixtures.USER.token,
-      fixtures.ENDPOINTS,
-    )
+    const db = new Db({
+      token:      fixtures.USER.token,
+      endpoints:  fixtures.ENDPOINTS,
+    })
 
     const EXPECTED_COUNTER = 3
     let counter = 0
