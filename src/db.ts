@@ -25,8 +25,8 @@ import {
 export type Apollo = ApolloClient<NormalizedCacheObject>
 
 export interface DbOptions {
-  token:      string,
-  endpoints:  Endpoints,
+  token?:     string,
+  endpoints?: Endpoints,
   log?:       typeof log,
 }
 
@@ -41,7 +41,7 @@ export class Db {
 
   public log:        typeof log
 
-  constructor(options: DbOptions) {
+  constructor(options: DbOptions = {}) {
     this.endpoints  = options.endpoints || ENDPOINTS
     this.log        = options.log       || log
     this.token      = options.token     || ''
