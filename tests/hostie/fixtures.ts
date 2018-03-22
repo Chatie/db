@@ -14,8 +14,8 @@ export async function createHostieFixture(
   const EXPECTED_KEY  = `key-${RAND_ID}`
 
   // console.log('############ clearing event loop tasks queue')
-  await new Promise(r => setImmediate(r))
-  await new Promise(r => setTimeout(r, 100))
+  // await new Promise(r => setImmediate(r))
+  // await new Promise(r => setTimeout(r, 100))
   // console.log('############ clear event loop tasks queue done')
 
   // console.log('############ before create')
@@ -28,8 +28,8 @@ export async function createHostieFixture(
 
   // issue #12
   // console.log('############ clearing event loop tasks queue')
-  await new Promise(r => setImmediate(r))
-  await new Promise(r => setTimeout(r, 100))
+  // await new Promise(r => setImmediate(r))
+  // await new Promise(r => setTimeout(r, 100))
   // console.log('############ clear event loop tasks queue done')
 
   assert(EXPECTED_KEY === hostie.key,   'should create the hostie with EXPECTED_KEY')
