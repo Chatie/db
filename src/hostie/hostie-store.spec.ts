@@ -174,6 +174,9 @@ test('delete()', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
+
+      await new Promise(r => setImmediate(r)) // wait event loop to finished all queued tasks
+
       const hostie          = await hostieStore.delete(HOSTIE_FIXTURE.id)
 
       t.equal(hostie.id, HOSTIE_FIXTURE.id, 'should return the id of deleted hostie')
