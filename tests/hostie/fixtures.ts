@@ -15,7 +15,7 @@ export async function createHostieFixture(
 
   console.log('############ clearing event loop tasks queue')
   await new Promise(r => setImmediate(r))
-  await new Promise(r => setTimeout(r, 100))
+  // await new Promise(r => setTimeout(r, 100))
   console.log('############ clear event loop tasks queue done')
 
   // console.log('############ before create')
@@ -34,8 +34,6 @@ export async function createHostieFixture(
 
   assert(EXPECTED_KEY   === hostie.key,   'should create the hostie with EXPECTED_KEY')
   assert(EXPECTED_NAME  === hostie.name,  'should create the hostie with EXPECTED_NAME')
-
-  console.log('Created Hostie Fixture:', hostie)
 
   return hostie
 }
