@@ -79,7 +79,7 @@ export class HostieStore extends Store<
       throw new Error('HostieStore.create() fail!')
     }
 
-    console.log('createHostie: ', result.createHostie)
+    log.silly('HostieStore', 'create()=%s', JSON.stringify(result.createHostie))
     return result.createHostie
   }
 
