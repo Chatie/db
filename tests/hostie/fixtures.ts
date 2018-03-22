@@ -29,9 +29,11 @@ export async function createHostieFixture(
   await new Promise(r => setTimeout(r, 100))
   console.log('############ clear event loop tasks queue done')
 
-  return {
+  const fixture = {
     id:   hostie.id,
     name: EXPECTED_NAME,
     key:  EXPECTED_KEY,
   }
+  console.log(fixture)
+  return fixture
 }

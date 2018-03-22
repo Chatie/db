@@ -61,8 +61,8 @@ test('create()', async t => {
     await hostieStore.open()
 
     try {
-      const EXPECTED_NAME = 'test name'
-      const EXPECTED_KEY = 'test note'
+      const EXPECTED_NAME = 'test name for create()'
+      const EXPECTED_KEY = 'test key for create()'
       const hostie = await hostieStore.create({
         name:     EXPECTED_NAME,
         key:      EXPECTED_KEY,
@@ -181,6 +181,7 @@ test('delete()', async t => {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
       const hostie          = await hostieStore.delete(HOSTIE_FIXTURE.id)
 
+      t.ok(HOSTIE_FIXTURE.id,               'should get a hostie fixture with id')
       t.equal(hostie.id, HOSTIE_FIXTURE.id, 'should return the id of deleted hostie')
 
     } catch (e) {
