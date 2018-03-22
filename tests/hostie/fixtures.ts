@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import {
   HostieStore,
   Hostie,
-}                 from '../../src/hostie/hostie-store'
+}               from '../../src/hostie/hostie-store'
 
 export async function createHostieFixture(
     hostieStore:  HostieStore,
@@ -32,8 +32,8 @@ export async function createHostieFixture(
   // await new Promise(r => setTimeout(r, 100))
   // console.log('############ clear event loop tasks queue done')
 
-  assert(EXPECTED_KEY === hostie.key,   'should create the hostie with EXPECTED_KEY')
-  assert(EXPECTED_NAME === hostie.name, 'should create the hostie with EXPECTED_NAME')
+  assert(EXPECTED_KEY   === hostie.key,   'should create the hostie with EXPECTED_KEY')
+  assert(EXPECTED_NAME  === hostie.name,  'should create the hostie with EXPECTED_NAME')
 
   console.log('Created Hostie Fixture:', hostie)
 

@@ -78,6 +78,8 @@ export class HostieStore extends Store<
     if (!result.createHostie) {
       throw new Error('HostieStore.create() fail!')
     }
+
+    console.log('createHostie: ', result.createHostie)
     return result.createHostie
   }
 
