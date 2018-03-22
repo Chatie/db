@@ -12,6 +12,7 @@ import {
 }                                 from '../../generated-schemas/hostie-schema'
 
 import { log }      from '../config'
+
 import {
   Db,
 }                   from '../db'
@@ -68,7 +69,7 @@ export class HostieStore extends Store<
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.CREATED, 'createHostie')
 
     log.silly('HostieStore', 'create() apollo.mutate()')
-    const result: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
+    const result: CreateHostieMutation = await this.apollo!.mutate<CreateHostieMutation>({
       mutation,
       variables,
       update,
@@ -97,7 +98,7 @@ export class HostieStore extends Store<
     const mutation  = GQL_DELETE_HOSTIE
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.DELETED, 'deleteHostie')
 
-    const result: DeleteHostieMutation = await this.db.apollo.mutate<DeleteHostieMutation>({
+    const result: DeleteHostieMutation = await this.apollo!.mutate<DeleteHostieMutation>({
       mutation,
       variables,
       update,
@@ -128,7 +129,7 @@ export class HostieStore extends Store<
     const mutation  = GQL_UPDATE_HOSTIE
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.UPDATED, 'updateHostie')
 
-    const result: UpdateHostieMutation = await this.db.apollo.mutate<UpdateHostieMutation>({
+    const result: UpdateHostieMutation = await this.apollo!.mutate<UpdateHostieMutation>({
       mutation,
       variables,
       update,

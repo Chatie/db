@@ -14,6 +14,7 @@ import {
 }                       from '../generated-schemas/'
 
 import {
+  Apollo,
   Db,
   MutationUpdaterFn,
   ObservableQuery,
@@ -43,12 +44,15 @@ export abstract class Store<
     SubscribeItemSubscription
 > {
   private itemDictSubscription: Subscription
-  private itemResolverList: Function[]
+  private itemResolverList:     Function[]
 
-  protected settings:           StoreSettings
+  protected apollo?:            Apollo
+  private   apolloSubscription: Subscription
 
-  protected $itemDict: BehaviorSubject< ItemDict<T> >
-  public get itemDict(): Observable< ItemDict<T> > {
+  protected settings: StoreSettings
+
+  protected $itemDict:    BehaviorSubject< ItemDict<T> >
+  public get itemDict():  Observable< ItemDict<T> > {
     log.silly('Store', 'get itemDict()')
     return this.$itemDict.asObservable()
   }
@@ -67,9 +71,13 @@ export abstract class Store<
       throw new Error('Store.open() need `this.settings` to be set first!')
     }
 
+    if (!this.apolloSubscription) {
+      this.apolloSubscription = this.db.apollo.subscribe(this.refreshApollo.bind(this))
+    }
+
     const future = new Promise(r => this.itemResolverList.push(r))
 
-    const hostieQuery = this.db.apollo.watchQuery<AllItemsQuery>({
+    const hostieQuery = this.apollo!.watchQuery<AllItemsQuery>({
       query: this.settings.gqlQueryAll,
     })
 
@@ -80,9 +88,28 @@ export abstract class Store<
     await future
   }
 
+  private async refreshApollo(apollo: Apollo | null): Promise<void> {
+    log.verbose('Store', 'refreshApollo()')
+
+    if (this.apollo) {
+      await this.close()
+      this.apollo = undefined
+    }
+
+    if (!apollo) {
+      return
+    }
+
+    this.apollo = apollo
+
+    await this.open()
+  }
+
   public async close():   Promise<void> {
     log.verbose('Store', 'close()')
-    this.itemDictSubscription.unsubscribe()
+    if (this.itemDictSubscription) {
+      this.itemDictSubscription.unsubscribe()
+    }
   }
 
   private initSubscribeToMore(itemQuery: ObservableQuery<AllItemsQuery>): void {
