@@ -4,9 +4,7 @@
 [![Build Status](https://api.travis-ci.org/Chatie/db.svg?branch=master)](https://travis-ci.org/Chatie/db)
 [![Greenkeeper badge](https://badges.greenkeeper.io/Chatie/db.svg)](https://greenkeeper.io/)
 
-RealTime Database for Chatie Service
-
-* <https://blog.chatie.io>
+RealTime Database for [Chatie Service](https://www.chatie.io)
 
 ![RealTime Data](https://chatie.io/db/images/realtime-data.png)
 > Picture Credit: [What is Real-time Data?](https://www.insightdata.co.uk/news/what-is-real-time-data/)
