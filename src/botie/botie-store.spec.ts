@@ -20,7 +20,7 @@ import {
 
 const localServer = new LocalServer()
 
-test('itemDict', async t => {
+test('itemList', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
     await db.open()
@@ -28,10 +28,17 @@ test('itemDict', async t => {
     await botieStore.open()
 
     try {
-      const itemDict = await botieStore.itemDict.first().toPromise()
+      const itemList = await botieStore.itemList.first().toPromise()
 
-      t.ok(itemDict, 'should get itemDict')
-      t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
+      t.ok(itemList, 'should get itemList')
+      t.equal(itemList.length, 0, 'should get zero items for a fresh fixture')
+
+      const newBotie = await createBotieFixture(botieStore, fixtures.USER.id)
+      const itemList2 = await botieStore.itemList.first().toPromise()
+      t.equal(itemList2.length, 1, 'should get 1 items after creation')
+
+      const item2 = itemList2.filter(i => i['id'] === newBotie.id)[0]
+      t.equal(item2.name, newBotie.name, 'should create the new botie with the name')
 
     } catch (e) {
       t.fail(e)
@@ -50,8 +57,8 @@ test('create()', async t => {
     await botieStore.open()
 
     try {
-      const EXPECTED_NAME = 'test name'
-      const EXPECTED_KEY = 'test note'
+      const EXPECTED_NAME = 'test name for create()'
+      const EXPECTED_KEY = 'test key for create()'
       const botie = await botieStore.create({
         name:     EXPECTED_NAME,
         key:      EXPECTED_KEY,
@@ -79,7 +86,7 @@ test('read() with exist id', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createBotieFixture(botieStore, fixtures.USER.id)
-      const botie          = await botieStore.read(HOSTIE_FIXTURE.id)
+      const botie          = await botieStore.read(HOSTIE_FIXTURE.id!)
 
       t.equal(botie.name, HOSTIE_FIXTURE.name, 'should get the name of botie with the id')
       t.equal(botie.key, HOSTIE_FIXTURE.key, 'should get the name of botie with the id')
@@ -125,12 +132,12 @@ test('update()', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createBotieFixture(botieStore, fixtures.USER.id)
-      const botie          = await botieStore.read(HOSTIE_FIXTURE.id)
+      const botie          = await botieStore.read(HOSTIE_FIXTURE.id!)
 
       const EXPECTED_UPDATED_NAME = 'updated name'
       const EXPECTED_UPDATED_NOTE = 'updated note'
 
-      const updatedBotie = await botieStore.update(botie.id, {
+      const updatedBotie = await botieStore.update(botie.id!, {
         name: EXPECTED_UPDATED_NAME,
         note: EXPECTED_UPDATED_NOTE,
       })
@@ -156,8 +163,9 @@ test('delete()', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createBotieFixture(botieStore, fixtures.USER.id)
-      const botie          = await botieStore.delete(HOSTIE_FIXTURE.id)
+      const botie          = await botieStore.delete(HOSTIE_FIXTURE.id!)
 
+      t.ok(HOSTIE_FIXTURE.id,               'should get a botie fixture with id')
       t.equal(botie.id, HOSTIE_FIXTURE.id, 'should return the id of deleted botie')
 
     } catch (e) {

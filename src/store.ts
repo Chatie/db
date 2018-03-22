@@ -23,10 +23,6 @@ import {
   log,
 }                     from './config'
 
-export interface ItemDict<T> {
-  [id: string]: T,
-}
-
 export interface StoreSettings {
   gqlQueryAll:  string,
   gqlSubscribe: string,
@@ -43,7 +39,7 @@ export abstract class Store<
     AllItemsQuery,
     SubscribeItemSubscription
 > {
-  private itemDictSubscription: Subscription
+  private itemListSubscription: Subscription
   private itemResolverList:     Function[]
 
   protected apollo?:            Apollo
@@ -52,10 +48,10 @@ export abstract class Store<
   private   log:      typeof log
   protected settings: StoreSettings
 
-  protected $itemDict:    BehaviorSubject< ItemDict<T> >
-  public get itemDict():  Observable< ItemDict<T> > {
-    this.log.silly('Store', 'get itemDict()')
-    return this.$itemDict.asObservable()
+  protected $itemList:    BehaviorSubject< T[] >
+  public get itemList():  Observable< T[] > {
+    this.log.silly('Store', 'get itemList()')
+    return this.$itemList.asObservable()
   }
 
   constructor(
@@ -64,7 +60,7 @@ export abstract class Store<
     this.log = db.log
 
     this.log.verbose('Store', 'constructor()')
-    this.$itemDict        = new BehaviorSubject< ItemDict<T> >({})
+    this.$itemList        = new BehaviorSubject< T[] >([])
     this.itemResolverList = []
 
   }
@@ -86,7 +82,7 @@ export abstract class Store<
     })
 
     this.initSubscribeToMore(hostieQuery)
-    this.itemDictSubscription = this.initSubscription(hostieQuery)
+    this.itemListSubscription = this.initSubscription(hostieQuery)
 
     // await this.initQuery()
     await future
@@ -111,8 +107,8 @@ export abstract class Store<
 
   public async close():   Promise<void> {
     this.log.verbose('Store', 'close()')
-    if (this.itemDictSubscription) {
-      this.itemDictSubscription.unsubscribe()
+    if (this.itemListSubscription) {
+      this.itemListSubscription.unsubscribe()
     }
   }
 
@@ -160,13 +156,10 @@ export abstract class Store<
 
     const sub = itemQuery.subscribe(
       ({ data }) => {
-        const newItemDict: ItemDict<T> = {}
-        for (const item of data[this.settings.dataKey]) {
-          newItemDict[item.id] = item
-        }
-        this.log.silly('HostieStore', 'init() subscribe() itemDict updated #%d items', data[this.settings.dataKey].length)
-
-        this.$itemDict.next(newItemDict)
+        this.log.silly('HostieStore', 'init() subscribe() itemList length change to %d',
+                                      data[this.settings.dataKey].length,
+                      )
+        this.$itemList.next([...data[this.settings.dataKey]])
 
         /**
          * issue #12
@@ -286,21 +279,23 @@ export abstract class Store<
    */
   public async read(id: string): Promise<T> {
     this.log.verbose('Store', 'read(id=%s)', id)
-    const itemDict = await this.itemDict.first().toPromise()
-    if (!itemDict[id]) {
+    const itemList = await this.itemList.first().toPromise()
+
+    const result = itemList.filter(i => i['id'] === id)
+    if (result.length !== 1) {
       throw new Error(`Store.read(id=${id}) not found!`)
     }
-    return itemDict[id]
+    return result[0]
   }
 
   /**
    * TO BE IMPLEMENT in the sub class
    */
-  public abstract async delete(id: string):           Promise< Partial<T> >
+  public abstract async delete(id: string):           Promise<T>
   public abstract async create(newItem: Partial<T>):  Promise<T>
   public abstract async update (
     id:     string,
-    props:  Partial<T>,
+    props:  T,
   ):                                                  Promise<T>
 
   // search: (cond: any) => Promise<[T]>,

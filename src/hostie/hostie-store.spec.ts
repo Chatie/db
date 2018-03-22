@@ -20,7 +20,7 @@ import {
 
 const localServer = new LocalServer()
 
-test('itemDict', async t => {
+test('itemList', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
     await db.open()
@@ -28,15 +28,17 @@ test('itemDict', async t => {
     await hostieStore.open()
 
     try {
-      const itemDict = await hostieStore.itemDict.first().toPromise()
+      const itemList = await hostieStore.itemList.first().toPromise()
 
-      t.ok(itemDict, 'should get itemDict')
-      t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
+      t.ok(itemList, 'should get itemList')
+      t.equal(itemList.length, 0, 'should get zero items for a fresh fixture')
 
       const newHostie = await createHostieFixture(hostieStore, fixtures.USER.id)
-      const itemDict2 = await hostieStore.itemDict.first().toPromise()
-      t.equal(Object.keys(itemDict2).length,  1,              'should get 1 items after creation')
-      t.equal(itemDict2[newHostie.id!].name,   newHostie.name, 'should create the new hostie with the name')
+      const itemList2 = await hostieStore.itemList.first().toPromise()
+      t.equal(itemList2.length, 1, 'should get 1 items after creation')
+
+      const item2 = itemList2.filter(i => i['id'] === newHostie.id)[0]
+      t.equal(item2.name, newHostie.name, 'should create the new hostie with the name')
 
     } catch (e) {
       t.fail(e)
