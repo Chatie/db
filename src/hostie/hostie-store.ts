@@ -66,11 +66,13 @@ export class HostieStore extends Store<
     const mutation  = GQL_CREATE_HOSTIE
     const update    = this.mutationUpdateFn(_ModelMutationType.CREATED, 'createHostie')
 
+    log.silly('HostieStore', 'create() apollo.mutate()')
     const result: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
       mutation,
       variables,
       update,
     }).then(m => m.data)
+    log.silly('HostieStore', 'create() apollo.mutate() done')
 
     if (!result.createHostie) {
       throw new Error('HostieStore.create() fail!')
