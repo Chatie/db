@@ -55,7 +55,7 @@ export class BotieStore extends Store<
       key:      string,
       ownerId:  string,
   }): Promise<Botie> {
-    log.verbose('BotieStore', 'add(newBotie{name:%s})', newBotie.name)
+    log.verbose('BotieStore', 'create(newBotie{name:%s})', newBotie.name)
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateBotieMutationVariables = {

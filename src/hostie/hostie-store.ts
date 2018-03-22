@@ -47,7 +47,6 @@ export class HostieStore extends Store<
   }
 
   /**
-   * @todo confirm the return type of Observable
    * @param newHostie
    */
   public async create(newHostie: {
@@ -55,7 +54,7 @@ export class HostieStore extends Store<
       key:      string,
       ownerId:  string,
   }): Promise<Hostie> {
-    log.verbose('HostieStore', 'add(newHostie{name:%s})', newHostie.name)
+    log.verbose('HostieStore', 'create(newHostie{name:%s})', newHostie.name)
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateHostieMutationVariables = {
@@ -64,16 +63,19 @@ export class HostieStore extends Store<
       ownerId:  newHostie.ownerId,
     }
 
-    const mutationResult: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
-      mutation: GQL_CREATE_HOSTIE,
+    const mutation  = GQL_CREATE_HOSTIE
+    const update    = this.mutationUpdateFn(_ModelMutationType.CREATED, 'createHostie')
+
+    const result: CreateHostieMutation = await this.db.apollo.mutate<CreateHostieMutation>({
+      mutation,
       variables,
-      update: this.mutationUpdateFn(_ModelMutationType.CREATED, 'createHostie'),
+      update,
     }).then(m => m.data)
 
-    if (!mutationResult.createHostie) {
+    if (!result.createHostie) {
       throw new Error('HostieStore.create() fail!')
     }
-    return mutationResult.createHostie
+    return result.createHostie
   }
 
   /**

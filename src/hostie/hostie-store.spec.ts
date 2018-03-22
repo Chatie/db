@@ -36,6 +36,11 @@ test('itemDict', async t => {
       t.ok(itemDict, 'should get itemDict')
       t.equal(Object.keys(itemDict).length, 0, 'should get zero items for a fresh fixture')
 
+      const newHostie = await createHostieFixture(hostieStore, fixtures.USER.id)
+      const itemDict2 = await hostieStore.itemDict.first().toPromise()
+      t.equal(Object.keys(itemDict2).length,  1,              'should get 1 items after creation')
+      t.equal(itemDict2[newHostie.id].name,   newHostie.name, 'should create the new hostie with the name')
+
     } catch (e) {
       t.fail(e)
     } finally {
