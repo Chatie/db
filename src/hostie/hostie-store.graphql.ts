@@ -6,6 +6,10 @@ export const GQL_FRAGMENT_HOSTIE = gql`
     key,
     name,
     note,
+
+    status,
+    system,
+
     owner {
       email,
       id,

@@ -39,7 +39,7 @@ test('itemDict', async t => {
       const newHostie = await createHostieFixture(hostieStore, fixtures.USER.id)
       const itemDict2 = await hostieStore.itemDict.first().toPromise()
       t.equal(Object.keys(itemDict2).length,  1,              'should get 1 items after creation')
-      t.equal(itemDict2[newHostie.id].name,   newHostie.name, 'should create the new hostie with the name')
+      t.equal(itemDict2[newHostie.id!].name,   newHostie.name, 'should create the new hostie with the name')
 
     } catch (e) {
       t.fail(e)
@@ -93,7 +93,7 @@ test('read() with exist id', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
-      const hostie          = await hostieStore.read(HOSTIE_FIXTURE.id)
+      const hostie          = await hostieStore.read(HOSTIE_FIXTURE.id!)
 
       t.equal(hostie.name, HOSTIE_FIXTURE.name, 'should get the name of hostie with the id')
       t.equal(hostie.key, HOSTIE_FIXTURE.key, 'should get the name of hostie with the id')
@@ -145,12 +145,12 @@ test('update()', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
-      const hostie          = await hostieStore.read(HOSTIE_FIXTURE.id)
+      const hostie          = await hostieStore.read(HOSTIE_FIXTURE.id!)
 
       const EXPECTED_UPDATED_NAME = 'updated name'
       const EXPECTED_UPDATED_NOTE = 'updated note'
 
-      const updatedHostie = await hostieStore.update(hostie.id, {
+      const updatedHostie = await hostieStore.update(hostie.id!, {
         name: EXPECTED_UPDATED_NAME,
         note: EXPECTED_UPDATED_NOTE,
       })
@@ -179,7 +179,7 @@ test('delete()', async t => {
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
-      const hostie          = await hostieStore.delete(HOSTIE_FIXTURE.id)
+      const hostie          = await hostieStore.delete(HOSTIE_FIXTURE.id!)
 
       t.ok(HOSTIE_FIXTURE.id,               'should get a hostie fixture with id')
       t.equal(hostie.id, HOSTIE_FIXTURE.id, 'should return the id of deleted hostie')

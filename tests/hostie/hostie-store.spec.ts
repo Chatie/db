@@ -58,20 +58,20 @@ test('smoke testing', async t => {
 
       const EXPECTED_UPDATE_NAME = 'expected update name'
       future = new Promise(r => resolverList.push(r))
-      const updatedHostie1 = await hostieStore.update(hostie1.id, {
+      const updatedHostie1 = await hostieStore.update(hostie1.id!, {
         name: EXPECTED_UPDATE_NAME,
       })
       await future
       t.equal(updatedHostie1.name, EXPECTED_UPDATE_NAME, 'should get updated name from the return value of update()')
-      t.equal(itemDict[hostie1.id].name, EXPECTED_UPDATE_NAME, 'should updated itemDict to the updated name after update')
+      t.equal(itemDict[hostie1.id!].name, EXPECTED_UPDATE_NAME, 'should updated itemDict to the updated name after update')
 
       future = new Promise(r => resolverList.push(r))
-      await hostieStore.delete(hostie2.id)
+      await hostieStore.delete(hostie2.id!)
       await future
       t.equal(Object.keys(itemDict).length, 1, 'should get 1 hostie after delete hostie2')
 
       future = new Promise(r => resolverList.push(r))
-      await hostieStore.delete(hostie1.id)
+      await hostieStore.delete(hostie1.id!)
       await future
       t.equal(Object.keys(itemDict).length, 0, 'should get 0 hostie after delete hostie1')
 

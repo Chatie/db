@@ -27,7 +27,7 @@ import {
   GQL_UPDATE_HOSTIE,
 }                         from './hostie-store.graphql'
 
-export type Hostie = HostieFragment
+export type Hostie = Partial<HostieFragment>
 
 export class HostieStore extends Store<
     Hostie,
@@ -87,7 +87,7 @@ export class HostieStore extends Store<
    * delete
    * @param id
    */
-  public async delete(id: string): Promise< Partial<Hostie> > {
+  public async delete(id: string): Promise<Hostie> {
     log.verbose('HostieStore', 'delete(id=%s)', id)
 
     const variables: DeleteHostieMutationVariables = {
@@ -114,7 +114,7 @@ export class HostieStore extends Store<
    * unspecified fields will be left untouched.
    * @param updateHostie
    */
-  public async update(id: string, props: Partial<Hostie>): Promise<Hostie> {
+  public async update(id: string, props: Hostie): Promise<Hostie> {
     log.verbose('HostieStore', 'update(id=%s)', id)
 
     const hostie = await this.read(id)
@@ -141,3 +141,8 @@ export class HostieStore extends Store<
   }
 
 }
+
+export {
+  Status,
+  System,
+}           from '../../generated-schemas/hostie-schema'
