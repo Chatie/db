@@ -6,6 +6,7 @@ export const GQL_FRAGMENT_BOTIE = gql`
     key,
     name,
     note,
+    status,
     owner {
       email,
       id,

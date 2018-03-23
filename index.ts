@@ -1,4 +1,8 @@
 export {
+  Botie,
+  BotieStore,
+}               from './src/botie/'
+export {
   VERSION,
   log,
 }               from './src/config'
@@ -8,6 +12,8 @@ export {
 export {
   Hostie,
   HostieStore,
+}               from './src/hostie/'
+export {
   Status,
   System,
-}               from './src/hostie/'
+}               from './generated-schemas/'
