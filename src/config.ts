@@ -1,15 +1,32 @@
-import * as readPkgUp from 'read-pkg-up'
-
 import { log }   from 'brolog'
-log.level(process.env['BROLOG_LEVEL'] as any)
+if (process) {
+  log.level(process.env['BROLOG_LEVEL'] as any)
+}
 
 // https://github.com/Microsoft/TypeScript/issues/14151#issuecomment-280812617
 if (!(<any>Symbol).asyncIterator) {
   ; (<any>Symbol).asyncIterator = Symbol.for('Symbol.asyncIterator')
 }
 
-const pkg = readPkgUp.sync({ cwd: __dirname }).pkg
-export const VERSION = pkg.version
+let pkg: {
+  version: string,
+} | undefined
+
+try {
+  pkg = require('../package.json')
+} catch (e) {
+  //
+}
+
+if (!pkg) {
+  try {
+    pkg = require('../../package.json')
+  } catch (e) {
+    //
+  }
+}
+
+export const VERSION = pkg ? pkg.version : 'unknown'
 
 export {
   log,
