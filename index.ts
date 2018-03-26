@@ -8,6 +8,7 @@ export {
 }               from './src/config'
 export {
   Db,
+  DbOptions,
 }               from './src/db'
 export {
   Hostie,

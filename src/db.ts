@@ -31,15 +31,16 @@ export interface DbOptions {
 }
 
 export class Db {
-  private $apollo:      BehaviorSubject <Apollo | null>
+
+  private apollo$:      BehaviorSubject <Apollo | null>
   public get apollo():  Observable      <Apollo | null> {
-    return this.$apollo.asObservable()
+    return this.apollo$.asObservable()
   }
 
   private endpoints:  Endpoints
   private token:      string
 
-  public log:        typeof log
+  public log:         typeof log
 
   constructor(options: DbOptions = {}) {
     this.endpoints  = options.endpoints || ENDPOINTS
@@ -49,8 +50,8 @@ export class Db {
     this.log.verbose('Db', 'constructor({token=%s, endpoints=%s)',
                       options.token,
                       JSON.stringify(options.endpoints),
-                )
-    this.$apollo = new BehaviorSubject<Apollo | null>(null)
+                    )
+    this.apollo$ = new BehaviorSubject<Apollo | null>(null)
   }
 
   private async nextApollo(available = true): Promise<void> {
@@ -69,17 +70,19 @@ export class Db {
      * 2. born a null(if should not available any more)
      */
     if (!available) {
-      this.$apollo.next(null)
+      this.apollo$.next(null)
       return
     }
 
     /**
      * 3. born a new apollo client with the token & endpoints
      */
-    this.$apollo.next(await getApolloClient(
+    const newApollo = await getApolloClient(
       this.token,
       this.endpoints,
-    ))
+    )
+
+    this.apollo$.next(newApollo)
   }
 
   public setToken(token: string) {
