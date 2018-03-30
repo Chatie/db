@@ -10,7 +10,7 @@ import {
   ApolloClient,
   Endpoints,
   NormalizedCacheObject,
-  getApolloClient,
+  makeApolloClient,
 }                         from '@chatie/graphql'
 
 export {
@@ -76,7 +76,7 @@ export class Db {
     /**
      * 3. born a new apollo client with the token & endpoints
      */
-    this.$apollo.next(await getApolloClient(
+    this.$apollo.next(await makeApolloClient(
       this.token,
       this.endpoints,
     ))

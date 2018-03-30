@@ -7,7 +7,9 @@ import {
 import {
   Subscription,
 }                       from 'rxjs/Subscription'
+import                       'rxjs/add/operator/distinctUntilChanged'
 import                       'rxjs/add/operator/first'
+import                       'rxjs/add/operator/share'
 
 import {
   _ModelMutationType,
@@ -51,7 +53,11 @@ export abstract class Store<
   protected $itemList:    BehaviorSubject< T[] >
   public get itemList():  Observable< T[] > {
     this.log.silly('Store', 'get itemList()')
+
+    // XXX: Make sure the share() & distinctUntilChanged() logic is right.
     return this.$itemList.asObservable()
+                        .share()
+                        .distinctUntilChanged()
   }
 
   constructor(
