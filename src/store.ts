@@ -45,17 +45,16 @@ export abstract class Store<
   private itemResolverList:     Function[]
 
   protected apollo?:            Apollo
-  private   apolloSubscription: Subscription
 
-  private   log:      typeof log
+  protected log:      typeof log
   protected settings: StoreSettings
 
-  protected $itemList:    BehaviorSubject< T[] >
+  protected itemList$:    BehaviorSubject< T[] >
   public get itemList():  Observable< T[] > {
     this.log.silly('Store', 'get itemList()')
 
     // XXX: Make sure the share() & distinctUntilChanged() logic is right.
-    return this.$itemList.asObservable()
+    return this.itemList$.asObservable()
                         .share()
                         .distinctUntilChanged()
   }
@@ -66,8 +65,16 @@ export abstract class Store<
     this.log = db.log
 
     this.log.verbose('Store', 'constructor()')
-    this.$itemList        = new BehaviorSubject< T[] >([])
+    this.itemList$ = new BehaviorSubject< T[] >([])
     this.itemResolverList = []
+
+    /**
+     * This subscription is for all the life cycle of Store,
+     * we will never need to unsubscribe it.
+     */
+    this.db.apollo.subscribe(apollo => {
+      this.refresh(apollo)
+    })
 
   }
 
@@ -77,13 +84,13 @@ export abstract class Store<
       throw new Error('Store.open() need `this.settings` to be set first!')
     }
 
-    if (!this.apolloSubscription) {
-      this.apolloSubscription = this.db.apollo.subscribe(this.refreshApollo.bind(this))
+    if (!this.apollo) {
+      throw new Error('Store.open() apollo not available!')
     }
 
     const future = new Promise(r => this.itemResolverList.push(r))
 
-    const hostieQuery = this.apollo!.watchQuery<AllItemsQuery>({
+    const hostieQuery = this.apollo.watchQuery<AllItemsQuery>({
       query: this.settings.gqlQueryAll,
     })
 
@@ -94,21 +101,25 @@ export abstract class Store<
     await future
   }
 
-  private async refreshApollo(apollo: Apollo | null): Promise<void> {
+  private async refresh(apollo: Apollo | null): Promise<void> {
     this.log.verbose('Store', 'refreshApollo()')
 
+    /**
+     * 1. close
+     */
     if (this.apollo) {
       await this.close()
       this.apollo = undefined
     }
 
-    if (!apollo) {
-      return
+    /**
+     * 2. reopen only if apollo is available
+     */
+    if (apollo) {
+      this.apollo = apollo
+      await this.open()
     }
 
-    this.apollo = apollo
-
-    await this.open()
   }
 
   public async close():   Promise<void> {
@@ -165,7 +176,7 @@ export abstract class Store<
         this.log.silly('HostieStore', 'init() subscribe() itemList length change to %d',
                                       data[this.settings.dataKey].length,
                       )
-        this.$itemList.next([...data[this.settings.dataKey]])
+        this.itemList$.next([...data[this.settings.dataKey]])
 
         /**
          * issue #12

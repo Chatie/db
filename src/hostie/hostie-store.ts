@@ -1,5 +1,4 @@
 import {
-  _ModelMutationType,
   AllHostiesQuery,
   DeleteHostieMutation,
   DeleteHostieMutationVariables,
@@ -11,7 +10,9 @@ import {
   UpdateHostieMutationVariables,
 }                                 from '../../generated-schemas/hostie-schema'
 
-import { log }      from '../config'
+import {
+  _ModelMutationType,
+}                               from '../../generated-schemas/'
 
 import {
   Db,
@@ -35,11 +36,12 @@ export class HostieStore extends Store<
     AllHostiesQuery,
     SubscribeHostieSubscription
 > {
+
   constructor(
     protected db: Db,
   ) {
     super(db)
-    log.verbose('HostieStore', 'constructor()')
+    this.log.verbose('HostieStore', 'constructor()')
 
     this.settings = {
       gqlQueryAll:  GQL_QUERY_ALL_HOSTIES,
@@ -56,7 +58,7 @@ export class HostieStore extends Store<
       key:      string,
       ownerId:  string,
   }): Promise<Hostie> {
-    log.verbose('HostieStore', 'create(newHostie=%s)', JSON.stringify(newHostie))
+    this.log.verbose('HostieStore', 'create(newHostie=%s)', JSON.stringify(newHostie))
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateHostieMutationVariables = {
@@ -68,19 +70,19 @@ export class HostieStore extends Store<
     const mutation  = GQL_CREATE_HOSTIE
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.CREATED, 'createHostie')
 
-    log.silly('HostieStore', 'create() apollo.mutate()')
+    this.log.silly('HostieStore', 'create() apollo.mutate()')
     const result: CreateHostieMutation = await this.apollo!.mutate<CreateHostieMutation>({
       mutation,
       variables,
       update,
     }).then(m => m.data)
-    log.silly('HostieStore', 'create() apollo.mutate() done')
+    this.log.silly('HostieStore', 'create() apollo.mutate() done')
 
     if (!result.createHostie) {
       throw new Error('HostieStore.create() fail!')
     }
 
-    log.silly('HostieStore', 'create()=%s', JSON.stringify(result.createHostie))
+    this.log.silly('HostieStore', 'create()=%s', JSON.stringify(result.createHostie))
     return result.createHostie
   }
 
@@ -89,7 +91,7 @@ export class HostieStore extends Store<
    * @param id
    */
   public async delete(id: string): Promise<Hostie> {
-    log.verbose('HostieStore', 'delete(id=%s)', id)
+    this.log.verbose('HostieStore', 'delete(id=%s)', id)
 
     const variables: DeleteHostieMutationVariables = {
       id,
@@ -116,7 +118,7 @@ export class HostieStore extends Store<
    * @param updateHostie
    */
   public async update(id: string, props: Hostie): Promise<Hostie> {
-    log.verbose('HostieStore', 'update(id=%s)', id)
+    this.log.verbose('HostieStore', 'update(id=%s)', id)
 
     const hostie = await this.read(id)
 
@@ -142,8 +144,3 @@ export class HostieStore extends Store<
   }
 
 }
-
-export {
-  Status,
-  System,
-}           from '../../generated-schemas/hostie-schema'
