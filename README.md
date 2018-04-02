@@ -28,7 +28,12 @@ RealTime Database for [Chatie Service](https://www.chatie.io)
 
 # CHANGE LOG
 
-### v0.3 master (18th, Feb, 2018)
+### v0.4 master (Apr 2018)
+
+1. use `StateSwitch` to wait `ready()` for `Store`
+1. integrate with `@chatie/app` in the Browser.
+
+### v0.3 (18th, Feb, 2018)
 
 Switch to [Graph.Cool](https://www.graph.cool) Serverless solution because Wilddog sucks.
 
