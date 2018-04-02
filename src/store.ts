@@ -63,10 +63,10 @@ export abstract class Store<
   ) {
     this.log = db.log
 
-    this.log.verbose('Store', 'constructor()')
+    this.log.verbose('Store', 'constructor(db=%s)', db)
     this.itemList$ = new BehaviorSubject< T[] >([])
 
-    this.state = new StateSwitch('Store')
+    this.state = new StateSwitch('Store', this.log)
 
     /**
      * This subscription is for all the life cycle of Store,
@@ -101,8 +101,6 @@ export abstract class Store<
 
   private async reset(apollo: Apollo | undefined): Promise<void> {
     this.log.verbose('Store', 'reset(%s)', apollo)
-
-    this.state.off(true)
 
     /**
      * 1. close the existing apollo if it is availble
