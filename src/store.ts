@@ -1,15 +1,13 @@
 import {
   BehaviorSubject,
-}                       from 'rxjs/BehaviorSubject'
-import {
   Observable,
-}                       from 'rxjs/Observable'
-import {
   Subscription,
-}                       from 'rxjs/Subscription'
+}                       from 'rxjs/Rx'
 import                       'rxjs/add/operator/distinctUntilChanged'
 import                       'rxjs/add/operator/first'
 import                       'rxjs/add/operator/share'
+
+import { StateSwitch }  from 'state-switch'
 
 import {
   _ModelMutationType,
@@ -41,8 +39,9 @@ export abstract class Store<
     AllItemsQuery,
     SubscribeItemSubscription
 > {
+  protected state: StateSwitch
+
   private itemListSubscription: Subscription
-  private itemResolverList:     Function[]
 
   protected apollo?:            Apollo
 
@@ -66,19 +65,18 @@ export abstract class Store<
 
     this.log.verbose('Store', 'constructor()')
     this.itemList$ = new BehaviorSubject< T[] >([])
-    this.itemResolverList = []
+
+    this.state = new StateSwitch('Store')
 
     /**
      * This subscription is for all the life cycle of Store,
      * we will never need to unsubscribe it.
      */
-    this.db.apollo.subscribe(apollo => {
-      this.refresh(apollo)
-    })
+    this.db.apollo.subscribe(apollo => this.reset(apollo))
 
   }
 
-  public async open(): Promise<void> {
+  private async open(): Promise<void> {
     this.log.verbose('Store', 'open()')
     if (!this.settings) {
       throw new Error('Store.open() need `this.settings` to be set first!')
@@ -88,7 +86,7 @@ export abstract class Store<
       throw new Error('Store.open() apollo not available!')
     }
 
-    const future = new Promise(r => this.itemResolverList.push(r))
+    this.state.on('pending')
 
     const hostieQuery = this.apollo.watchQuery<AllItemsQuery>({
       query: this.settings.gqlQueryAll,
@@ -98,35 +96,43 @@ export abstract class Store<
     this.itemListSubscription = this.initSubscription(hostieQuery)
 
     // await this.initQuery()
-    await future
+    // await future
   }
 
-  private async refresh(apollo: Apollo | null): Promise<void> {
-    this.log.verbose('Store', 'refreshApollo()')
+  private async reset(apollo: Apollo | undefined): Promise<void> {
+    this.log.verbose('Store', 'reset(%s)', apollo)
+
+    this.state.off(true)
 
     /**
-     * 1. close
+     * 1. close the existing apollo if it is availble
      */
     if (this.apollo) {
       await this.close()
-      this.apollo = undefined
     }
 
+    this.apollo = apollo
+
     /**
-     * 2. reopen only if apollo is available
+     * 2. reopen only if the new apollo is available
      */
     if (apollo) {
-      this.apollo = apollo
       await this.open()
     }
 
   }
 
-  public async close():   Promise<void> {
+  private async close():   Promise<void> {
     this.log.verbose('Store', 'close()')
+
+    this.state.off('pending')
+
     if (this.itemListSubscription) {
       this.itemListSubscription.unsubscribe()
     }
+
+    this.state.off(true)
+
   }
 
   private initSubscribeToMore(itemQuery: ObservableQuery<AllItemsQuery>): void {
@@ -183,8 +189,7 @@ export abstract class Store<
          *
          * wait subscription to be ready before open() returns
          */
-        this.itemResolverList.forEach(fn => fn())
-        this.itemResolverList = []
+        this.state.on(true)
       },
     ) as Subscription
 
@@ -296,6 +301,9 @@ export abstract class Store<
    */
   public async read(id: string): Promise<T> {
     this.log.verbose('Store', 'read(id=%s)', id)
+
+    await this.state.ready('on')
+
     const itemList = await this.itemList.first().toPromise()
 
     const result = itemList.filter(i => i['id'] === id)

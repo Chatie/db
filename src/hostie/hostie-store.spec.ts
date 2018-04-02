@@ -23,9 +23,11 @@ const localServer = new LocalServer()
 test('itemList', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+
+    await db.open()
+    // await hostieStore.ready()
+    // await hostieStore.open()
 
     try {
       const itemList = await hostieStore.itemList.first().toPromise()
@@ -43,7 +45,7 @@ test('itemList', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
@@ -52,9 +54,10 @@ test('itemList', async t => {
 test('create()', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+
+    await db.open()
+    // await hostieStore.open()
 
     try {
       const EXPECTED_NAME = 'test name for create()'
@@ -65,13 +68,13 @@ test('create()', async t => {
         ownerId:  fixtures.USER.id,
       })
 
-      t.equal(hostie.name, EXPECTED_NAME,   'should create hostie with EXPECTED_NAME')
-      t.equal(hostie.key, EXPECTED_KEY,     'should create hostie with EXPECTED_NOTE')
+      t.equal(hostie.name,  EXPECTED_NAME,  'should create hostie with EXPECTED_NAME')
+      t.equal(hostie.key,   EXPECTED_KEY,   'should create hostie with EXPECTED_NOTE')
 
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
@@ -80,9 +83,10 @@ test('create()', async t => {
 test('read() with exist id', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+
+    await db.open()
+    // await hostieStore.open()
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
@@ -94,7 +98,7 @@ test('read() with exist id', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
@@ -103,9 +107,10 @@ test('read() with exist id', async t => {
 test('read() with not exist id', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+
+    await db.open()
+    // await hostieStore.open()
 
     try {
       const NOT_EXIST_ID = 'not exist id'
@@ -117,7 +122,7 @@ test('read() with not exist id', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
@@ -126,9 +131,10 @@ test('read() with not exist id', async t => {
 test('update()', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+
+    await db.open()
+    // await hostieStore.open()
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
@@ -148,7 +154,7 @@ test('update()', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
@@ -157,9 +163,11 @@ test('update()', async t => {
 test('delete()', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
+
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+    await db.open()
+
+    // await hostieStore.open()
 
     try {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
@@ -171,7 +179,7 @@ test('delete()', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
