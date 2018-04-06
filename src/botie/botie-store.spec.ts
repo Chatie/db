@@ -23,9 +23,10 @@ const localServer = new LocalServer()
 test('itemList', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const botieStore = new BotieStore(db)
-    await botieStore.open()
+
+    await db.open()
+    // await botieStore.open()
 
     try {
       const itemList = await botieStore.itemList.first().toPromise()
@@ -43,7 +44,7 @@ test('itemList', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await botieStore.close()
+      // await botieStore.close()
       await db.close()
     }
   }
@@ -52,9 +53,10 @@ test('itemList', async t => {
 test('create()', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const botieStore = new BotieStore(db)
-    await botieStore.open()
+
+    await db.open()
+    // await botieStore.open()
 
     try {
       const EXPECTED_NAME = 'test name for create()'
@@ -71,7 +73,7 @@ test('create()', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await botieStore.close()
+      // await botieStore.close()
       await db.close()
     }
   }
@@ -80,9 +82,10 @@ test('create()', async t => {
 test('read() with exist id', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const botieStore = new BotieStore(db)
-    await botieStore.open()
+
+    await db.open()
+    // await botieStore.open()
 
     try {
       const HOSTIE_FIXTURE  = await createBotieFixture(botieStore, fixtures.USER.id)
@@ -94,7 +97,7 @@ test('read() with exist id', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await botieStore.close()
+      // await botieStore.close()
       await db.close()
     }
   }
@@ -103,9 +106,10 @@ test('read() with exist id', async t => {
 test('read() with not exist id', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const botieStore = new BotieStore(db)
-    await botieStore.open()
+
+    await db.open()
+    // await botieStore.open()
 
     try {
       const NOT_EXIST_ID = 'not exist id'
@@ -117,7 +121,7 @@ test('read() with not exist id', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await botieStore.close()
+      // await botieStore.close()
       await db.close()
     }
   }
@@ -126,9 +130,10 @@ test('read() with not exist id', async t => {
 test('update()', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const botieStore = new BotieStore(db)
-    await botieStore.open()
+
+    await db.open()
+    // await botieStore.open()
 
     try {
       const HOSTIE_FIXTURE  = await createBotieFixture(botieStore, fixtures.USER.id)
@@ -148,7 +153,7 @@ test('update()', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await botieStore.close()
+      // await botieStore.close()
       await db.close()
     }
   }
@@ -157,9 +162,10 @@ test('update()', async t => {
 test('delete()', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
-    await db.open()
     const botieStore = new BotieStore(db)
-    await botieStore.open()
+
+    await db.open()
+    // await botieStore.open()
 
     try {
       const HOSTIE_FIXTURE  = await createBotieFixture(botieStore, fixtures.USER.id)
@@ -171,7 +177,7 @@ test('delete()', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await botieStore.close()
+      // await botieStore.close()
       await db.close()
     }
   }

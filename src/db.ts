@@ -1,16 +1,14 @@
 import {
   BehaviorSubject,
-}                   from 'rxjs/BehaviorSubject'
-import {
   Observable,
-}                   from 'rxjs/Observable'
+}                   from 'rxjs/Rx'
 
 import {
   ENDPOINTS,
   ApolloClient,
   Endpoints,
   NormalizedCacheObject,
-  getApolloClient,
+  makeApolloClient,
 }                         from '@chatie/graphql'
 
 export {
@@ -32,8 +30,8 @@ export interface DbOptions {
 
 export class Db {
 
-  private apollo$:      BehaviorSubject <Apollo | null>
-  public get apollo():  Observable      <Apollo | null> {
+  private apollo$:      BehaviorSubject <Apollo | undefined>
+  public get apollo():  Observable      <Apollo | undefined> {
     return this.apollo$.asObservable()
   }
 
@@ -51,38 +49,40 @@ export class Db {
                       options.token,
                       JSON.stringify(options.endpoints),
                     )
-    this.apollo$ = new BehaviorSubject<Apollo | null>(null)
+    this.apollo$ = new BehaviorSubject<Apollo | undefined>(undefined)
   }
 
   private async nextApollo(available = true): Promise<void> {
     this.log.verbose('Db', 'nextApollo(available=%s)', available)
 
-    /**
-     * 1. close the old one(if any)
-     */
-    const apollo = await this.apollo.first().toPromise()
-    if (apollo) {
-      await apollo['wsClose']()
-      await apollo.resetStore()
+    const oldApollo = await this.apollo.first().toPromise()
+
+    if (available) {
+      /**
+       * 1. born a new apollo client with the token & endpoints
+       */
+      const newApollo = await makeApolloClient(
+        this.token,
+        this.endpoints,
+      )
+
+      this.apollo$.next(newApollo)
+
+    } else {
+      /**
+       * 2. born undefined(if should not available any more)
+       */
+      this.apollo$.next(undefined)
     }
 
     /**
-     * 2. born a null(if should not available any more)
+     * 3. close the old one(if any)
      */
-    if (!available) {
-      this.apollo$.next(null)
-      return
+    if (oldApollo) {
+      await oldApollo['wsClose']()
+      // await oldApollo.resetStore()
     }
 
-    /**
-     * 3. born a new apollo client with the token & endpoints
-     */
-    const newApollo = await getApolloClient(
-      this.token,
-      this.endpoints,
-    )
-
-    this.apollo$.next(newApollo)
   }
 
   public setToken(token: string) {
@@ -118,6 +118,7 @@ export class Db {
     await this.nextApollo()
   }
 
+  // Does close() necessary?
   public async close(): Promise<void> {
     this.log.verbose('Db', 'close()')
     await this.nextApollo(false)

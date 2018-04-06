@@ -22,10 +22,10 @@ const localServer = new LocalServer()
 test('smoke testing', async t => {
   for await (const fixtures of localServer.fixtures()) {
     const db = userDbFixture(fixtures)
+    const hostieStore = new HostieStore(db)
 
     await db.open()
-    const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+    // await hostieStore.open()
 
     try {
       let itemList
@@ -78,7 +78,7 @@ test('smoke testing', async t => {
     } catch (e) {
       t.fail(e)
     } finally {
-      await hostieStore.close()
+      // await hostieStore.close()
       await db.close()
     }
   }
