@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core'
-
+import { Auth }       from 'auth-angular'
 import {
   BehaviorSubject,
   Observable,
-}                   from 'rxjs/Rx'
+  Subscription,
+}                     from 'rxjs/Rx'
 
 import {
   ENDPOINTS,
@@ -18,13 +19,12 @@ export {
   ObservableQuery,
 }                         from '@chatie/graphql'
 
-import {
-  log,
-}           from './config'
+import { log }  from './config'
 
 export type Apollo = ApolloClient<NormalizedCacheObject>
 
 export interface DbOptions {
+  auth?:      Auth,
   token?:     string,
   endpoints?: Endpoints,
   log?:       typeof log,
@@ -43,16 +43,24 @@ export class Db {
 
   public log:         typeof log
 
+  private authSub?: Subscription
+
   constructor(options: DbOptions = {}) {
-    this.endpoints  = options.endpoints || ENDPOINTS
     this.log        = options.log       || log
+    this.log.verbose('Db', 'constructor({token=%s, endpoints=%s)',
+                      options.token                     || '',
+                      JSON.stringify(options.endpoints) || '',
+                    )
+
+    this.endpoints  = options.endpoints || ENDPOINTS
     this.token      = options.token     || ''
 
-    this.log.verbose('Db', 'constructor({token=%s, endpoints=%s)',
-                      options.token,
-                      JSON.stringify(options.endpoints),
-                    )
+    if (options.auth) {
+      this.setAuth(options.auth)
+    }
+
     this.apollo$ = new BehaviorSubject<Apollo | undefined>(undefined)
+
   }
 
   private async nextApollo(available = true): Promise<void> {
@@ -85,6 +93,25 @@ export class Db {
       await oldApollo['wsClose']()
       // await oldApollo.resetStore()
     }
+
+  }
+
+  public setAuth(auth: Auth) {
+    this.log.verbose('Db', 'setAuth()')
+
+    if (this.authSub) {
+      this.authSub.unsubscribe()
+      this.authSub = undefined
+    }
+
+    this.authSub = auth.idToken.subscribe(async token => {
+      if (token) {
+        this.setToken(token)
+        await this.open()
+      } else {
+        await this.close()
+      }
+    })
 
   }
 

@@ -11,6 +11,9 @@ export {
   DbOptions,
 }               from './src/db'
 export {
+  DbModule,
+}               from './src/db-module'
+export {
   GiftieStore,
 }               from './src/giftie'
 export {
