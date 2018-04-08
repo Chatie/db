@@ -34,9 +34,7 @@ export interface DbOptions {
 export class Db {
 
   private apollo$:      BehaviorSubject <Apollo | undefined>
-  public get apollo():  Observable      <Apollo | undefined> {
-    return this.apollo$.asObservable()
-  }
+  public apollo:        Observable      <Apollo | undefined>
 
   private endpoints:  Endpoints
   private token:      string
@@ -55,11 +53,12 @@ export class Db {
     this.endpoints  = options.endpoints || ENDPOINTS
     this.token      = options.token     || ''
 
+    this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
+    this.apollo   = this.apollo$.asObservable().share().distinctUntilChanged()
+
     if (options.auth) {
       this.setAuth(options.auth)
     }
-
-    this.apollo$ = new BehaviorSubject<Apollo | undefined>(undefined)
 
   }
 
