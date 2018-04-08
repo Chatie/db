@@ -5,6 +5,7 @@
     , "outDir": "dist"
     , "declaration": true
     , "sourceMap": true
+    , "experimentalDecorators": true
 
     , "noEmitOnError": true
     , "noUnusedLocals": true
@@ -18,9 +19,8 @@
     , "noImplicitThis": true
     , "traceResolution": false
     , "lib": [
-        "es2016"
+        "dom"
       , "esnext"
-      , "dom"
     ]
   }
   , "exclude": [
@@ -31,6 +31,7 @@
       "index.ts"
     , "bin/*.ts"
     , "examples/**/*.ts"
+    , "generated-schemas/**/*.ts"
     , "src/**/*.ts"
     , "scripts/**/*.ts"
     , "tests/**/*.spec.ts"

@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 import * as test  from 'blue-tape'
-import 'rxjs/add/operator/first'
+// import 'rxjs/add/operator/first'
 
 import {
   LocalServer,

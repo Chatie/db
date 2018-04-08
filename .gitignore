@@ -41,3 +41,4 @@ jspm_packages
 
 t.*
 t/
+.ng_pkg_build/

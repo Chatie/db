@@ -24,14 +24,14 @@ jobs:
         - echo $TRAVIS_OS_NAME
         - node --version
         - npm --version
-        - npm run graphql:restart
+        - npm run graphcool:restart
         - npm run generate-schema
         - npm test
 
     - stage: pack
       script:
         - echo "NPM Pack Testing..."
-        - npm run graphql:restart
+        - npm run graphcool:restart
         - npm run generate-schema
         - npm run test:pack
         - echo 'NPM Pack Testing is PASSED.'
@@ -40,9 +40,12 @@ jobs:
       script:
         - echo "Deploying to NPM ..."
         - npm version
-        - npm run graphql:restart
+        - npm run graphcool:restart
         - npm run generate-schema
-        - npm run dist
+
+      before_deploy:
+        - npm run ng:packagr
+        - cd dist
 
       deploy:
         provider: npm

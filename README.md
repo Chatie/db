@@ -16,6 +16,12 @@ RealTime Database for [Chatie Service](https://www.chatie.io)
 
 # RESOURCES
 
+## Angular Module
+
+* [Transpile your libraries to Angular Package Format](http://spektrakel.de/ng-packagr/)
+* [Angular Package Format (APF) v6.0](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs/preview#)
+* [Juri Strumpflohner - Create and publish Angular libs like a Pro](https://www.youtube.com/watch?v=K4YMmwxGKjY)
+
 ## Admin
 
 ![Chart](https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif)
@@ -28,7 +34,15 @@ RealTime Database for [Chatie Service](https://www.chatie.io)
 
 # CHANGE LOG
 
-### v0.4 master (Apr 2018)
+### v0.5 master (Apr 8, 2018)
+
+**Angular Injection Support.**
+
+1. use [ng-packagr](https://github.com/dherges/ng-packagr) to package `@chatie/db` to follow the [Angular Package Format (APF) v6.0](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs/preview#)
+
+### v0.4 (Apr 1, 2018)
+
+**Integrate with Angular**
 
 1. use `StateSwitch` to wait `ready()` for `Store`
 1. integrate with `@chatie/app` in the Browser.

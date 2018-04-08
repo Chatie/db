@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core'
+
 import {
   BehaviorSubject,
   Observable,
@@ -28,6 +30,7 @@ export interface DbOptions {
   log?:       typeof log,
 }
 
+@Injectable()
 export class Db {
 
   private apollo$:      BehaviorSubject <Apollo | undefined>

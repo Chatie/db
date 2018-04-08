@@ -3,9 +3,15 @@ import {
   Observable,
   Subscription,
 }                       from 'rxjs/Rx'
-import                       'rxjs/add/operator/distinctUntilChanged'
-import                       'rxjs/add/operator/first'
-import                       'rxjs/add/operator/share'
+import {
+  distinctUntilChanged,
+  // first,
+  share,
+}                       from 'rxjs/operators'
+
+// import                       'rxjs/add/operator/distinctUntilChanged'
+// import                       'rxjs/add/operator/first'
+// import                       'rxjs/add/operator/share'
 
 import { StateSwitch }  from 'state-switch'
 
@@ -53,9 +59,10 @@ export abstract class Store<
     this.log.silly('Store', 'get itemList()')
 
     // XXX: Make sure the share() & distinctUntilChanged() logic is right.
-    return this.itemList$.asObservable()
-                        .share()
-                        .distinctUntilChanged()
+    return this.itemList$.asObservable().pipe(
+      share(),
+      distinctUntilChanged(),
+    )
   }
 
   constructor(

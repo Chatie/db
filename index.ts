@@ -11,6 +11,9 @@ export {
   DbOptions,
 }               from './src/db'
 export {
+  GiftieStore,
+}               from './src/giftie'
+export {
   Hostie,
   HostieStore,
 }               from './src/hostie/'

@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core'
+
 import {
   AllHostiesQuery,
   DeleteHostieMutation,
@@ -31,6 +33,7 @@ import {
 
 export type Hostie = Partial<HostieFragment>
 
+@Injectable()
 export class HostieStore extends Store<
     Hostie,
     AllHostiesQuery,
