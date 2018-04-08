@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core'
+
 import {
   _ModelMutationType,
   AllBotiesQuery,
@@ -9,7 +11,7 @@ import {
   SubscribeBotieSubscription,
   UpdateBotieMutation,
   UpdateBotieMutationVariables,
-}                               from '../../generated-schemas/botie-schema'
+}                                 from '../../generated-schemas/botie-schema'
 export type Botie = Partial<BotieFragment>
 
 import { log }      from '../config'
@@ -28,6 +30,7 @@ import {
   GQL_UPDATE_BOTIE,
 }                         from './botie-store.graphql'
 
+@Injectable()
 export class BotieStore extends Store<
     Botie,
     AllBotiesQuery,
