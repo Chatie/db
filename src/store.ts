@@ -3,9 +3,6 @@ import {
   Observable,
   Subscription,
 }                       from 'rxjs/Rx'
-import {
-  distinctUntilChanged,
-}                       from 'rxjs/operators'
 
 import { StateSwitch }  from 'state-switch'
 
@@ -35,27 +32,20 @@ export interface StoreAction {
 }
 
 export abstract class Store<
-    T,
-    AllItemsQuery,
-    SubscribeItemSubscription
+  T,
+  AllItemsQuery,
+  SubscribeItemSubscription
 > {
   protected state: StateSwitch
 
   private itemListSubscription: Subscription
 
-  protected apollo?:            Apollo
-
+  protected apollo?:  Apollo
   protected log:      typeof log
   protected settings: StoreSettings
 
   protected itemList$:    BehaviorSubject< T[] >
-  public get itemList():  Observable< T[] > {
-    this.log.silly('Store', 'get itemList()')
-
-    return this.itemList$.asObservable().pipe(
-      distinctUntilChanged(),
-    )
-  }
+  public    itemList:     Observable< T[] >
 
   constructor(
     protected db: Db,
@@ -63,7 +53,9 @@ export abstract class Store<
     this.log = db.log
 
     this.log.verbose('Store', 'constructor(db=%s)', db.constructor.name)
-    this.itemList$ = new BehaviorSubject< T[] >([])
+
+    this.itemList$  = new BehaviorSubject< T[] >([])
+    this.itemList   = this.itemList$.asObservable().distinctUntilChanged()
 
     this.state = new StateSwitch('Store', this.log)
 

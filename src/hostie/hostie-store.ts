@@ -29,7 +29,7 @@ import {
   GQL_QUERY_ALL_HOSTIES,
   GQL_SUBSCRIBE_HOSTIE,
   GQL_UPDATE_HOSTIE,
-}                         from './hostie-store.graphql'
+}                         from './hostie.graphql'
 
 export type Hostie = Partial<HostieFragment>
 
@@ -59,12 +59,19 @@ export class HostieStore extends Store<
   public async create(newHostie: {
       name:     string,
       key:      string,
-      ownerId:  string,
+      ownerId?: string,
   }): Promise<Hostie> {
     this.log.verbose('HostieStore', 'create(newHostie=%s)', JSON.stringify(newHostie))
 
     await this.state.ready()
 
+    if (!newHostie.ownerId) {
+      const currentUser = await this.db.currentUser.first().toPromise()
+      if (!currentUser) {
+        throw new Error('no currentUser')
+      }
+      newHostie.ownerId = currentUser.id
+    }
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateHostieMutationVariables = {
       key:      newHostie.key,

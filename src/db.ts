@@ -18,7 +18,12 @@ export {
   ObservableQuery,
 }                         from '@chatie/graphql'
 
-import { log }  from './config'
+import {
+  CurrentUserQuery,
+}                           from '../generated-schemas/db-schema'
+
+import { GQL_CURRENT_USER } from './db.graphql'
+import { log }              from './config'
 
 export type Apollo = ApolloClient<NormalizedCacheObject>
 
@@ -28,11 +33,16 @@ export interface DbOptions {
   log?:       typeof log,
 }
 
+export type CurrentUser = CurrentUserQuery['user']
+
 @Injectable()
 export class Db {
 
-  private apollo$:    BehaviorSubject <Apollo | undefined>
-  public  apollo:     Observable      <Apollo | undefined>
+  private apollo$:  BehaviorSubject <Apollo | undefined>
+  public  apollo:   Observable      <Apollo | undefined>
+
+  private currentUser$: BehaviorSubject <CurrentUser | undefined>
+  public  currentUser:  Observable      <CurrentUser | undefined>
 
   private endpoints:  Endpoints
   private token:      string
@@ -48,6 +58,9 @@ export class Db {
 
     this.endpoints  = options.endpoints || ENDPOINTS
     this.token      = options.token     || ''
+
+    this.currentUser$ = new BehaviorSubject<CurrentUser | undefined>(undefined)
+    this.currentUser  = this.currentUser$.asObservable().distinctUntilChanged()
 
     this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
     this.apollo   = this.apollo$.asObservable().distinctUntilChanged()
@@ -71,10 +84,14 @@ export class Db {
 
       this.apollo$.next(newApollo)
 
+      const currentUser = await this.getCurrentUser(newApollo)
+      this.currentUser$.next(currentUser)
+
     } else {
       /**
        * 2. born undefined(if should not available any more)
        */
+      this.currentUser$.next(undefined)
       this.apollo$.next(undefined)
     }
 
@@ -125,6 +142,26 @@ export class Db {
   public async close(): Promise<void> {
     this.log.verbose('Db', 'close()')
     await this.nextApollo(false)
+  }
+
+  private async getCurrentUser(apollo: Apollo) {
+    this.log.verbose('Db', 'currentUser()')
+
+    if (!apollo) {
+      this.log.error('Db', 'currentUser() no apollo defined!')
+      throw new Error('no current user in Db')
+    }
+
+    const user = await apollo.query<CurrentUserQuery>({
+      query: GQL_CURRENT_USER,
+    }).then(x => x.data.user)
+
+    if (!user) {
+      throw new Error('cant get current user!')
+    }
+
+    log.silly('Db', 'currentUser(id=%s, email=%s, name=%s)', user.id, user.email, user.name)
+    return user
   }
 }
 

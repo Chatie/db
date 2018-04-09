@@ -28,7 +28,7 @@ import {
   GQL_QUERY_ALL_BOTIES,
   GQL_SUBSCRIBE_BOTIE,
   GQL_UPDATE_BOTIE,
-}                         from './botie-store.graphql'
+}                         from './botie.graphql'
 
 @Injectable()
 export class BotieStore extends Store<
