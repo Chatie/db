@@ -29,7 +29,6 @@ test('itemList', async t => {
     await db.open()
     // await hostieStore.ready()
     // await hostieStore.open()
-
     try {
       const itemList = await hostieStore.itemList.first().toPromise()
 

@@ -4,7 +4,10 @@ import {
   BehaviorSubject,
   Observable,
   Subscription,
-}                     from 'rxjs/Rx'
+}                         from 'rxjs/Rx'
+import {
+  distinctUntilChanged,
+}                         from 'rxjs/operators'
 
 import {
   ENDPOINTS,
@@ -54,7 +57,9 @@ export class Db {
     this.token      = options.token     || ''
 
     this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
-    this.apollo   = this.apollo$.asObservable().share().distinctUntilChanged()
+    this.apollo   = this.apollo$.asObservable().pipe(
+      distinctUntilChanged(),
+    )
 
     if (options.auth) {
       this.setAuth(options.auth)
@@ -66,6 +71,7 @@ export class Db {
     this.log.verbose('Db', 'nextApollo(available=%s)', available)
 
     const oldApollo = await this.apollo.first().toPromise()
+    this.log.silly('Db', 'nextApollo() oldApollo got')
 
     if (available) {
       /**

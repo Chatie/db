@@ -5,13 +5,7 @@ import {
 }                       from 'rxjs/Rx'
 import {
   distinctUntilChanged,
-  // first,
-  share,
 }                       from 'rxjs/operators'
-
-// import                       'rxjs/add/operator/distinctUntilChanged'
-// import                       'rxjs/add/operator/first'
-// import                       'rxjs/add/operator/share'
 
 import { StateSwitch }  from 'state-switch'
 
@@ -58,9 +52,7 @@ export abstract class Store<
   public get itemList():  Observable< T[] > {
     this.log.silly('Store', 'get itemList()')
 
-    // XXX: Make sure the share() & distinctUntilChanged() logic is right.
     return this.itemList$.asObservable().pipe(
-      share(),
       distinctUntilChanged(),
     )
   }
@@ -79,7 +71,7 @@ export abstract class Store<
      * This subscription is for all the life cycle of Store,
      * we will never need to unsubscribe it.
      */
-    this.db.apollo.subscribe(apollo => this.reset(apollo))
+    this.db.apollo.subscribe(apollo => this.refresh(apollo))
 
   }
 
@@ -106,8 +98,8 @@ export abstract class Store<
     // await future
   }
 
-  private async reset(apollo: Apollo | undefined): Promise<void> {
-    this.log.verbose('Store', 'reset(%s)', apollo)
+  private async refresh(apollo: Apollo | undefined): Promise<void> {
+    this.log.verbose('Store', 'refresh(%s)', apollo)
 
     /**
      * 1. close the existing apollo if it is availble
@@ -307,7 +299,7 @@ export abstract class Store<
   public async read(id: string): Promise<T> {
     this.log.verbose('Store', 'read(id=%s)', id)
 
-    await this.state.ready('on')
+    await this.state.ready()
 
     const itemList = await this.itemList.first().toPromise()
 

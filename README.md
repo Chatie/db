@@ -14,6 +14,25 @@ RealTime Database for [Chatie Service](https://www.chatie.io)
 1. RealTime Store Class for Hostie, Botie and Gitfie etc.
 1. Backed by [@chatie/graphql](https://github.com/Chatie/graphql) which Powered By [GraphCool](https://www.graph.cool/).
 
+# TESTING
+
+## Generate Schemas
+
+Generate schemas from the production graphql server:
+
+```shell
+npm run generate-schemas
+```
+
+## Unit Tests
+
+Run unit tests on local server:
+
+```shell
+npm run graphcool:restart
+npm run test:unit
+```
+
 # RESOURCES
 
 ## Angular Module

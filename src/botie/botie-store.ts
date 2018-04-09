@@ -60,7 +60,7 @@ export class BotieStore extends Store<
   }): Promise<Botie> {
     log.verbose('BotieStore', 'create(newBotie{name:%s})', newBotie.name)
 
-    await this.state.ready('on')
+    await this.state.ready()
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateBotieMutationVariables = {
@@ -88,7 +88,7 @@ export class BotieStore extends Store<
   public async delete(id: string): Promise<Botie> {
     log.verbose('BotieStore', 'delete(id=%s)', id)
 
-    await this.state.ready('on')
+    await this.state.ready()
 
     const variables: DeleteBotieMutationVariables = {
       id,
@@ -113,7 +113,7 @@ export class BotieStore extends Store<
   public async update(id: string, props: Partial<Botie>): Promise<Botie> {
     log.verbose('BotieStore', 'update(id=%s)', id)
 
-    await this.state.ready('on')
+    await this.state.ready()
 
     const botie = await this.read(id)
 
