@@ -70,7 +70,7 @@
   "dependencies": {
     "@chatie/graphql": "^0.4.4",
     "graphql-tag": "^2.8.0",
-    "state-switch": "^0.3.0"
+    "state-switch": "^0.4.1"
   },
   "ngPackage": {
     "lib": {
