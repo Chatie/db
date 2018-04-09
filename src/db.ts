@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core'
-import { Auth }       from 'auth-angular'
 import {
   BehaviorSubject,
   Observable,
-  Subscription,
+  // Subscription,
 }                         from 'rxjs/Rx'
-import {
-  distinctUntilChanged,
-}                         from 'rxjs/operators'
 
 import {
   ENDPOINTS,
@@ -27,7 +23,6 @@ import { log }  from './config'
 export type Apollo = ApolloClient<NormalizedCacheObject>
 
 export interface DbOptions {
-  auth?:      Auth,
   token?:     string,
   endpoints?: Endpoints,
   log?:       typeof log,
@@ -36,15 +31,13 @@ export interface DbOptions {
 @Injectable()
 export class Db {
 
-  private apollo$:      BehaviorSubject <Apollo | undefined>
-  public apollo:        Observable      <Apollo | undefined>
+  private apollo$:    BehaviorSubject <Apollo | undefined>
+  public  apollo:     Observable      <Apollo | undefined>
 
   private endpoints:  Endpoints
   private token:      string
 
   public log:         typeof log
-
-  private authSub?: Subscription
 
   constructor(options: DbOptions = {}) {
     this.log        = options.log       || log
@@ -57,13 +50,7 @@ export class Db {
     this.token      = options.token     || ''
 
     this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
-    this.apollo   = this.apollo$.asObservable().pipe(
-      distinctUntilChanged(),
-    )
-
-    if (options.auth) {
-      this.setAuth(options.auth)
-    }
+    this.apollo   = this.apollo$.asObservable().distinctUntilChanged()
 
   }
 
@@ -98,26 +85,6 @@ export class Db {
       await oldApollo['wsClose']()
       // await oldApollo.resetStore()
     }
-
-  }
-
-  public setAuth(auth: Auth) {
-    this.log.verbose('Db', 'setAuth()')
-
-    if (this.authSub) {
-      this.authSub.unsubscribe()
-      this.authSub = undefined
-    }
-
-    this.authSub = auth.valid.subscribe(async valid => {
-      if (valid) {
-        const token = await auth.idToken.first().toPromise()
-        this.setToken(token)
-        await this.open()
-      } else {
-        await this.close()
-      }
-    })
 
   }
 

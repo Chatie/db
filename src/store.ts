@@ -62,7 +62,7 @@ export abstract class Store<
   ) {
     this.log = db.log
 
-    this.log.verbose('Store', 'constructor(db=%s)', db)
+    this.log.verbose('Store', 'constructor(db=%s)', db.constructor.name)
     this.itemList$ = new BehaviorSubject< T[] >([])
 
     this.state = new StateSwitch('Store', this.log)
@@ -99,7 +99,7 @@ export abstract class Store<
   }
 
   private async refresh(apollo: Apollo | undefined): Promise<void> {
-    this.log.verbose('Store', 'refresh(%s)', apollo)
+    this.log.verbose('Store', 'refresh(%s)', apollo && apollo.constructor.name)
 
     /**
      * 1. close the existing apollo if it is availble

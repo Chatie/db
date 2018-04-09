@@ -31,3 +31,10 @@ function myVersion(): string {
   }
   return 'not found'
 }
+
+/**
+ * Auth0 idToken Schema
+ */
+export interface GraphCoolIdToken {
+  'https://graph.cool/token'?: string,
+}
