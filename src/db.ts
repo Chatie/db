@@ -109,8 +109,9 @@ export class Db {
       this.authSub = undefined
     }
 
-    this.authSub = auth.idToken.subscribe(async token => {
-      if (token) {
+    this.authSub = auth.valid.subscribe(async valid => {
+      if (valid) {
+        const token = await auth.idToken.first().toPromise()
         this.setToken(token)
         await this.open()
       } else {
