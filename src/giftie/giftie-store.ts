@@ -17,7 +17,6 @@ export class GiftieStore {
     protected log: Brolog,
   ) {
     // super()
-    console.log('GiftieStore', 'constructor()')
     this.log.verbose('GiftieStore', 'constructor()')
   }
 }
