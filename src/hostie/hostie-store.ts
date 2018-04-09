@@ -58,7 +58,7 @@ export class HostieStore extends Store<
    */
   public async create(newHostie: {
       name:     string,
-      key:      string,
+      token:      string,
       ownerId?: string,
   }): Promise<Hostie> {
     this.log.verbose('HostieStore', 'create(newHostie=%s)', JSON.stringify(newHostie))
@@ -72,9 +72,9 @@ export class HostieStore extends Store<
       }
       newHostie.ownerId = currentUser.id
     }
-    // FIXME: key! & name! should be checked gracefully
+    // FIXME: token! & name! should be checked gracefully
     const variables: CreateHostieMutationVariables = {
-      key:      newHostie.key,
+      token:    newHostie.token,
       name:     newHostie.name,
       ownerId:  newHostie.ownerId,
     }

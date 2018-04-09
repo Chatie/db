@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 export const GQL_FRAGMENT_BOTIE = gql`
   fragment Botie on Botie {
     id,
-    key,
+    token,
     name,
     note,
     status,
@@ -34,7 +34,7 @@ export const GQL_SUBSCRIBE_BOTIE = gql`
       },
       previousValues {
         id,
-        key,
+        token,
       },
     }
   }
@@ -52,12 +52,12 @@ export const GQL_DELETE_BOTIE = gql`
 
 export const GQL_CREATE_BOTIE = gql`
   mutation CreateBotie(
-    $key:     String!
+    $token:     String!
     $name:    String!,
     $ownerId: ID!,
   ) {
     createBotie(
-      key:      $key,
+      token:      $token,
       name:     $name,
       ownerId:  $ownerId,
     ) {
