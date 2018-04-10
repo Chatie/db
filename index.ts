@@ -22,5 +22,5 @@ export {
 }               from './src/hostie/'
 export {
   Status,
-  System,
+  Platform,
 }               from './generated-schemas/'

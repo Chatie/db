@@ -8,7 +8,7 @@ export const GQL_FRAGMENT_HOSTIE = gql`
     note,
 
     status,
-    system,
+    platform,
 
     owner {
       email,

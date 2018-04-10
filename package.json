@@ -69,7 +69,7 @@
     "rxjs": "^5.5.6"
   },
   "dependencies": {
-    "@chatie/graphql": "^0.4.4",
+    "@chatie/graphql": "^0.4.8",
     "graphql-tag": "^2.8.0",
     "jwt-decode": "^2.2.0",
     "state-switch": "^0.4.0"
