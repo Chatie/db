@@ -158,7 +158,7 @@ export abstract class Store<
         return newData
       },
       onError: error => {
-        this.log.error('Store', 'initSubscribeToMore() onError() %s', error)
+        this.log.error('Store', 'initSubscribeToMore() onError() %s', JSON.stringify(error))
       },
     })
   }
