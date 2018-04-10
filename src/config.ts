@@ -8,29 +8,7 @@ if (!(<any>Symbol).asyncIterator) {
 /**
  * export VRESION
  */
-export const VERSION = myVersion()
-
-/**
- * Helper Functions
- */
-function myVersion(): string {
-  let pkg: {
-    version: string,
-  } | undefined
-
-  const MAX_DEPTH = 3
-  for (let n = 0; n < MAX_DEPTH; n++) {
-    if (pkg) {
-      return pkg.version || 'unknown'
-    }
-    const pkgFile = '../'.repeat(n) + './package.json'
-
-    try {
-      pkg = require(pkgFile)
-    } catch (e) { /* fail safe */ }
-  }
-  return 'not found'
-}
+export const VERSION = require('../package.json').version
 
 /**
  * Auth0 idToken Schema
