@@ -1,5 +1,5 @@
 import {
-  // ModuleWithProviders,
+  ModuleWithProviders,
   NgModule,
 }                       from '@angular/core'
 import { Auth }         from 'auth-angular'
@@ -42,18 +42,24 @@ export function dbFactory(
 
 @NgModule({
   id: '@chatie/db',
-  providers: [
-    {
-      provide: Db,
-      useFactory: dbFactory,
-      deps: [
-        Auth,
-        Brolog,
-      ],
-    },
-    BotieStore,
-    GiftieStore,
-    HostieStore,
-  ],
 })
-export class DbModule {}
+export class DbModule {
+  public static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: DbModule,
+      providers: [
+        {
+          provide: Db,
+          useFactory: dbFactory,
+          deps: [
+            Auth,
+            Brolog,
+          ],
+        },
+        BotieStore,
+        GiftieStore,
+        HostieStore,
+      ],
+    }
+  }
+}

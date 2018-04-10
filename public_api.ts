@@ -3,17 +3,6 @@ export {
   BotieStore,
 }               from './src/botie/'
 export {
-  GiftieStore,
-}               from './src/giftie'
-export {
-  Hostie,
-  HostieStore,
-}               from './src/hostie/'
-export {
-  DbModule,
-}               from './src/db-module'
-
-export {
   VERSION,
   log,
 }               from './src/config'
@@ -22,6 +11,16 @@ export {
   DbOptions,
 }               from './src/db'
 export {
+  DbModule,
+}               from './src/db-module'
+export {
   Status,
   Platform,
 }               from './generated-schemas/'
+export {
+  GiftieStore,
+}               from './src/giftie'
+export {
+  Hostie,
+  HostieStore,
+}               from './src/hostie/'

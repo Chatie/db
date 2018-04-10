@@ -8,7 +8,7 @@
     "generate-schema": "ts-node scripts/generate-schema",
     "graphcool:restart": "chatie-graphql-local-stop && chatie-graphql-local-start",
     "lint": "npm run lint:ts",
-    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" --exclude \"dist/\" && tsc --noEmit",
+    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" && tsc --noEmit",
     "ng:packagr": "ng-packagr -p package.json",
     "test": "npm run lint && npm run test:unit",
     "test:debug": "BROLOG_LEVEL=silly blue-tape -r ts-node/register -r source-map-support/register src/hostie/*.spec.ts",
