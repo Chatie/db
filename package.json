@@ -65,13 +65,13 @@
     "@angular/core": "^5.2.9",
     "auth-angular": "*",
     "brolog": ">=1",
-    "rxjs": "^5.5.6"
+    "rxjs": "^5.5.6",
+    "state-switch": "^0.4.0"
   },
   "dependencies": {
     "@chatie/graphql": "^0.4.8",
     "graphql-tag": "^2.8.0",
-    "jwt-decode": "^2.2.0",
-    "state-switch": "^0.4.0"
+    "jwt-decode": "^2.2.0"
   },
   "ngPackage": {
     "lib": {
