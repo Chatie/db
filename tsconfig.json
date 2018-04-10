@@ -28,8 +28,7 @@
     , "dist/"
   ]
   , "include": [
-      "index.ts"
-    , "bin/*.ts"
+      "bin/*.ts"
     , "examples/**/*.ts"
     , "generated-schemas/**/*.ts"
     , "src/**/*.ts"

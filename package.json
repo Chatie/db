@@ -2,7 +2,6 @@
   "name": "@chatie/db",
   "version": "0.5.17",
   "description": "Database for Chatie",
-  "main": "index.ts",
   "scripts": {
     "clean": "shx rm -fr dist",
     "dist": "npm run clean && tsc",
@@ -75,13 +74,12 @@
   },
   "ngPackage": {
     "lib": {
-      "entryFile": "index.ts"
+      "entryFile": "public_api.ts"
     },
     "whitelistedNonPeerDependencies": [
       "@chatie/graphql",
       "graphql-tag",
-      "jwt-decode",
-      "state-switch"
+      "jwt-decode"
     ]
   }
 }
