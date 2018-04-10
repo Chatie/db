@@ -12,7 +12,7 @@ export {
 }               from './src/db'
 export {
   DbModule,
-}               from './src/db-module'
+}               from './src/db.module'
 export {
   Status,
   Platform,
