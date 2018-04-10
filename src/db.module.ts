@@ -25,16 +25,22 @@ export function dbFactory(
   auth.idToken.subscribe(token => {
     log.verbose('DbModule', 'auth.idToken.subscript(token=%s)', token)
 
+    if (!token) {
+      db.close()
+      return
+    }
+
     const obj             = jwt_decode(token) as GraphCoolIdToken
     const graphCoolToken  = obj['https://graph.cool/token']
     log.silly('DbModule', 'auth.idToken.subscript() graphCoolToken=%s)', graphCoolToken)
 
-    if (graphCoolToken) {
-      db.setToken(graphCoolToken)
-      db.open()
-    } else {
+    if (!graphCoolToken) {
       db.close()
+      return
     }
+
+    db.setToken(graphCoolToken)
+    db.open()
   })
 
   return db
