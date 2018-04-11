@@ -42,13 +42,13 @@ export abstract class Store<
 
   protected apollo?:  Apollo
   protected log:      typeof log
-  protected settings: StoreSettings
 
   protected itemList$:    BehaviorSubject< T[] >
   public    itemList:     Observable< T[] >
 
   constructor(
-    protected db: Db,
+    protected db:       Db,
+    protected settings: StoreSettings,
   ) {
     this.log = db.log
 
@@ -159,7 +159,7 @@ export abstract class Store<
         return newData
       },
       onError: error => {
-        this.log.error('Store', 'initSubscribeToMore() onError() %s', JSON.stringify(error))
+        this.log.warn('Store', 'initSubscribeToMore() onError() %s', JSON.stringify(error))
       },
     })
   }
@@ -169,7 +169,7 @@ export abstract class Store<
 
     const sub = itemQuery.subscribe(
       ({ data }) => {
-        this.log.silly('HostieStore', 'init() subscribe() itemList length change to %d',
+        this.log.silly('Store', 'initSubscription() itemQuery.subscribe() data[dataKey].length=%d',
                                       data[this.settings.dataKey].length,
                       )
         this.itemList$.next([...data[this.settings.dataKey]])

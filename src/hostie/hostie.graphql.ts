@@ -37,6 +37,7 @@ export const GQL_SUBSCRIBE_HOSTIE = gql`
       },
       previousValues {
         id,
+        token,
       },
     }
   }

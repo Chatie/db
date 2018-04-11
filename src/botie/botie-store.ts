@@ -39,14 +39,12 @@ export class BotieStore extends Store<
   constructor(
     protected db: Db,
   ) {
-    super(db)
-    log.verbose('BotieStore', 'constructor()')
-
-    this.settings = {
+    super(db, {
       gqlQueryAll:  GQL_QUERY_ALL_BOTIES,
       gqlSubscribe: GQL_SUBSCRIBE_BOTIE,
       dataKey:      'allBoties',
-    }
+    })
+    log.verbose('BotieStore', 'constructor()')
   }
 
   /**
