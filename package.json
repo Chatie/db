@@ -81,7 +81,6 @@
     "lib": {
       "entryFile": "public_api.ts"
     },
-    "dest": "@chatie/db",
     "whitelistedNonPeerDependencies": []
   }
 }

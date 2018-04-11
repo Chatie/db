@@ -45,7 +45,7 @@ jobs:
 
       before_deploy:
         - npm run ng:packagr
-        - cd @chatie/db
+        - cd dist/
 
       deploy:
         provider: npm
