@@ -20,6 +20,8 @@ stages:
 jobs:
   include:
     - stage: test
+      install:
+        - travis_retry npm install
       script:
         - echo $TRAVIS_OS_NAME
         - node --version
@@ -29,6 +31,8 @@ jobs:
         - npm test
 
     - stage: pack
+      install:
+        - travis_retry npm install
       script:
         - echo "NPM Pack Testing..."
         - travis_retry npm run graphcool:restart
@@ -37,6 +41,8 @@ jobs:
         - echo 'NPM Pack Testing is PASSED.'
 
     - stage: deploy
+      install:
+        - travis_retry npm install
       script:
         - echo "Deploying to NPM ..."
         - npm version
