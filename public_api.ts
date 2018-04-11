@@ -19,11 +19,12 @@ export {
 export {
   Botie,
   BotieStore,
-}               from './src/botie/'
+}               from './src/botie/botie-store'
 export {
+  Giftie,
   GiftieStore,
-}               from './src/giftie'
+}               from './src/giftie/giftie-store'
 export {
   Hostie,
   HostieStore,
-}               from './src/hostie/'
+}               from './src/hostie/hostie-store'
