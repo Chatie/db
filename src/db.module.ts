@@ -6,13 +6,14 @@ import { Auth }         from 'auth-angular'
 import { Brolog }       from 'brolog'
 import jwt_decode       from 'jwt-decode'
 
-import { Db }           from './db'
-import { BotieStore }   from './botie/'
+import { BotieStore }   from './botie/botie-store'
+import { GiftieStore }  from './giftie/giftie-store'
+import { HostieStore }  from './hostie/hostie-store'
+
 import {
   GraphCoolIdToken,
 }                       from './config'
-import { GiftieStore }  from './giftie'
-import { HostieStore }  from './hostie'
+import { Db }           from './db'
 
 export function dbFactory(
   auth: Auth,
