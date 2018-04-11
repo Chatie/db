@@ -43,4 +43,3 @@ t.*
 t/
 .ng_pkg_build/
 dist.tgz
-/@chatie/

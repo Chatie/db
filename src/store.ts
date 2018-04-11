@@ -130,11 +130,12 @@ export abstract class Store<
       document: this.settings.gqlSubscribe,
       updateQuery: (prev, { subscriptionData }) => {
         const data: SubscribeItemSubscription = subscriptionData.data
-        if (!data || !data[this.settings.dataKey]) {
+
+        const dataKey = this.settings.dataKey
+        if (!data || !data[dataKey]) {
           return prev
         }
 
-        const dataKey = this.settings.dataKey
         const item    = data[dataKey]
 
         this.log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
@@ -150,7 +151,7 @@ export abstract class Store<
         newData[dataKey] = this.mutationReducer(
           newData[dataKey],
           {
-            type: item.mutation,
+            type: item.mutation,          // MutationType: CREATED / DELETED / UPDATED
             node: node || previousValues, // when DELETE, node will be null and we use previousValues
           },
         )

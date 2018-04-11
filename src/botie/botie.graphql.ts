@@ -34,7 +34,6 @@ export const GQL_SUBSCRIBE_BOTIE = gql`
       },
       previousValues {
         id,
-        token,
       },
     }
   }
