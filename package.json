@@ -1,6 +1,6 @@
 {
   "name": "@chatie/db",
-  "version": "0.5.29",
+  "version": "0.5.30",
   "description": "Database for Chatie",
   "scripts": {
     "clean": "shx rm -fr dist",
