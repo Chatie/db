@@ -8,7 +8,7 @@ if (!(<any>Symbol).asyncIterator) {
 /**
  * export VRESION
  */
-export const VERSION: string = require('../package.json')['version']
+export const VERSION: string = require('../package.json')['version'] || 'unknown'
 
 /**
  * Auth0 idToken Schema

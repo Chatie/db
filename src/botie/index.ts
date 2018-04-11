@@ -1,1 +1,4 @@
-export * from './botie-store'
+export {
+  Botie,
+  BotieStore,
+}             from './botie-store'

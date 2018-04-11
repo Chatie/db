@@ -1,4 +1,3 @@
-// import { Injectable } from '@angular/core'
 import {
   BehaviorSubject,
   Observable,
@@ -35,7 +34,6 @@ export interface DbOptions {
 
 export type CurrentUser = CurrentUserQuery['user']
 
-// @Injectable()
 export class Db {
 
   private apollo$:  BehaviorSubject <Apollo | undefined>
