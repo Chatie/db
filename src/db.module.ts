@@ -19,12 +19,14 @@ export function dbFactory(
   auth: Auth,
   log:  Brolog,
 ) {
+  log.verbose('DbModule', 'dbFactory()')
+
   const db = new Db({
     log,
   })
 
   auth.idToken.subscribe(token => {
-    log.verbose('DbModule', 'auth.idToken.subscript(token=%s)', token)
+    log.verbose('DbModule', 'dbFactory() auth.idToken.subscript(token=%s)', token)
 
     if (!token) {
       db.close()

@@ -69,7 +69,7 @@ export class Db {
     this.log.verbose('Db', 'nextApollo(available=%s)', available)
 
     const oldApollo = await this.apollo.first().toPromise()
-    this.log.silly('Db', 'nextApollo() oldApollo got')
+    this.log.silly('Db', 'nextApollo() oldApollo=%s', typeof oldApollo)
 
     if (available) {
       /**
@@ -111,7 +111,7 @@ export class Db {
       return
     }
 
-    this.log.silly('Db', 'setToken() token changed from %s to %s', this.token, token)
+    this.log.silly('Db', 'setToken() old token=%s', this.token  || '""')
     this.token = token
   }
 
