@@ -49,7 +49,7 @@ export class Db {
 
   constructor(options: DbOptions = {}) {
     this.log        = options.log       || log
-    this.log.verbose('Db', 'constructor({token=%s, endpoints=%s)',
+    this.log.verbose('Db', 'constructor({token=%s, endpoints=%s})',
                       options.token                     || '',
                       JSON.stringify(options.endpoints) || '',
                     )

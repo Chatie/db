@@ -52,7 +52,7 @@ export abstract class Store<
   ) {
     this.log = db.log
 
-    this.log.verbose('Store', 'constructor(db=%s)', db.constructor.name)
+    this.log.verbose('Store', 'constructor()')
 
     this.itemList$  = new BehaviorSubject< T[] >([])
     this.itemList   = this.itemList$.asObservable().distinctUntilChanged()
