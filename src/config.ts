@@ -8,26 +8,11 @@ if (!(<any>Symbol).asyncIterator) {
 /**
  * export VRESION
  */
-export const VERSION = myVersion()
+export const VERSION: string = require('../package.json')['version'] || 'unknown'
 
 /**
- * Helper Functions
+ * Auth0 idToken Schema
  */
-function myVersion(): string {
-  let pkg: {
-    version: string,
-  } | undefined
-
-  const MAX_DEPTH = 3
-  for (let n = 0; n < MAX_DEPTH; n++) {
-    if (pkg) {
-      return pkg.version || 'unknown'
-    }
-    const pkgFile = '../'.repeat(n) + './package.json'
-
-    try {
-      pkg = require(pkgFile)
-    } catch (e) { /* fail safe */ }
-  }
-  return 'not found'
+export interface GraphCoolIdToken {
+  'https://graph.cool/token'?: string,
 }

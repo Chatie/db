@@ -1,5 +1,5 @@
 export {
   _ModelMutationType,
   Status,
-  System,
+  Platform,
 }                       from './hostie-schema'

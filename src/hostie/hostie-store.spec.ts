@@ -60,16 +60,16 @@ test('create()', async t => {
     // await hostieStore.open()
 
     try {
-      const EXPECTED_NAME = 'test name for create()'
-      const EXPECTED_KEY = 'test key for create()'
+      const EXPECTED_NAME   = 'test name for create()'
+      const EXPECTED_TOKEN  = 'test token for create()'
       const hostie = await hostieStore.create({
         name:     EXPECTED_NAME,
-        key:      EXPECTED_KEY,
+        token:      EXPECTED_TOKEN,
         ownerId:  fixtures.USER.id,
       })
 
       t.equal(hostie.name,  EXPECTED_NAME,  'should create hostie with EXPECTED_NAME')
-      t.equal(hostie.key,   EXPECTED_KEY,   'should create hostie with EXPECTED_NOTE')
+      t.equal(hostie.token, EXPECTED_TOKEN, 'should create hostie with EXPECTED_NOTE')
 
     } catch (e) {
       t.fail(e)
@@ -92,8 +92,8 @@ test('read() with exist id', async t => {
       const HOSTIE_FIXTURE  = await createHostieFixture(hostieStore, fixtures.USER.id)
       const hostie          = await hostieStore.read(HOSTIE_FIXTURE.id!)
 
-      t.equal(hostie.name, HOSTIE_FIXTURE.name, 'should get the name of hostie with the id')
-      t.equal(hostie.key, HOSTIE_FIXTURE.key, 'should get the name of hostie with the id')
+      t.equal(hostie.name,  HOSTIE_FIXTURE.name,  'should get the name of hostie with the id')
+      t.equal(hostie.token, HOSTIE_FIXTURE.token, 'should get the name of hostie with the id')
 
     } catch (e) {
       t.fail(e)

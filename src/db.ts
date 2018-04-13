@@ -1,13 +1,8 @@
-import { Injectable } from '@angular/core'
-import { Auth }       from 'auth-angular'
 import {
   BehaviorSubject,
   Observable,
-  Subscription,
+  // Subscription,
 }                         from 'rxjs/Rx'
-import {
-  distinctUntilChanged,
-}                         from 'rxjs/operators'
 
 import {
   ENDPOINTS,
@@ -22,33 +17,39 @@ export {
   ObservableQuery,
 }                         from '@chatie/graphql'
 
-import { log }  from './config'
+import {
+  CurrentUserQuery,
+}                           from '../generated-schemas/db-schema'
+
+import { GQL_CURRENT_USER } from './db.graphql'
+import { log }              from './config'
 
 export type Apollo = ApolloClient<NormalizedCacheObject>
 
 export interface DbOptions {
-  auth?:      Auth,
   token?:     string,
   endpoints?: Endpoints,
   log?:       typeof log,
 }
 
-@Injectable()
+export type CurrentUser = CurrentUserQuery['user']
+
 export class Db {
 
-  private apollo$:      BehaviorSubject <Apollo | undefined>
-  public apollo:        Observable      <Apollo | undefined>
+  private apollo$:  BehaviorSubject <Apollo | undefined>
+  public  apollo:   Observable      <Apollo | undefined>
+
+  private currentUser$: BehaviorSubject <CurrentUser | undefined>
+  public  currentUser:  Observable      <CurrentUser | undefined>
 
   private endpoints:  Endpoints
   private token:      string
 
   public log:         typeof log
 
-  private authSub?: Subscription
-
   constructor(options: DbOptions = {}) {
     this.log        = options.log       || log
-    this.log.verbose('Db', 'constructor({token=%s, endpoints=%s)',
+    this.log.verbose('Db', 'constructor({token=%s, endpoints=%s})',
                       options.token                     || '',
                       JSON.stringify(options.endpoints) || '',
                     )
@@ -56,14 +57,11 @@ export class Db {
     this.endpoints  = options.endpoints || ENDPOINTS
     this.token      = options.token     || ''
 
-    this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
-    this.apollo   = this.apollo$.asObservable().pipe(
-      distinctUntilChanged(),
-    )
+    this.currentUser$ = new BehaviorSubject<CurrentUser | undefined>(undefined)
+    this.currentUser  = this.currentUser$.asObservable().distinctUntilChanged()
 
-    if (options.auth) {
-      this.setAuth(options.auth)
-    }
+    this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
+    this.apollo   = this.apollo$.asObservable().distinctUntilChanged()
 
   }
 
@@ -71,7 +69,7 @@ export class Db {
     this.log.verbose('Db', 'nextApollo(available=%s)', available)
 
     const oldApollo = await this.apollo.first().toPromise()
-    this.log.silly('Db', 'nextApollo() oldApollo got')
+    this.log.silly('Db', 'nextApollo() oldApollo=%s', typeof oldApollo)
 
     if (available) {
       /**
@@ -84,10 +82,14 @@ export class Db {
 
       this.apollo$.next(newApollo)
 
+      const currentUser = await this.getCurrentUser(newApollo)
+      this.currentUser$.next(currentUser)
+
     } else {
       /**
        * 2. born undefined(if should not available any more)
        */
+      this.currentUser$.next(undefined)
       this.apollo$.next(undefined)
     }
 
@@ -101,26 +103,6 @@ export class Db {
 
   }
 
-  public setAuth(auth: Auth) {
-    this.log.verbose('Db', 'setAuth()')
-
-    if (this.authSub) {
-      this.authSub.unsubscribe()
-      this.authSub = undefined
-    }
-
-    this.authSub = auth.valid.subscribe(async valid => {
-      if (valid) {
-        const token = await auth.idToken.first().toPromise()
-        this.setToken(token)
-        await this.open()
-      } else {
-        await this.close()
-      }
-    })
-
-  }
-
   public setToken(token: string) {
     this.log.verbose('Db', 'setToken(token=%s)', token)
 
@@ -129,7 +111,7 @@ export class Db {
       return
     }
 
-    this.log.silly('Db', 'setToken() token changed from %s to %s', this.token, token)
+    this.log.silly('Db', 'setToken() old token=%s', this.token  || '""')
     this.token = token
   }
 
@@ -158,6 +140,26 @@ export class Db {
   public async close(): Promise<void> {
     this.log.verbose('Db', 'close()')
     await this.nextApollo(false)
+  }
+
+  private async getCurrentUser(apollo: Apollo) {
+    this.log.verbose('Db', 'currentUser()')
+
+    if (!apollo) {
+      this.log.error('Db', 'currentUser() no apollo defined!')
+      throw new Error('no current user in Db')
+    }
+
+    const user = await apollo.query<CurrentUserQuery>({
+      query: GQL_CURRENT_USER,
+    }).then(x => x.data.user)
+
+    if (!user) {
+      throw new Error('cant get current user!')
+    }
+
+    log.silly('Db', 'currentUser(id=%s, email=%s, name=%s)', user.id, user.email, user.name)
+    return user
   }
 }
 

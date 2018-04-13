@@ -1,20 +1,19 @@
 {
   "name": "@chatie/db",
   "version": "0.6.1",
-  "description": "Database for Chatie",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "public_api.ts",
+  "description": "Real-time Database for Chatie",
   "scripts": {
     "clean": "shx rm -fr dist",
     "dist": "npm run clean && tsc",
     "generate-schema": "ts-node scripts/generate-schema",
     "graphcool:restart": "chatie-graphql-local-stop && chatie-graphql-local-start",
     "lint": "npm run lint:ts",
-    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" --exclude \"dist/\" && tsc --noEmit",
+    "lint:ts": "echo tslint v`tslint --version` && tslint --project tsconfig.json --exclude \"tests/fixtures/**\" && tsc --noEmit",
     "ng:packagr": "ng-packagr -p package.json",
     "test": "npm run lint && npm run test:unit",
     "test:debug": "BROLOG_LEVEL=silly blue-tape -r ts-node/register -r source-map-support/register src/hostie/*.spec.ts",
-    "test:pack": "npm run dist && npm pack && export TMPDIR=/tmp/pack-testing.$$ && mkdir $TMPDIR && mv *-*.*.*.tgz $TMPDIR && cp tests/fixtures/pack-testing.js $TMPDIR && cd $TMPDIR && npm init -y && (for i in {1..3}; do npm i *-*.*.*.tgz @angular/core auth-angular brolog rxjs && ./node_modules/.bin/chatie-graphql-local-restart && node --harmony_async_iteration pack-testing.js && break || sleep 1; done)",
+    "test:pack": "npm run dist && npm pack && export TMPDIR=/tmp/pack-testing.$$ && mkdir $TMPDIR && mv *-*.*.*.tgz $TMPDIR && cp tests/fixtures/pack-testing.js $TMPDIR && cd $TMPDIR && npm init -y && (for i in {1..3}; do npm i *-*.*.*.tgz @angular/core auth-angular brolog rxjs state-switch && ./node_modules/.bin/chatie-graphql-local-restart && node --harmony_async_iteration pack-testing.js && break || sleep 1; done)",
     "test:unit": "blue-tape -r ts-node/register {src,tests}/**/*.spec.ts"
   },
   "git": {
@@ -41,10 +40,12 @@
     "@angular/compiler": "^5.2.9",
     "@angular/compiler-cli": "^5.2.9",
     "@angular/core": "^5.2.9",
+    "@auth0/angular-jwt": "^1.1.0",
     "@types/blue-tape": "^0.1.31",
     "@types/glob": "^5.0.35",
     "apollo-codegen": "^0.19.0",
-    "auth-angular": "0.1.1",
+    "auth-angular": "^0.1.3",
+    "auth0-js": "^9.4.2",
     "babel-eslint": "^8.2.2",
     "blue-tape": "^1.0.0",
     "brolog": "^1.2.15",
@@ -52,9 +53,11 @@
     "eslint": "^4.17.0",
     "git-scripts": "^0.2.1",
     "glob": "^7.1.2",
+    "jwt-decode": "^2.2.0",
     "ng-packagr": "^2.4.2",
     "rxjs": "^5.5.6",
     "shx": "^0.2.2",
+    "state-switch": "^0.4.4",
     "ts-node": "^5.0.1",
     "tsickle": "^0.27.5",
     "tslint": "^5.9.1",
@@ -66,21 +69,18 @@
     "@angular/core": "^5.2.9",
     "auth-angular": "*",
     "brolog": "*",
-    "rxjs": "^5.5.6"
+    "jwt-decode": "^2.2.0",
+    "rxjs": "^5.5.6",
+    "state-switch": "^0.4.0"
   },
   "dependencies": {
     "@chatie/graphql": "^0.5.0",
-    "graphql-tag": "^2.8.0",
-    "state-switch": "^0.4.0"
+    "graphql-tag": "^2.8.0"
   },
   "ngPackage": {
     "lib": {
-      "entryFile": "index.ts"
+      "entryFile": "public_api.ts"
     },
-    "whitelistedNonPeerDependencies": [
-      "@chatie/graphql",
-      "graphql-tag",
-      "state-switch"
-    ]
+    "whitelistedNonPeerDependencies": []
   }
 }

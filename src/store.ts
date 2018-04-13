@@ -4,9 +4,6 @@ import {
   Observable,
   Subscription,
 }                       from 'rxjs/Rx'
-import {
-  distinctUntilChanged,
-}                       from 'rxjs/operators'
 
 import { StateSwitch }  from 'state-switch'
 
@@ -36,35 +33,30 @@ export interface StoreAction {
 }
 
 export abstract class Store<
-    T,
-    AllItemsQuery,
-    SubscribeItemSubscription
+  T,
+  AllItemsQuery,
+  SubscribeItemSubscription
 > {
   protected state: StateSwitch
 
   private itemListSubscription: Subscription
 
-  protected apollo?:            Apollo
-
+  protected apollo?:  Apollo
   protected log:      typeof log
-  protected settings: StoreSettings
 
   protected itemList$:    BehaviorSubject< T[] >
-  public get itemList():  Observable< T[] > {
-    this.log.silly('Store', 'get itemList()')
-
-    return this.itemList$.asObservable().pipe(
-      distinctUntilChanged(),
-    )
-  }
+  public    itemList:     Observable< T[] >
 
   constructor(
-    protected db: Db,
+    protected db:       Db,
+    protected settings: StoreSettings,
   ) {
     this.log = db.log
 
-    this.log.verbose('Store', 'constructor(db=%s)', db)
-    this.itemList$ = new BehaviorSubject< T[] >([])
+    this.log.verbose('Store', 'constructor()')
+
+    this.itemList$  = new BehaviorSubject< T[] >([])
+    this.itemList   = this.itemList$.asObservable().distinctUntilChanged()
 
     this.state = new StateSwitch('Store', this.log)
 
@@ -100,7 +92,7 @@ export abstract class Store<
   }
 
   private async refresh(apollo: Apollo | undefined): Promise<void> {
-    this.log.verbose('Store', 'refresh(%s)', apollo)
+    this.log.verbose('Store', 'refresh(%s)', apollo && apollo.constructor.name)
 
     /**
      * 1. close the existing apollo if it is availble
@@ -139,11 +131,12 @@ export abstract class Store<
       document: this.settings.gqlSubscribe,
       updateQuery: (prev, { subscriptionData }) => {
         const data: SubscribeItemSubscription = subscriptionData.data
-        if (!data || !data[this.settings.dataKey]) {
+
+        const dataKey = this.settings.dataKey
+        if (!data || !data[dataKey]) {
           return prev
         }
 
-        const dataKey = this.settings.dataKey
         const item    = data[dataKey]
 
         this.log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
@@ -159,7 +152,7 @@ export abstract class Store<
         newData[dataKey] = this.mutationReducer(
           newData[dataKey],
           {
-            type: item.mutation,
+            type: item.mutation,          // MutationType: CREATED / DELETED / UPDATED
             node: node || previousValues, // when DELETE, node will be null and we use previousValues
           },
         )
@@ -167,7 +160,7 @@ export abstract class Store<
         return newData
       },
       onError: error => {
-        this.log.error('Store', 'initSubscribeToMore() onError() %s', error)
+        this.log.warn('Store', 'initSubscribeToMore() onError() %s', JSON.stringify(error))
       },
     })
   }
@@ -177,7 +170,7 @@ export abstract class Store<
 
     const sub = itemQuery.subscribe(
       ({ data }) => {
-        this.log.silly('HostieStore', 'init() subscribe() itemList length change to %d',
+        this.log.silly('Store', 'initSubscription() itemQuery.subscribe() data[dataKey].length=%d',
                                       data[this.settings.dataKey].length,
                       )
         this.itemList$.next([...data[this.settings.dataKey]])

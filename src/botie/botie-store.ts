@@ -28,7 +28,7 @@ import {
   GQL_QUERY_ALL_BOTIES,
   GQL_SUBSCRIBE_BOTIE,
   GQL_UPDATE_BOTIE,
-}                         from './botie-store.graphql'
+}                         from './botie.graphql'
 
 @Injectable()
 export class BotieStore extends Store<
@@ -39,14 +39,12 @@ export class BotieStore extends Store<
   constructor(
     protected db: Db,
   ) {
-    super(db)
-    log.verbose('BotieStore', 'constructor()')
-
-    this.settings = {
+    super(db, {
       gqlQueryAll:  GQL_QUERY_ALL_BOTIES,
       gqlSubscribe: GQL_SUBSCRIBE_BOTIE,
       dataKey:      'allBoties',
-    }
+    })
+    log.verbose('BotieStore', 'constructor()')
   }
 
   /**
@@ -55,7 +53,7 @@ export class BotieStore extends Store<
    */
   public async create(newBotie: {
       name:     string,
-      key:      string,
+      token:    string,
       ownerId:  string,
   }): Promise<Botie> {
     log.verbose('BotieStore', 'create(newBotie{name:%s})', newBotie.name)
@@ -64,7 +62,7 @@ export class BotieStore extends Store<
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateBotieMutationVariables = {
-      key:      newBotie.key,
+      token:    newBotie.token,
       name:     newBotie.name,
       ownerId:  newBotie.ownerId,
     }

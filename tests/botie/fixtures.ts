@@ -6,13 +6,13 @@ export async function createBotieFixture(
     botieStore: BotieStore,
     ownerId:    string,
 ) {
-  const RAND_ID       = Math.random().toString().substr(2, 7)
-  const EXPECTED_NAME = `name-${RAND_ID}`
-  const EXPECTED_KEY  = `key-${RAND_ID}`
+  const RAND_ID         = Math.random().toString().substr(2, 7)
+  const EXPECTED_NAME   = `name-${RAND_ID}`
+  const EXPECTED_TOKEN  = `token-${RAND_ID}`
 
   const botie = await botieStore.create({
-    name: EXPECTED_NAME,
-    key:  EXPECTED_KEY,
+    name:   EXPECTED_NAME,
+    token:  EXPECTED_TOKEN,
     ownerId,
   })
 
@@ -21,8 +21,8 @@ export async function createBotieFixture(
   // await new Promise(r => setTimeout(r, 100))
 
   return {
-    id:   botie.id,
-    name: EXPECTED_NAME,
-    key:  EXPECTED_KEY,
+    id:     botie.id,
+    name:   EXPECTED_NAME,
+    token:  EXPECTED_TOKEN,
   }
 }

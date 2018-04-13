@@ -3,12 +3,12 @@ import gql from 'graphql-tag'
 export const GQL_FRAGMENT_HOSTIE = gql`
   fragment Hostie on Hostie {
     id,
-    key,
+    token,
     name,
     note,
 
     status,
-    system,
+    platform,
 
     owner {
       email,
@@ -37,7 +37,7 @@ export const GQL_SUBSCRIBE_HOSTIE = gql`
       },
       previousValues {
         id,
-        key,
+        token,
       },
     }
   }
@@ -55,12 +55,12 @@ export const GQL_DELETE_HOSTIE = gql`
 
 export const GQL_CREATE_HOSTIE = gql`
   mutation CreateHostie(
-    $key:     String!
+    $token:   String!
     $name:    String!,
     $ownerId: ID!,
   ) {
     createHostie(
-      key:      $key,
+      token:    $token,
       name:     $name,
       ownerId:  $ownerId,
     ) {

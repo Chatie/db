@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 
-import { Brolog } from 'brolog'
+import { Brolog }     from 'brolog'
 
 // import {
 //   Db,
@@ -10,6 +10,8 @@ import { Brolog } from 'brolog'
 //   Store,
 // }                   from '../store'
 
+export type Giftie = 'giftie'
+
 @Injectable()
 export class GiftieStore {
 
@@ -17,7 +19,6 @@ export class GiftieStore {
     protected log: Brolog,
   ) {
     // super()
-    console.log('GiftieStore', 'constructor()')
     this.log.verbose('GiftieStore', 'constructor()')
   }
 }
