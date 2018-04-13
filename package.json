@@ -41,6 +41,7 @@
     "@angular/compiler-cli": "^5.2.9",
     "@angular/core": "^5.2.9",
     "@auth0/angular-jwt": "^1.1.0",
+    "@chatie/graphql": "^0.5.1",
     "@types/blue-tape": "^0.1.31",
     "@types/glob": "^5.0.35",
     "apollo-codegen": "^0.19.0",
@@ -53,6 +54,7 @@
     "eslint": "^4.17.0",
     "git-scripts": "^0.2.1",
     "glob": "^7.1.2",
+    "graphql-tag": "^2.8.0",
     "jwt-decode": "^2.2.0",
     "ng-packagr": "^2.4.2",
     "rxjs": "^5.5.6",
@@ -75,13 +77,11 @@
     "rxjs": "^5.5.6",
     "state-switch": "^0.4.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "ngPackage": {
     "lib": {
       "entryFile": "public_api.ts"
     },
-    "whitelistedNonPeerDependencies": [
-   ]
+    "whitelistedNonPeerDependencies": []
   }
 }
