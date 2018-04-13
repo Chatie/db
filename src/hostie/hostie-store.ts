@@ -76,19 +76,19 @@ export class HostieStore extends Store<
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.CREATED, 'createHostie')
 
     this.log.silly('HostieStore', 'create() apollo.mutate()')
-    const result: CreateHostieMutation = await this.apollo!.mutate<CreateHostieMutation>({
+    const createHostie: CreateHostieMutation['createHostie'] = await this.apollo!.mutate({
       mutation,
       variables,
       update,
-    }).then(m => m.data)
+    }).then(m => m.data && m.data['createHostie'])
     this.log.silly('HostieStore', 'create() apollo.mutate() done')
 
-    if (!result.createHostie) {
+    if (!createHostie) {
       throw new Error('HostieStore.create() fail!')
     }
 
-    this.log.silly('HostieStore', 'create()=%s', JSON.stringify(result.createHostie))
-    return result.createHostie
+    this.log.silly('HostieStore', 'create()=%s', JSON.stringify(createHostie))
+    return createHostie
   }
 
   /**
@@ -107,16 +107,16 @@ export class HostieStore extends Store<
     const mutation  = GQL_DELETE_HOSTIE
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.DELETED, 'deleteHostie')
 
-    const result: DeleteHostieMutation = await this.apollo!.mutate<DeleteHostieMutation>({
+    const deleteHostie: DeleteHostieMutation['deleteHostie'] = await this.apollo!.mutate({
       mutation,
       variables,
       update,
-    }).then(m => m.data)
+    }).then(m => m.data && m.data['deleteHostie'])
 
-    if (!result.deleteHostie) {
+    if (!deleteHostie) {
       throw new Error(`HostieStore.delete(id=${id}) failed!`)
     }
-    return result.deleteHostie
+    return deleteHostie
   }
 
   /**
@@ -140,16 +140,16 @@ export class HostieStore extends Store<
     const mutation  = GQL_UPDATE_HOSTIE
     const update    = this.mutationUpdateFnFactory(_ModelMutationType.UPDATED, 'updateHostie')
 
-    const result: UpdateHostieMutation = await this.apollo!.mutate<UpdateHostieMutation>({
+    const updateHostie: UpdateHostieMutation['updateHostie'] = await this.apollo!.mutate({
       mutation,
       variables,
       update,
-    }).then(m => m.data)
+    }).then(m => m.data && m.data['updateHostie'])
 
-    if (!result.updateHostie) {
+    if (!updateHostie) {
       throw new Error('HostieStore.update() failed!')
     }
-    return result.updateHostie
+    return updateHostie
   }
 
 }

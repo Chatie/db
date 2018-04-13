@@ -69,16 +69,16 @@ export class BotieStore extends Store<
       ownerId:  newBotie.ownerId,
     }
 
-    const mutationResult: CreateBotieMutation = await this.apollo!.mutate<CreateBotieMutation>({
+    const createBotie: CreateBotieMutation['createBotie'] = await this.apollo!.mutate({
       mutation: GQL_CREATE_BOTIE,
       variables,
       update: this.mutationUpdateFnFactory(_ModelMutationType.CREATED, 'createBotie'),
-    }).then(m => m.data)
+    }).then(m => m.data && m.data.createBotie)
 
-    if (!mutationResult.createBotie) {
+    if (!createBotie) {
       throw new Error('BotieStore.create() fail!')
     }
-    return mutationResult.createBotie
+    return createBotie
   }
 
   /**
@@ -93,16 +93,16 @@ export class BotieStore extends Store<
     const variables: DeleteBotieMutationVariables = {
       id,
     }
-    const result: DeleteBotieMutation = await this.apollo!.mutate<DeleteBotieMutation>({
+    const deleteBotie: DeleteBotieMutation['deleteBotie'] = await this.apollo!.mutate({
       mutation: GQL_DELETE_BOTIE,
       variables,
       update: this.mutationUpdateFnFactory(_ModelMutationType.DELETED, 'deleteBotie'),
-    }).then(m => m.data)
+    }).then(m => m.data && m.data['deleteBotie'])
 
-    if (!result.deleteBotie) {
+    if (!deleteBotie) {
       throw new Error(`BotieStore.delete(id=${id}) failed!`)
     }
-    return result.deleteBotie
+    return deleteBotie
   }
 
   /**
@@ -123,16 +123,16 @@ export class BotieStore extends Store<
       note:   props.note || botie.note,
     }
 
-    const result: UpdateBotieMutation = await this.apollo!.mutate<UpdateBotieMutation>({
+    const updateBotie: UpdateBotieMutation['updateBotie'] = await this.apollo!.mutate({
       mutation: GQL_UPDATE_BOTIE,
       variables,
       update: this.mutationUpdateFnFactory(_ModelMutationType.UPDATED, 'updateBotie'),
-    }).then(m => m.data)
+    }).then(m => m.data && m.data['updateBotie'])
 
-    if (!result.updateBotie) {
+    if (!updateBotie) {
       throw new Error('BotieStore.update() failed!')
     }
-    return result.updateBotie
+    return updateBotie
   }
 
 }

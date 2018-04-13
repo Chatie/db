@@ -1,3 +1,4 @@
+import { DocumentNode } from 'graphql'
 import {
   BehaviorSubject,
   Observable,
@@ -24,9 +25,9 @@ import {
 }                     from './config'
 
 export interface StoreSettings {
-  gqlQueryAll:  string,
-  gqlSubscribe: string,
   dataKey:      string,
+  gqlQueryAll:  DocumentNode,
+  gqlSubscribe: DocumentNode,
 }
 
 export interface StoreAction {
@@ -233,23 +234,34 @@ export abstract class Store<
   }
 
   protected mutationUpdateFnFactory(
-      mutationType:     _ModelMutationType,
-      mutationDataKey:  string,
+    mutationType:     _ModelMutationType,
+    mutationDataKey:  string,
   ): MutationUpdaterFn<T> {
-    this.log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
+    this.log.verbose('Store', 'mutationUpdateFnFactory(mutationType=%s, mutationDataKey=%s)', mutationType, mutationDataKey)
 
     return (proxy, { data }) => {
-      this.log.verbose('Store', 'mutationUpdateFn(mutationType=%s, mutationDataKey=%s), (proxy, {data})', mutationType, mutationDataKey)
+      this.log.verbose('Store', 'mutationUpdateFnFactory(mutationType=%s, mutationDataKey=%s) (proxy, {data})', mutationType, mutationDataKey)
+
+      if (!data) {
+        this.log.verbose('Store', 'mutationUpdateFnFactory() (proxy, {data}) data empty???')
+        return
+      }
 
       let cachedData: AllItemsQuery | null = null
       try {
         cachedData = proxy.readQuery<AllItemsQuery>({ query: this.settings.gqlQueryAll })
       } catch (e) {
-        this.log.verbose('Store', 'mutationUpdateFn() call proxy.readQuery() before any query had been executed.')
+        this.log.verbose('Store', 'mutationUpdateFnFactory(mutationType=%s, mutationDataKey=%s) (proxy, {data}), %s',
+                                  mutationType,
+                                  mutationDataKey,
+                                  'call proxy.readQuery() got exceptoin. it mostly like there is no query had been executed before.')
       }
 
       if (!cachedData) {
-        this.log.verbose('Store', 'mutationUpdateFn() proxy.readQuery() return empty???')
+        this.log.verbose('Store', 'mutationUpdateFnFactory(mutationType=%s, mutationDataKey=%s) (proxy, {data})proxy.readQuery() return empty???',
+                                  mutationType,
+                                  mutationDataKey,
+                        )
         return
       }
 
