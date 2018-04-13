@@ -54,11 +54,19 @@ export class BotieStore extends Store<
   public async create(newBotie: {
       name:     string,
       token:    string,
-      ownerId:  string,
+      ownerId?: string,
   }): Promise<Botie> {
     log.verbose('BotieStore', 'create(newBotie{name:%s})', newBotie.name)
 
     await this.state.ready()
+
+    if (!newBotie.ownerId) {
+      const currentUser = await this.db.currentUser.first().toPromise()
+      if (!currentUser) {
+        throw new Error('no currentUser')
+      }
+      newBotie.ownerId = currentUser.id
+    }
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateBotieMutationVariables = {
