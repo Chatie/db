@@ -78,6 +78,10 @@
     "state-switch": "^0.4.0"
   },
   "dependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
   "ngPackage": {
     "lib": {
       "entryFile": "public_api.ts"

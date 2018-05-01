@@ -6,7 +6,7 @@ export const GQL_CURRENT_USER = gql`
       email,
       id,
       name,
-      nickname,
+      login,
     }
   }
 `
