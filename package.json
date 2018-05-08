@@ -61,7 +61,7 @@
     "shx": "^0.2.2",
     "state-switch": "^0.4.4",
     "ts-node": "^6.0.0",
-    "tsickle": "^0.27.5",
+    "tsickle": "^0.28.0",
     "tslint": "^5.9.1",
     "tslint-jsdoc-rules": "^0.1.2",
     "typescript": "^2.7.1",
