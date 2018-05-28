@@ -13,11 +13,14 @@ import {
 async function main () {
   const localServer = new LocalServer()
   for await (const serverFixtures of localServer.fixtures()) {
-    const db = new Db(serverFixtures.USER.token, serverFixtures.ENDPOINTS)
+    const db = new Db({
+      token    : serverFixtures.USER.token,
+      endpoints: serverFixtures.ENDPOINTS,
+    })
     await db.open()
 
     const hostieStore = new HostieStore(db)
-    await hostieStore.open()
+    await (hostieStore as any).open()
 
     console.log(`Pack Testing v${VERSION} PASSED.`)
   }

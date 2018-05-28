@@ -3,7 +3,7 @@ set -e
 
 
 npm run dist
-npm pack
+npm run pack
 
 TMPDIR="/tmp/npm-pack-testing.$$"
 mkdir "$TMPDIR"
@@ -14,6 +14,7 @@ cd $TMPDIR
 npm init -y
 npm install *-*.*.*.tgz \
   @angular/core \
+  @chatie/graphql \
   @types/node \
   auth-angular \
   brolog \
