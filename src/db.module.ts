@@ -4,7 +4,7 @@ import {
 }                       from '@angular/core'
 import { Auth }         from 'auth-angular'
 import { Brolog }       from 'brolog'
-import * as jwt_decode  from 'jwt-decode'
+const jwtDecode = require('jwt-decode')
 
 import { BotieStore }   from './botie/botie-store'
 import { GiftieStore }  from './giftie/giftie-store'
@@ -33,7 +33,7 @@ export function dbFactory(
       return
     }
 
-    const obj             = jwt_decode(token) as GraphCoolIdToken
+    const obj             = jwtDecode(token) as GraphCoolIdToken
     const graphCoolToken = obj['https://graph.cool/token']
     log.silly('DbModule', 'auth.idToken.subscript() graphCoolToken=%s)', graphCoolToken)
 
