@@ -2,6 +2,7 @@ sudo: required
 language: node_js
 node_js:
   - "10"
+  - "9"
 services:
   - docker
 os:
@@ -14,12 +15,14 @@ cache:
 install: travis_retry npm install
 
 script:
+  - echo "Testing Start ..."
   - echo $TRAVIS_OS_NAME
   - node --version
   - npm --version
   - travis_retry npm run graphcool:restart
   - npm run generate-schema
   - npm test
+  - echo "Testing Finished."
 
 stages:
   - test
@@ -32,15 +35,15 @@ jobs:
   include:
     - stage: pack
       script:
-        - echo "NPM Pack Testing..."
+        - echo "NPM Pack Testing Start ..."
         - travis_retry npm run graphcool:restart
         - npm run generate-schema
         - npm run test:pack
-        - echo 'NPM Pack Testing is PASSED.'
+        - echo 'NPM Pack Testing Finished.'
 
     - stage: deploy
       script:
-        - echo "Packing NPM ..."
+        - echo "Packing NPM Start ..."
         - npm version
         - travis_retry npm run graphcool:restart
         - npm run generate-schema
