@@ -1,13 +1,13 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
-const {
+import {
   LocalServer,
-}               = require('@chatie/graphql')
-const {
+}               from '@chatie/graphql'
+import {
   VERSION,
   Db,
   HostieStore,
-}               = require('@chatie/db')
+}               from '@chatie/db'
 // }                  = require('../../')
 
 async function main () {
