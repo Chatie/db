@@ -1,5 +1,10 @@
 #!/usr/bin/env ts-node
 
+// @auth0/angular-jwt bug workaround
+//  ReferenceError: window is not defined #51
+//  see: https://github.com/Chatie/db/issues/51
+global['window'] = global['window'] || {}
+
 import {
   LocalServer,
 }               from '@chatie/graphql'
