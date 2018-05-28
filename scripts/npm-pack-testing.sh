@@ -30,6 +30,7 @@ npm install *-*.*.*.tgz \
   smoke-testing.ts
 
 ./node_modules/.bin/chatie-graphql-local-restart
-node --harmony_async_iteration smoke-testing.js
+# node --harmony_async_iteration smoke-testing.js
+node smoke-testing.js
 
 # (for i in {1..3}; do node smoke-testing.js && break || sleep 1; done)
