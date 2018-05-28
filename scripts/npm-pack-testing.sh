@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-
 npm run dist
 npm run pack
 
@@ -14,12 +13,12 @@ cd $TMPDIR
 npm init -y
 npm install *-*.*.*.tgz \
   @angular/core \
-  @auth0/angular-jwt \
   @chatie/graphql \
   @types/node \
   auth-angular \
   brolog \
   graphql-tag \
+  jwt-decode \
   rxjs \
   state-switch \
   typescript@latest
