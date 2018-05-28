@@ -14,6 +14,7 @@ cd $TMPDIR
 npm init -y
 npm install *-*.*.*.tgz \
   @angular/core \
+  @auth0/angular-jwt \
   @chatie/graphql \
   @types/node \
   auth-angular \
