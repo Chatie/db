@@ -18,6 +18,7 @@ npm install *-*.*.*.tgz \
   @types/node \
   auth-angular \
   brolog \
+  graphql-tag \
   rxjs \
   state-switch \
   typescript@latest
