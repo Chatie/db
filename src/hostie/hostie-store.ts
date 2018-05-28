@@ -1,3 +1,7 @@
+import {
+  first,
+}                         from 'rxjs/operators'
+
 import { Injectable } from '@angular/core'
 
 import {
@@ -64,7 +68,7 @@ export class HostieStore extends Store<
     await this.state.ready()
 
     if (!newHostie.ownerId) {
-      const currentUser = await this.db.currentUser.first().toPromise()
+      const currentUser = await this.db.currentUser.pipe(first()).toPromise()
       if (!currentUser) {
         throw new Error('no currentUser')
       }

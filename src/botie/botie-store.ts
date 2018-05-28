@@ -1,3 +1,5 @@
+import { first }      from 'rxjs/operators'
+
 import { Injectable } from '@angular/core'
 
 import {
@@ -60,19 +62,23 @@ export class BotieStore extends Store<
 
     await this.state.ready()
 
-    if (!newBotie.ownerId) {
-      const currentUser = await this.db.currentUser.first().toPromise()
+    let ownerId = newBotie.ownerId
+    if (!ownerId) {
+      const currentUser = await this.db.currentUser.pipe(first()).toPromise()
       if (!currentUser) {
         throw new Error('no currentUser')
       }
-      newBotie.ownerId = currentUser.id
+      ownerId = currentUser.id
+    }
+    if (!ownerId) {
+      throw new Error('no ownerId')
     }
 
     // FIXME: key! & name! should be checked gracefully
     const variables: CreateBotieMutationVariables = {
       token:    newBotie.token,
       name:     newBotie.name,
-      ownerId:  newBotie.ownerId,
+      ownerId,
     }
 
     const createBotie: CreateBotieMutation['createBotie'] = await this.apollo!.mutate({

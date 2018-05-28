@@ -3,7 +3,11 @@ import {
   BehaviorSubject,
   Observable,
   Subscription,
-}                       from 'rxjs/Rx'
+}                       from 'rxjs'
+import {
+  distinctUntilChanged,
+  first,
+}                         from 'rxjs/operators'
 
 import { StateSwitch }  from 'state-switch'
 
@@ -33,13 +37,13 @@ export interface StoreAction {
 }
 
 export abstract class Store<
-  T,
-  AllItemsQuery,
-  SubscribeItemSubscription
+  T extends { [idx: string]: any },
+  AllItemsQuery extends { [idx: string]: any },
+  SubscribeItemSubscription extends { [idx: string]: any }
 > {
   protected state: StateSwitch
 
-  private itemListSubscription: Subscription
+  private itemListSubscription?: Subscription
 
   protected apollo?:  Apollo
   protected log:      typeof log
@@ -56,7 +60,7 @@ export abstract class Store<
     this.log.verbose('Store', 'constructor()')
 
     this.itemList$  = new BehaviorSubject< T[] >([])
-    this.itemList   = this.itemList$.asObservable().distinctUntilChanged()
+    this.itemList   = this.itemList$.asObservable().pipe(distinctUntilChanged())
 
     this.state = new StateSwitch('Store', this.log)
 
@@ -133,11 +137,12 @@ export abstract class Store<
         const data: SubscribeItemSubscription = subscriptionData.data
 
         const dataKey = this.settings.dataKey
-        if (!data || !data[dataKey]) {
+        // if (!data || !data[dataKey]) {
+        if (!data || !(dataKey in data)) {
           return prev
         }
 
-        const item    = data[dataKey]
+        const item = data[dataKey]
 
         this.log.silly('Store', 'init() subscribeToMore() updateQuery() prev=%s', JSON.stringify(prev))
         this.log.silly('Store', 'init() subscribeToMore() updateQuery() data=%s', JSON.stringify(data))
@@ -147,6 +152,8 @@ export abstract class Store<
 
         const newData = {
           ...prev,
+        } as {
+          [idx: string]: any,
         }
 
         newData[dataKey] = this.mutationReducer(
@@ -265,6 +272,8 @@ export abstract class Store<
        */
       const newData = {
         ...cachedData as Object,
+      } as {
+        [idx: string]: any,
       }
       newData[this.settings.dataKey] = this.mutationReducer(
         newData[this.settings.dataKey],
@@ -306,7 +315,7 @@ export abstract class Store<
 
     await this.state.ready()
 
-    const itemList = await this.itemList.first().toPromise()
+    const itemList = await this.itemList.pipe(first()).toPromise()
 
     const result = itemList.filter(i => i['id'] === id)
     if (result.length !== 1) {

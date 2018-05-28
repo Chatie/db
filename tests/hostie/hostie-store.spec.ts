@@ -28,7 +28,7 @@ test('smoke testing', async t => {
     // await hostieStore.open()
 
     try {
-      let itemList
+      let itemList: undefined | any[]
       let resolverList = [] as Function[]
       let future: Promise<void>
 
@@ -41,6 +41,11 @@ test('smoke testing', async t => {
       await future
 
       t.ok(itemList, 'should get itemList')
+
+      if (!itemList) {
+        throw new Error('no itemList!')
+      }
+
       t.equal(itemList.length, 0, 'should get zero items for a fresh fixture')
 
       future = new Promise(r => resolverList.push(r))

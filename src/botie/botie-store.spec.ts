@@ -3,6 +3,10 @@
 import * as test  from 'blue-tape'
 // import 'rxjs/add/operator/first'
 // import { first } from 'rxjs/operators'
+import {
+  distinctUntilChanged,
+  first,
+}                         from 'rxjs/operators'
 
 import {
   LocalServer,
@@ -30,13 +34,13 @@ test('itemList', async t => {
     // await botieStore.open()
 
     try {
-      const itemList = await botieStore.itemList.first().toPromise()
+      const itemList = await botieStore.itemList.pipe(first()).toPromise()
 
       t.ok(itemList, 'should get itemList')
       t.equal(itemList.length, 0, 'should get zero items for a fresh fixture')
 
       const newBotie = await createBotieFixture(botieStore, fixtures.USER.id)
-      const itemList2 = await botieStore.itemList.first().toPromise()
+      const itemList2 = await botieStore.itemList.pipe(first()).toPromise()
       t.equal(itemList2.length, 1, 'should get 1 items after creation')
 
       const item2 = itemList2.filter(i => i['id'] === newBotie.id)[0]

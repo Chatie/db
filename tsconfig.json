@@ -6,17 +6,10 @@
     , "declaration": true
     , "sourceMap": true
     , "experimentalDecorators": true
+    , "strict": true
 
     , "noEmitOnError": true
-    , "noUnusedLocals": true
-    , "noImplicitReturns": true
-    , "noFallthroughCasesInSwitch": true
-    , "strictNullChecks": true
-    , "alwaysStrict": true
 
-    , "noImplicitAny": false
-    , "noUnusedParameters": true
-    , "noImplicitThis": true
     , "traceResolution": false
     , "lib": [
         "dom"
@@ -26,6 +19,7 @@
   , "exclude": [
       "node_modules/"
     , "dist/"
+    , "tests/fixtures/"
   ]
   , "include": [
       "bin/*.ts"

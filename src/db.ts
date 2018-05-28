@@ -2,8 +2,11 @@ import {
   BehaviorSubject,
   Observable,
   // Subscription,
-}                         from 'rxjs/Rx'
-
+}                         from 'rxjs'
+import {
+  distinctUntilChanged,
+  first,
+}                         from 'rxjs/operators'
 import {
   ENDPOINTS,
   ApolloClient,
@@ -24,7 +27,7 @@ import {
 import { GQL_CURRENT_USER } from './db.graphql'
 import { log }              from './config'
 
-export type Apollo = ApolloClient<NormalizedCacheObject>
+export type Apollo = ApolloClient<NormalizedCacheObject> & { wsClose?: Function }
 
 export interface DbOptions {
   token?:     string,
@@ -58,17 +61,17 @@ export class Db {
     this.token      = options.token     || ''
 
     this.currentUser$ = new BehaviorSubject<CurrentUser | undefined>(undefined)
-    this.currentUser  = this.currentUser$.asObservable().distinctUntilChanged()
+    this.currentUser  = this.currentUser$.asObservable().pipe(distinctUntilChanged())
 
     this.apollo$  = new BehaviorSubject<Apollo | undefined>(undefined)
-    this.apollo   = this.apollo$.asObservable().distinctUntilChanged()
+    this.apollo   = this.apollo$.asObservable().pipe(distinctUntilChanged())
 
   }
 
   private async nextApollo(available = true): Promise<void> {
     this.log.verbose('Db', 'nextApollo(available=%s)', available)
 
-    const oldApollo = await this.apollo.first().toPromise()
+    const oldApollo = await this.apollo.pipe(first()).toPromise()
     this.log.silly('Db', 'nextApollo() oldApollo=%s', typeof oldApollo)
 
     if (available) {
@@ -97,7 +100,10 @@ export class Db {
      * 3. close the old one(if any)
      */
     if (oldApollo) {
-      await oldApollo['wsClose']()
+      if (!oldApollo.wsClose) {
+        throw new Error('no wsClose!')
+      }
+      await oldApollo.wsClose()
       // await oldApollo.resetStore()
     }
 

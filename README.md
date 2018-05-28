@@ -9,14 +9,14 @@ RealTime Database for [Chatie Service](https://www.chatie.io)
 ![RealTime Data](https://chatie.io/db/images/realtime-data.png)
 > Picture Credit: [What is Real-time Data?](https://www.insightdata.co.uk/news/what-is-real-time-data/)
 
-# FEATURES
+## FEATURES
 
 1. RealTime Store Class for Hostie, Botie and Gitfie etc.
 1. Backed by [@chatie/graphql](https://github.com/Chatie/graphql) which Powered By [GraphCool](https://www.graph.cool/).
 
-# TESTING
+## TESTING
 
-## Generate Schemas
+### Generate Schemas
 
 Generate schemas from the production graphql server:
 
@@ -24,7 +24,7 @@ Generate schemas from the production graphql server:
 npm run generate-schemas
 ```
 
-## Unit Tests
+### Unit Tests
 
 Run unit tests on local server:
 
@@ -33,27 +33,31 @@ npm run graphcool:restart
 npm run test:unit
 ```
 
-# RESOURCES
+## RESOURCES
 
-## Angular Module
+### Angular Module
 
 * [Transpile your libraries to Angular Package Format](http://spektrakel.de/ng-packagr/)
 * [Angular Package Format (APF) v6.0](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs/preview#)
 * [Juri Strumpflohner - Create and publish Angular libs like a Pro](https://www.youtube.com/watch?v=K4YMmwxGKjY)
 
-## Admin
+### Admin
 
 ![Chart](https://heroku-blog-files.s3.amazonaws.com/posts/1479328331-Kafka%20Twitter%20Dashboard.gif)
-> https://blog.heroku.com/kafka-data-pipelines-frp-node
+> <https://blog.heroku.com/kafka-data-pipelines-frp-node>
 
-
-## Apollo Client
+### Apollo Client
 
 * [Apollo Client + TypeScript example](https://medium.com/@borekb/apollo-client-typescript-example-99febdaa18fa)
 
-# CHANGE LOG
+## CHANGE LOG
 
-### v0.5 master (Apr 8, 2018)
+### v0.8 master (May 2018)
+
+1. Upgrade RxJS version from 5 to 6
+1. Force in `strict` TypeScript mode
+
+### v0.5 (Apr 8, 2018)
 
 **Angular Injection Support.**
 
@@ -92,11 +96,11 @@ Starting with Realtime Database: [Ionic DB](https://forum.ionicframework.com/t/i
 
 1. Limitation: does not support server JWT
 
-## See Also
+## SEE ALSO
 
 * [An enhanced GraphQL developer experience with TypeScript](https://dev-blog.apollodata.com/graphql-dx-d35bcf51c943)
 
-# AUTHOR
+## AUTHOR
 
 [Huan LI](http://linkedin.com/in/zixia) \<zixia@zixia.net\>
 
@@ -104,7 +108,7 @@ Starting with Realtime Database: [Ionic DB](https://forum.ionicframework.com/t/i
   <img src="https://stackexchange.com/users/flair/265499.png" width="208" height="58" alt="profile for zixia on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for zixia on Stack Exchange, a network of free, community-driven Q&amp;A sites">
 </a>
 
-# COPYRIGHT & LICENSE
+## COPYRIGHT & LICENSE
 
 * Code & Docs © 2017-2018 Huan LI \<zixia@zixia.net\>
 * Code released under the Apache-2.0 License

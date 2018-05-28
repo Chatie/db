@@ -4,7 +4,8 @@ import {
 }                       from '@angular/core'
 import { Auth }         from 'auth-angular'
 import { Brolog }       from 'brolog'
-import jwt_decode       from 'jwt-decode'
+// import * as jwt_decode  from 'jwt-decode'
+import { JwtHelperService } from '@auth0/angular-jwt'
 
 import { BotieStore }   from './botie/botie-store'
 import { GiftieStore }  from './giftie/giftie-store'
@@ -16,9 +17,10 @@ import {
 import { Db }           from './db'
 
 export function dbFactory(
-  auth: Auth,
-  log:  Brolog,
-) {
+  auth     : Auth,
+  log      : Brolog,
+  jwtHelper: JwtHelperService,
+): Db {
   log.verbose('DbModule', 'dbFactory()')
 
   const db = new Db({
@@ -33,8 +35,9 @@ export function dbFactory(
       return
     }
 
-    const obj             = jwt_decode(token) as GraphCoolIdToken
-    const graphCoolToken  = obj['https://graph.cool/token']
+    // const obj             = jwt_decode(token) as GraphCoolIdToken
+    const obj            = jwtHelper.decodeToken(token) as GraphCoolIdToken
+    const graphCoolToken = obj['https://graph.cool/token']
     log.silly('DbModule', 'auth.idToken.subscript() graphCoolToken=%s)', graphCoolToken)
 
     if (!graphCoolToken) {
@@ -63,6 +66,7 @@ export class DbModule {
           deps: [
             Auth,
             Brolog,
+            JwtHelperService,
           ],
         },
         BotieStore,

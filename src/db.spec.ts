@@ -3,7 +3,7 @@
 import * as test  from 'blue-tape'
 
 // import 'rxjs/add/operator/first'
-// import { first } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 
 import {
   LocalServer,
@@ -24,16 +24,16 @@ test('db', async t => {
     let counter = 0
     db.apollo.subscribe(() => counter++)
 
-    let apollo = await db.apollo.first().toPromise()
+    let apollo = await db.apollo.pipe(first()).toPromise()
     t.notOk(apollo, 'should get a null apollo after construction')
 
     await db.open()
-    apollo = await db.apollo.first().toPromise()
+    apollo = await db.apollo.pipe(first()).toPromise()
     t.ok(apollo, 'should get a instiaciated apollo after open')
     t.ok(apollo!.version, 'should had inited apollo client')
 
     await db.close()
-    apollo = await db.apollo.first().toPromise()
+    apollo = await db.apollo.pipe(first()).toPromise()
     t.notOk(apollo, 'should get a null apollo after close()')
 
     t.pass('db.{open,close}() passed')
