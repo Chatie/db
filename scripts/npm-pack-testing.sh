@@ -12,7 +12,7 @@ cp tests/fixtures/smoke-testing.ts "$TMPDIR"
 cd $TMPDIR
 npm init -y
 npm install *-*.*.*.tgz \
-  @angular/commo \
+  @angular/common \
   @angular/core \
   @auth0/angular-jwt \
   @chatie/graphql \
@@ -25,7 +25,7 @@ npm install *-*.*.*.tgz \
   jwt-decode \
   rxjs \
   state-switch \
-  typescript@latest
+  typescript
 
 ./node_modules/.bin/tsc \
   --lib esnext,dom \
