@@ -33,7 +33,7 @@ async function main () {
     const hostieStore = new HostieStore(db)
     await (hostieStore as any).open()
 
-    console.log(`Pack Testing v${VERSION} PASSED.`)
+    console.log(`Smoke Testing v${VERSION} PASSED.`)
   }
   return 0
 }
