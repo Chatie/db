@@ -54,7 +54,7 @@
     "babel-eslint": "^8.2.2",
     "blue-tape": "^1.0.0",
     "brolog": "^1.2.15",
-    "dotenv": "^5.0.1",
+    "dotenv": "^6.0.0",
     "eslint": "^4.17.0",
     "git-scripts": "^0.2.1",
     "glob": "^7.1.2",
