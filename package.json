@@ -1,6 +1,6 @@
 {
   "name": "@chatie/db",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "main": "public_api.ts",
   "description": "Real-time Database for Chatie",
   "scripts": {
