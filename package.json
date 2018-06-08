@@ -63,7 +63,7 @@
     "graphql-tag": "^2.8.0",
     "ng-packagr": "^3.0.0",
     "rxjs": "^6.1.0",
-    "shx": "^0.2.2",
+    "shx": "^0.3.0",
     "state-switch": "^0.4.4",
     "ts-node": "^6.0.0",
     "tsickle": "^0.29.0",
