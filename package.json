@@ -45,7 +45,7 @@
     "@chatie/graphql": "^0.6.4",
     "@types/auth0-js": "^8.11.2",
     "@types/blue-tape": "^0.1.31",
-    "@types/dotenv": "^4.0.3",
+    "@types/dotenv": "^6.1.0",
     "@types/glob": "^5.0.35",
     "@types/node": "10.5.5",
     "@types/semver": "^5.5.0",
