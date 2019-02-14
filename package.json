@@ -68,7 +68,7 @@
     "tsickle": "^0.33.0",
     "ts-node": "^7.0.0",
     "tslint": "^5.9.1",
-    "tslint-jsdoc-rules": "^0.1.2",
+    "tslint-jsdoc-rules": "^0.2.0",
     "typescript": "2.7.2",
     "zone.js": "^0.8.25"
   },
