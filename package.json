@@ -61,7 +61,7 @@
     "git-scripts": "^0.2.1",
     "glob": "^7.1.2",
     "graphql-tag": "^2.8.0",
-    "ng-packagr": "^4.0.0",
+    "ng-packagr": "^5.0.1",
     "rxjs": "^6.1.0",
     "state-switch": "^0.6.2",
     "shx": "^0.3.0",
