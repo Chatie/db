@@ -43,7 +43,7 @@
     "@angular/core": "^6.0.0",
     "@auth0/angular-jwt": "^3.0.0",
     "@chatie/graphql": "^0.6.4",
-    "@types/auth0-js": "^8.11.2",
+    "@types/auth0-js": "^9.10.0",
     "@types/blue-tape": "^0.1.31",
     "@types/dotenv": "^6.1.0",
     "@types/glob": "^5.0.35",
