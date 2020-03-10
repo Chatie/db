@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40chatie%2Fdb.svg)](https://www.npmjs.com/package/@chatie/db)
 [![Build Status](https://api.travis-ci.org/Chatie/db.svg?branch=master)](https://travis-ci.org/Chatie/db)
-[![Greenkeeper badge](https://badges.greenkeeper.io/Chatie/db.svg)](https://greenkeeper.io/)
+
 
 RealTime Database for [Chatie Service](https://www.chatie.io)
 
